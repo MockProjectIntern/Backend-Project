@@ -1,6 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sapo.mock_project.inventory_receipt.constants.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,19 +24,30 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String fullName;
+
+    private String phone;
+
+    private String email;
+
     private String username;
 
     @JsonIgnore
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    private String avatar;
+
+    private boolean isActive;
+
+    private RoleEnum role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority("ROLE_" + getRole().getName().toUpperCase()));
+        authorityList.add(new SimpleGrantedAuthority("ROLE_" + getRole()));
 
         return authorityList;
     }

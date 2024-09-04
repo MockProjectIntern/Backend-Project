@@ -1,7 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.components;
 
 import com.sapo.mock_project.inventory_receipt.entities.User;
-import com.sapo.mock_project.inventory_receipt.repositories.UserRepository;
+import com.sapo.mock_project.inventory_receipt.repositories.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -83,6 +83,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 // Healthcheck request, no JWT token required
                 Pair.of(String.format("%s/healthcheck/health", apiPrefix), "GET"),
                 Pair.of(String.format("%s/actuator/**", apiPrefix), "GET"),
+
+                Pair.of(String.format("%s/user/register", apiPrefix), "POST"),
 
                 // OpenAPI requests, no JWT token required
                 Pair.of("/v3/api-docs/**", "GET"),

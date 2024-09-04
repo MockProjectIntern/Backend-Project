@@ -1,6 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.configuration;
 
-import com.sapo.mock_project.inventory_receipt.repositories.UserRepository;
+import com.sapo.mock_project.inventory_receipt.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
