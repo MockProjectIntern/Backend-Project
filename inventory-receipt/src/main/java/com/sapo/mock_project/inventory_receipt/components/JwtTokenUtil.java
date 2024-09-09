@@ -25,7 +25,17 @@ public class JwtTokenUtil {
     @Value("${token.secretKey}")
     private String secretKey;
 
+    @Value("${token.expiration-refresh-token}")
+    private int expirationRefreshToken;
+
+    @Value("${token.type}")
+    private String tokenType;
+
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
+
+    public String getTokenType() {
+        return tokenType;
+    }
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -36,6 +46,25 @@ public class JwtTokenUtil {
                     .setClaims(claims)
                     .setSubject(String.valueOf(user.getId()))
                     .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
+                    .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                    .compact();
+
+            return token;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public String generateRefreshToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+
+        try {
+            String token = Jwts.builder()
+                    .setClaims(claims)
+                    .setSubject(String.valueOf(user.getId()))
+                    .setExpiration(new Date(System.currentTimeMillis() + expirationRefreshToken * 1000L))
                     .signWith(getSignKey(), SignatureAlgorithm.HS256)
                     .compact();
 

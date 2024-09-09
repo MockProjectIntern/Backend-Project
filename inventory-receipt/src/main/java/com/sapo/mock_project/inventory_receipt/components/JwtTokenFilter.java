@@ -84,7 +84,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/healthcheck/health", apiPrefix), "GET"),
                 Pair.of(String.format("%s/actuator/**", apiPrefix), "GET"),
 
-                Pair.of(String.format("%s/user/register", apiPrefix), "POST"),
+                Pair.of(String.format("%s/users/register**", apiPrefix), "POST"),
+                Pair.of(String.format("%s/users/login**", apiPrefix), "POST"),
+                Pair.of(String.format("%s/users/refresh-token**", apiPrefix), "POST"),
 
                 // OpenAPI requests, no JWT token required
                 Pair.of("/v3/api-docs/**", "GET"),

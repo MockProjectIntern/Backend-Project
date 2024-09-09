@@ -39,4 +39,14 @@ public class GlobalExceptionController {
     public ResponseEntity<ResponseObject<Object>> handle(MissingServletRequestParameterException e) {
         return ResponseUtil.error400Response(e.getMessage());
     }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<ResponseObject<Object>> handle(DataNotFoundException e) {
+        return ResponseUtil.error404Response(e.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ResponseObject<Object>> handle(ExpiredTokenException e) {
+        return ResponseUtil.error401Response(e.getMessage());
+    }
 }

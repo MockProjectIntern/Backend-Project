@@ -20,7 +20,7 @@ public class SecurityConfig {
     @Bean
     UserDetailsService userDetailsService() {
         return username -> {
-            return userRepository.findByUsername(username)
+            return userRepository.findByPhone(username)
                     .orElseThrow(() -> new RuntimeException("Cannot find user with username = " + username));
         };
     }
