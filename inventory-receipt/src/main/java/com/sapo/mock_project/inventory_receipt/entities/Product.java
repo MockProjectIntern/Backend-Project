@@ -1,5 +1,10 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
+import com.sapo.mock_project.inventory_receipt.constants.enums.ProductStatus;
+import com.sapo.mock_project.inventory_receipt.converts.ProductImageConverter;
+import com.sapo.mock_project.inventory_receipt.converts.ProductTypeConverter;
+import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductImage;
+import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,29 +25,43 @@ public class Product extends BaseEntity {
 
     private String name;
 
-    private BigDecimal price;
+    @Convert(converter = ProductImageConverter.class)
+    private List<ProductImage> images;
 
-    private String image;
+    @Convert(converter = ProductTypeConverter.class)
+    private List<ProductType> types;
 
-    private String brand;
+    private BigDecimal quantity;
 
-    private String variant;
-
-    private String color;
-
-    private Long quantity;
-
-    private Long sold;
+    private BigDecimal sold;
 
     private String description;
 
+    private String unit;
+
+    private BigDecimal costPrice;
+
+    private BigDecimal wholesalePrice;
+
+    private BigDecimal retailPrice;
+
+    private String tags;
+
+    private ProductStatus status;
+
     @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
     @OneToMany(mappedBy = "product")
-    private List<ProductReceipt> productReceipts;
+    private List<GINProduct> gins;
 
     @OneToMany(mappedBy = "product")
     private List<CategoryProduct> categoryProducts;
+
+    @OneToMany(mappedBy = "product")
+    private List<PriceAdjustment> priceAdjustments;
+
+    @OneToMany(mappedBy = "product")
+    private List<GRNProduct> grnProducts;
 }

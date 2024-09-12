@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sapo.mock_project.inventory_receipt.constants.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.MySQLEnumJdbcType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,8 +42,44 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "userCreated")
+    private List<GIN> createdGIN;
+
+    @OneToMany(mappedBy = "userBalanced")
+    private List<GIN> balancedGIN;
+
+    @OneToMany(mappedBy = "userInspection")
+    private List<GIN> inspectionGIN;
+
+    @OneToMany(mappedBy = "userCreated")
+    private List<Order> createdOrders;
+
+    @OneToMany(mappedBy = "userCompleted")
+    private List<Order> completedOrders;
+
+    @OneToMany(mappedBy = "userCancelled")
+    private List<Order> cancelledOrders;
+
+    @OneToMany(mappedBy = "userEnded")
+    private List<Order> endedOrders;
+
+    @OneToMany(mappedBy = "userCreated")
+    private List<PriceAdjustment> createdPriceAdjustments;
+
+    @OneToMany(mappedBy = "userCreated")
+    private List<RefundInformation> createdRefundInformations;
+
+    @OneToMany(mappedBy = "userCreated")
+    private List<GRN> createdGRNs;
+
+    @OneToMany(mappedBy = "userImported")
+    private List<GRN> importedGRNs;
+
+    @OneToMany(mappedBy = "userCancelled")
+    private List<GRN> cancelledGRNs;
+
+    @OneToMany(mappedBy = "userEnded")
+    private List<GRN> endedGRNs;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

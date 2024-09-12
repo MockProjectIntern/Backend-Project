@@ -6,30 +6,30 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "order_details")
+@Table(name = "gin_products")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderDetail extends BaseEntity {
+public class GINProduct extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long quantity;
+    private BigDecimal actualStock;
 
-    private BigDecimal price;
+    private BigDecimal discrepancyQuantity;
 
-    private BigDecimal discount;
+    private String reason;
 
-    private BigDecimal importedQuantity;
+    private String note;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "gin_id")
+    private GIN gin;
 }
