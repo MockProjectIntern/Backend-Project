@@ -2,8 +2,10 @@ package com.sapo.mock_project.inventory_receipt.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sapo.mock_project.inventory_receipt.constants.enums.RoleEnum;
+import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +23,15 @@ import java.util.List;
 @Builder
 public class User extends BaseEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequences")
+    @GenericGenerator(
+            name = "user_sequences",
+            strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "BRD"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "user_sequences")
+            })
     private Long id;
 
     private String fullName;

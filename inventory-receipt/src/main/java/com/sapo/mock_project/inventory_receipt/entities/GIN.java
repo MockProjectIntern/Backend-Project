@@ -1,8 +1,10 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
 import com.sapo.mock_project.inventory_receipt.constants.enums.GINStatus;
+import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,9 +16,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GIN {
+public class GIN extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gin_sequences")
+    @GenericGenerator(
+            name = "gin_sequences",
+            strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "BRD"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "gin_sequences")
+            })
     private Long id;
 
     private GINStatus status;

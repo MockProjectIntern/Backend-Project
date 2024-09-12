@@ -1,10 +1,10 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import java.util.List;
 
@@ -15,8 +15,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Brand {
+public class Brand extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brand_sequences")
+    @GenericGenerator(
+            name = "brand_sequences",
+            strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
+            parameters = {
+                    @Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "BRD"),
+                    @Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
+                    @Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "brand_sequences")
+            })
     private String id;
 
     private String name;

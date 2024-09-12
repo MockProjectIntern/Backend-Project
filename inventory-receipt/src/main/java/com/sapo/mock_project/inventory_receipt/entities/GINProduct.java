@@ -1,7 +1,9 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
+import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
 
@@ -14,7 +16,15 @@ import java.math.BigDecimal;
 @Builder
 public class GINProduct extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gin_product_sequences")
+    @GenericGenerator(
+            name = "gin_product_sequences",
+            strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "BRD"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "gin_product_sequences")
+            })
     private Long id;
 
     private BigDecimal actualStock;
