@@ -36,6 +36,7 @@ public class Supplier extends BaseEntity {
 
     private String address;
 
+    @Enumerated(EnumType.STRING)
     private SupplierStatus status;
 
     @ManyToOne

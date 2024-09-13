@@ -4,42 +4,43 @@ DATABASE IF NOT EXISTS inventory_receipts;
 USE
 inventory_receipts;
 
-CREATE TABLE Users
+CREATE TABLE users
 (
-    id         VARCHAR(10) NOT NULL PRIMARY KEY,
-    full_name  VARCHAR(50),
-    phone      CHAR(10),
-    email      CHAR(50),
-    password   TEXT,
-    address    TEXT,
-    birthday   TIMESTAMP,
-    avatar     TEXT,
-    is_active  BOOLEAN,
-    gender     SMALLINT,
+    id         VARCHAR(10) NOT NULL PRIMARY KEY,                                     -- Khóa chính của bảng, bắt đầu bằng "USR" và 5 ký tự số
+    full_name  VARCHAR(50),                                                          -- Tên đầy đủ của người dùng
+    phone      CHAR(10),                                                             -- Số điện thoại của người dùng
+    email      CHAR(50),                                                             -- Địa chỉ email của người dùng
+    password   TEXT,                                                                 -- Mật khẩu của người dùng
+    address    TEXT,                                                                 -- Địa chỉ của người dùng
+    avatar     TEXT,                                                                 -- Ảnh đại diện của người dùng
+    is_active  BOOLEAN,                                                              -- Trạng thái hoạt động của người dùng
+    gender     SMALLINT,                                                             -- Giới tính của người dùng
+    role       ENUM('COORDINATOR', 'WAREHOUSE_STAFF', 'WAREHOUSE_MANAGER') NOT NULL, -- Vai trò của người dùng
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE supplier_groups
 (
-    id         VARCHAR(10) NOT NULL PRIMARY KEY,
-    name       VARCHAR(50),
-    note       TEXT,
+    id         VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng, bắt đầu bằng "SUPGR" và 5 ký tự số
+    name       VARCHAR(50),                      -- Tên nhóm nhà cung cấp
+    note       TEXT,                             -- Ghi chú
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE suppliers
 (
-    id         VARCHAR(10) NOT NULL PRIMARY KEY,
-    name       VARCHAR(50),
-    phone      CHAR(10),
-    email      CHAR(50),
-    address    TEXT,
-    status     ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
-    is_active  BOOLEAN,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id                VARCHAR(10) NOT NULL PRIMARY KEY,                     -- Khóa chính của bảng, bắt đầu bằng "SUP" và 5 ký tự số
+    name              VARCHAR(50),                                          -- Tên nhà cung cấp
+    phone             CHAR(10),                                             -- Số điện thoại của nhà cung cấp
+    email             CHAR(50),                                             -- Địa chỉ email của nhà cung cấp
+    address           TEXT,                                                 -- Địa chỉ của nhà cung cấp
+    status            ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE', -- Trạng thái hoạt động của nhà cung cấp
+    supplier_group_id VARCHAR(10),                                          -- Nhóm nhà cung cấp
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (supplier_group_id) REFERENCES supplier_groups (id)
 );
 
 CREATE TABLE orders

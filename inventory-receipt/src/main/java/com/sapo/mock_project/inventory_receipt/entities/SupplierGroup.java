@@ -1,9 +1,12 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
+import com.sapo.mock_project.inventory_receipt.constants.enums.SupplierGroupStatus;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+
+import java.util.List;
 
 @Entity
 @Table(name = "supplier_groups")
@@ -28,4 +31,10 @@ public class SupplierGroup extends BaseEntity {
     private String name;
 
     private String note;
+
+    @Enumerated(EnumType.STRING)
+    private SupplierGroupStatus status;
+
+    @OneToMany(mappedBy = "group")
+    private List<Supplier> suppliers;
 }

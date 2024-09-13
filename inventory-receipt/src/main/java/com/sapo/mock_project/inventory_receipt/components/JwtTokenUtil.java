@@ -99,8 +99,8 @@ public class JwtTokenUtil {
         return expirationDate.before(new Date());
     }
 
-    public Long extractId(String token) {
-        return Long.valueOf(extractClaim(token, Claims::getSubject));
+    public String extractId(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
     public boolean validateToken(String token) {

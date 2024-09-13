@@ -27,7 +27,6 @@ public class ResponseUtil {
                         .build());
     }
 
-
     /**
      * Tạo phản hồi thành công với mã trạng thái HTTP 200, thông điệp và dữ liệu.
      *
