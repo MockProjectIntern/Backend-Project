@@ -20,7 +20,7 @@ public class LoginResponse {
      */
     @Schema(description = "ID của người dùng", example = "12345")
     @JsonProperty("user_id")
-    private Long userId;
+    private String userId;
 
     /**
      * Họ và tên của người dùng.

@@ -19,7 +19,7 @@ public class UserDetailResponse extends BaseResponse {
      */
     @JsonProperty("id")
     @Schema(description = "ID của người dùng", example = "12345")
-    private Long id;
+    private String id;
 
     /**
      * Họ và tên của người dùng.
