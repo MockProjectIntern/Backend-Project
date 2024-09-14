@@ -55,7 +55,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-            final Long id = jwtTokenUtil.extractId(token);
+            final String id = jwtTokenUtil.extractId(token);
             if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 User userDetails = userRepository.findById(id).get();
 

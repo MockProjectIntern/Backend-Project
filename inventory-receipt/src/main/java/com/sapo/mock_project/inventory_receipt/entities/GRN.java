@@ -49,6 +49,8 @@ public class GRN extends BaseEntity {
 
     private BigDecimal totalReceivedQuantity;
 
+    private BigDecimal discount;
+
     private BigDecimal taxAmount;
 
     private BigDecimal totalValue;

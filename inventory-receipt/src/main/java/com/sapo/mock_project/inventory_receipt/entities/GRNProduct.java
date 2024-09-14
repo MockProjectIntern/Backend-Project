@@ -33,7 +33,7 @@ public class GRNProduct extends BaseEntity {
 
     private BigDecimal tax;
 
-    private BigDecimal amount;
+    private BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
         try {
             String refreshToken = request.getRefreshToken();
 
-            final Long id = jwtTokenUtil.extractId(refreshToken);
+            final String id = jwtTokenUtil.extractId(refreshToken);
             if (id != null) {
                 Optional<User> userDetails = userRepository.findById(id);
                 if (userDetails.isEmpty() || !jwtTokenUtil.validateToken(refreshToken)) {

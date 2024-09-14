@@ -7,5 +7,6 @@ public interface BaseEndpoint {
     String PRODUCT = "/products";
     String RECEIPT = "/receipts";
     String SUPPLIER = "/suppliers";
+    String SUPPLIER_GROUP = "/supplier-groups";
     String USER = "/users";
 }
