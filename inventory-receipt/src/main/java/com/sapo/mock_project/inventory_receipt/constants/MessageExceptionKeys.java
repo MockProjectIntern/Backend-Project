@@ -8,4 +8,6 @@ public class MessageExceptionKeys {
     public static final String USER_TOKEN_INVALID = "user.token.invalid";
 
     public static final String SUPPLIER_GROUP_NOT_FOUND = "supplier_group.not_found";
+
+    public static final String SUPPLIER_NOT_FOUND = "supplier.not_found";
 }

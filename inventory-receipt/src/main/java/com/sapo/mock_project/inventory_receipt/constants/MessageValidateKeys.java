@@ -8,4 +8,7 @@ public class MessageValidateKeys {
 
     public static final String SUPPLIER_GROUP_NAME_EXISTED = "supplier_group.name.existed";
     public static final String SUPPLIER_GROUP_ID_EXISTED = "supplier_group.id.existed";
+
+    public static final String SUPPLIER_ID_EXISTED = "supplier.id.existed";
+    public static final String SUPPLIER_NAME_EXISTED = "supplier.name.existed";
 }

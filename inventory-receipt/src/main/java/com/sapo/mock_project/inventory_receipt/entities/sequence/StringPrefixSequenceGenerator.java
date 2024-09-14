@@ -35,8 +35,8 @@ public class StringPrefixSequenceGenerator extends SequenceStyleGenerator {
     /**
      * Cấu hình trình tạo chuỗi với các tham số từ Hibernate.
      *
-     * @param type          loại dữ liệu của khóa chính.
-     * @param params        các tham số cấu hình.
+     * @param type            loại dữ liệu của khóa chính.
+     * @param params          các tham số cấu hình.
      * @param serviceRegistry service registry của Hibernate.
      * @throws MappingException nếu có lỗi trong quá trình ánh xạ.
      */

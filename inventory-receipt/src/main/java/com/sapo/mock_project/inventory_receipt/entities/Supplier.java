@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -36,8 +37,16 @@ public class Supplier extends BaseEntity {
 
     private String address;
 
+    private String tags;
+
+    private String note;
+
     @Enumerated(EnumType.STRING)
     private SupplierStatus status;
+
+    private BigDecimal currentDebt;
+
+    private BigDecimal totalRefund;
 
     @ManyToOne
     @JoinColumn(name = "supplier_group_id")

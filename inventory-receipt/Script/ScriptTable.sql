@@ -31,13 +31,17 @@ CREATE TABLE supplier_groups
 
 CREATE TABLE suppliers
 (
-    id                VARCHAR(10) NOT NULL PRIMARY KEY,                     -- Khóa chính của bảng, bắt đầu bằng "SUP" và 5 ký tự số
-    name              VARCHAR(50),                                          -- Tên nhà cung cấp
-    phone             CHAR(10),                                             -- Số điện thoại của nhà cung cấp
-    email             CHAR(50),                                             -- Địa chỉ email của nhà cung cấp
-    address           TEXT,                                                 -- Địa chỉ của nhà cung cấp
-    status            ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE', -- Trạng thái hoạt động của nhà cung cấp
-    supplier_group_id VARCHAR(10),                                          -- Nhóm nhà cung cấp
+    id                VARCHAR(10) NOT NULL PRIMARY KEY,                                -- Khóa chính của bảng, bắt đầu bằng "SUP" và 5 ký tự số
+    name              VARCHAR(50),                                                     -- Tên nhà cung cấp
+    phone             CHAR(10),                                                        -- Số điện thoại của nhà cung cấp
+    email             CHAR(50),                                                        -- Địa chỉ email của nhà cung cấp
+    address           TEXT,                                                            -- Địa chỉ của nhà cung cấp
+    status            ENUM('ACTIVE', 'INACTIVE', 'DELETED') NOT NULL DEFAULT 'ACTIVE', -- Trạng thái hoạt động của nhà cung cấp
+    supplier_group_id VARCHAR(10),                                                     -- Nhóm nhà cung cấp
+    current_debt      DECIMAL(10, 2),                                                  -- Nợ hiện tại
+    total_refund      DECIMAL(10, 2),                                                  -- Tổng số tiền đã hoàn trả\
+    tags              TEXT,                                                            -- Tags
+    note              TEXT,                                                            -- Ghi chú
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (supplier_group_id) REFERENCES supplier_groups (id)
@@ -57,12 +61,14 @@ CREATE TABLE orders
     user_completed_id VARCHAR(10),
     user_cancelled_id VARCHAR(10),
     user_ended_id     VARCHAR(10),
+    supplier_id       VARCHAR(10),
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_created_id) REFERENCES Users (id),
     FOREIGN KEY (user_completed_id) REFERENCES Users (id),
     FOREIGN KEY (user_cancelled_id) REFERENCES Users (id),
-    FOREIGN KEY (user_ended_id) REFERENCES Users (id)
+    FOREIGN KEY (user_ended_id) REFERENCES Users (id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers (id)
 );
 
 CREATE TABLE brands
@@ -188,6 +194,7 @@ CREATE TABLE grns
     user_cancelled_id      VARCHAR(10),
     user_ended_id          VARCHAR(10),
     total_receipt_quantity DECIMAL(10, 2),
+    discount               DECIMAL(10, 2),
     tax_amount             DECIMAL(10, 2),
     total_value            DECIMAL(10, 2),
     payment_status         ENUM('PENDING', 'PAID', 'UNPAID') NOT NULL DEFAULT 'PENDING',
@@ -215,7 +222,7 @@ CREATE TABLE grn_products
     quantity   DECIMAL(10, 2),
     discount   DECIMAL(10, 2),
     tax        DECIMAL(10, 2),
-    amount     DECIMAL(10, 2),
+    price      DECIMAL(10, 2),
     grn_id     VARCHAR(10),
     product_id VARCHAR(10),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -23,7 +23,7 @@ public class Pagination<T> {
      * Tổng số trang có sẵn.
      */
     @Schema(description = "Tổng số trang có sẵn", example = "10")
-    @JsonProperty("page")
+    @JsonProperty("total_page")
     private int totalPage;
 
     /**
