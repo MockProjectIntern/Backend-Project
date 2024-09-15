@@ -1,7 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sapo.mock_project.inventory_receipt.entities.Supplier;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 

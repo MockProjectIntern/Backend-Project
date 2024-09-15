@@ -9,4 +9,6 @@ public interface BaseEndpoint {
     String SUPPLIER = "/suppliers";
     String SUPPLIER_GROUP = "/supplier-groups";
     String USER = "/users";
+    String TRANSACTION = "/transactions";
+    String TRANSACTION_CATEGORY = "/transaction-categories";
 }

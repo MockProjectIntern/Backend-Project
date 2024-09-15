@@ -24,7 +24,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Supplierspecification implements Specification<Supplier> {
+public class SupplierSpecification implements Specification<Supplier> {
 
     /**
      * Đối tượng chứa các thông tin lọc.
@@ -47,7 +47,7 @@ public class Supplierspecification implements Specification<Supplier> {
         String keyword = request.getKeyword();
         SupplierStatus status = request.getStatus();
         String supplierGroupId = request.getSupplierGroupId();
-        LocalDateTime createdDate = DateUtils.getDateTime(request.getCreatedDate());
+        LocalDateTime createdDate = DateUtils.getDateTimeFrom(request.getCreatedDate());
         String tags = request.getTags();
 
         // Điều kiện lọc theo từ khóa

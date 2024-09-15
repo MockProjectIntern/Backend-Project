@@ -49,4 +49,9 @@ public class GlobalExceptionController {
     public ResponseEntity<ResponseObject<Object>> handle(ExpiredTokenException e) {
         return ResponseUtil.error401Response(e.getMessage());
     }
+
+    @ExceptionHandler(NoActionForOperationException.class)
+    public ResponseEntity<ResponseObject<Object>> handle(NoActionForOperationException e) {
+        return ResponseUtil.error400Response(e.getMessage());
+    }
 }

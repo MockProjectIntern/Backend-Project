@@ -19,7 +19,7 @@ import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.mappers.SupplierMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierGroupRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
-import com.sapo.mock_project.inventory_receipt.services.specification.Supplierspecification;
+import com.sapo.mock_project.inventory_receipt.services.specification.SupplierSpecification;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -116,7 +116,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public ResponseEntity<ResponseObject<Object>> filterSupplier(GetListSupplierRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
-            Supplierspecification supplierspecification = new Supplierspecification(request);
+            SupplierSpecification supplierspecification = new SupplierSpecification(request);
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
 
             Page<Supplier> supplierPage = supplierRepository.findAll(supplierspecification, pageable);

@@ -10,4 +10,9 @@ public class MessageExceptionKeys {
     public static final String SUPPLIER_GROUP_NOT_FOUND = "supplier_group.not_found";
 
     public static final String SUPPLIER_NOT_FOUND = "supplier.not_found";
+
+    public static final String TRANSACTION_CATEGORY_NOT_FOUND = "transaction_category.not_found";
+
+    public static final String TRANSACTION_NOT_FOUND = "transaction.not_found";
+    public static final String TRANSACTION_NOT_CANCELABLE = "transaction.not_cancelable";
 }
