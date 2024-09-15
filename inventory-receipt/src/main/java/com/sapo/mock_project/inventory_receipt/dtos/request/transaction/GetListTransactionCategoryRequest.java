@@ -6,32 +6,32 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * DTO yêu cầu lấy danh sách danh mục giao dịch.
+ * DTO yêu cầu lấy danh sách danh mục phiếu thu/chi.
  * <p>
- * Lớp này chứa các thông tin cần thiết để lọc và tìm kiếm danh mục giao dịch, bao gồm từ khóa tìm kiếm và loại giao dịch.
+ * Lớp này chứa các thông tin cần thiết để lọc và tìm kiếm danh mục phiếu thu/chi, bao gồm từ khóa tìm kiếm và loại phiếu thu/chi.
  * </p>
  */
 @Data
-@Schema(description = "Yêu cầu lấy danh sách danh mục giao dịch")
+@Schema(description = "Yêu cầu lấy danh sách danh mục phiếu thu/chi")
 public class GetListTransactionCategoryRequest {
 
     /**
-     * Từ khóa tìm kiếm để lọc danh mục giao dịch.
+     * Từ khóa tìm kiếm để lọc danh mục phiếu thu/chi.
      * <p>
-     * Đây là chuỗi ký tự dùng để tìm kiếm trong tên và mô tả của danh mục giao dịch.
+     * Đây là chuỗi ký tự dùng để tìm kiếm trong tên và mô tả của danh mục phiếu thu/chi.
      * </p>
      */
     @JsonProperty("keyword")
-    @Schema(description = "Từ khóa tìm kiếm để lọc danh mục giao dịch", example = "Danh mục")
+    @Schema(description = "Từ khóa tìm kiếm để lọc danh mục phiếu thu/chi", example = "Danh mục")
     private String keyword;
 
     /**
-     * Loại giao dịch để lọc danh mục giao dịch.
+     * Loại phiếu thu/chi để lọc danh mục phiếu thu/chi.
      * <p>
-     * Đây là loại giao dịch được định nghĩa bởi {@link TransactionType}, dùng để phân loại danh mục giao dịch.
+     * Đây là loại phiếu thu/chi được định nghĩa bởi {@link TransactionType}, dùng để phân loại danh mục phiếu thu/chi.
      * </p>
      */
     @JsonProperty("type")
-    @Schema(description = "Loại giao dịch để lọc danh mục giao dịch", example = "PURCHASE")
+    @Schema(description = "Loại phiếu thu/chi để lọc danh mục phiếu thu/chi", example = "PURCHASE")
     private TransactionType type;
 }

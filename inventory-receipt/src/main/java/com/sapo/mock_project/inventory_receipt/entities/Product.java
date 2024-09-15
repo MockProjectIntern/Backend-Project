@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
+import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.sapo.mock_project.inventory_receipt.constants.enums.ProductStatus;
 import com.sapo.mock_project.inventory_receipt.converts.ProductImageConverter;
 import com.sapo.mock_project.inventory_receipt.converts.ProductTypeConverter;
@@ -27,7 +28,7 @@ public class Product extends BaseEntity {
             name = "product_sequences",
             strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
             parameters = {
-                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "PRD"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = PrefixId.PRODUCT),
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "product_sequences")
             })

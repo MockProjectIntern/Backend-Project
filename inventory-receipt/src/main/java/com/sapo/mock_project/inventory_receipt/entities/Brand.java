@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
+import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +23,7 @@ public class Brand extends BaseEntity {
             name = "brand_sequences",
             strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
             parameters = {
-                    @Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "BRD"),
+                    @Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = PrefixId.BRAND),
                     @Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
                     @Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "brand_sequences")
             })

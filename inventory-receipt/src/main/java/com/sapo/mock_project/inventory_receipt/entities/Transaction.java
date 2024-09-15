@@ -1,7 +1,9 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
+import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionMethod;
 import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionType;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,14 +18,14 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Transaction {
+public class Transaction extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_sequences")
     @GenericGenerator(
             name = "transaction_sequences",
             strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
             parameters = {
-                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "TSN"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = PrefixId.TRANSACTION),
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "transaction_sequences")
             })
@@ -40,14 +42,25 @@ public class Transaction {
 
     private String referenceCode;
 
+    private String referenceId;
+
     private String recipientGroup;
 
     private String recipientId;
 
+    private String recipientName;
+
     @Enumerated(EnumType.STRING)
     private TransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status;
 
     @ManyToOne
     @JoinColumn(name = "transaction_category_id")
     private TransactionCategory category;
+
+    @ManyToOne
+    @JoinColumn(name = "user_created_id")
+    private User userCreated;
 }

@@ -6,52 +6,52 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * DTO yêu cầu tạo một danh mục giao dịch mới.
+ * DTO yêu cầu tạo một danh mục phiếu thu/chi mới.
  * <p>
- * Lớp này chứa các thông tin cần thiết để tạo một danh mục giao dịch mới bao gồm ID, tên, mô tả, và loại giao dịch.
+ * Lớp này chứa các thông tin cần thiết để tạo một danh mục phiếu thu/chi mới bao gồm ID, tên, mô tả, và loại phiếu thu/chi.
  * </p>
  */
 @Data
-@Schema(description = "Yêu cầu tạo một danh mục giao dịch mới")
+@Schema(description = "Yêu cầu tạo một danh mục phiếu thu/chi mới")
 public class CreateTransactionCategoryRequest {
 
     /**
-     * ID của danh mục giao dịch.
+     * ID của danh mục phiếu thu/chi.
      * <p>
-     * Đây là mã định danh duy nhất của danh mục giao dịch, có thể được sử dụng để nhận diện danh mục trong cơ sở dữ liệu.
+     * Đây là mã định danh duy nhất của danh mục phiếu thu/chi, có thể được sử dụng để nhận diện danh mục trong cơ sở dữ liệu.
      * </p>
      */
     @JsonProperty("id")
-    @Schema(description = "ID của danh mục giao dịch", example = "12345")
+    @Schema(description = "ID của danh mục phiếu thu/chi", example = "12345")
     private String id;
 
     /**
-     * Tên của danh mục giao dịch.
+     * Tên của danh mục phiếu thu/chi.
      * <p>
-     * Đây là tên của danh mục giao dịch được sử dụng để nhận diện và phân loại danh mục.
+     * Đây là tên của danh mục phiếu thu/chi được sử dụng để nhận diện và phân loại danh mục.
      * </p>
      */
     @JsonProperty("name")
-    @Schema(description = "Tên của danh mục giao dịch", example = "Danh mục 1")
+    @Schema(description = "Tên của danh mục phiếu thu/chi", example = "Danh mục 1")
     private String name;
 
     /**
-     * Mô tả của danh mục giao dịch.
+     * Mô tả của danh mục phiếu thu/chi.
      * <p>
-     * Đây là mô tả chi tiết về danh mục giao dịch, cung cấp thêm thông tin về danh mục.
+     * Đây là mô tả chi tiết về danh mục phiếu thu/chi, cung cấp thêm thông tin về danh mục.
      * </p>
      */
     @JsonProperty("description")
-    @Schema(description = "Mô tả của danh mục giao dịch", example = "Mô tả chi tiết về danh mục 1")
+    @Schema(description = "Mô tả của danh mục phiếu thu/chi", example = "Mô tả chi tiết về danh mục 1")
     private String description;
 
     /**
-     * Loại giao dịch của danh mục.
+     * Loại phiếu thu/chi của danh mục.
      * <p>
-     * Đây là loại giao dịch mà danh mục thuộc về, được định nghĩa bởi {@link TransactionType}.
+     * Đây là loại phiếu thu/chi mà danh mục thuộc về, được định nghĩa bởi {@link TransactionType}.
      * </p>
      */
     @JsonProperty("type")
-    @Schema(description = "Loại giao dịch của danh mục", example = "PURCHASE")
+    @Schema(description = "Loại phiếu thu/chi của danh mục", example = "PURCHASE")
     private TransactionType type;
 }

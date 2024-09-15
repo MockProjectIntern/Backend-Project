@@ -1,6 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.sapo.mock_project.inventory_receipt.constants.enums.RoleEnum;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
@@ -28,7 +29,7 @@ public class User extends BaseEntity implements UserDetails {
             name = "user_sequences",
             strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
             parameters = {
-                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = "USR"),
+                    @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.VALUE_PREFIX_PARAMETER, value = PrefixId.USER),
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d"),
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "user_sequences")
             })
@@ -90,6 +91,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "userEnded")
     private List<GRN> endedGRNs;
+
+    @OneToMany(mappedBy = "userCreated")
+    private List<Transaction> createdTransactions;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

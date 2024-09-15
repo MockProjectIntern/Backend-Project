@@ -19,7 +19,7 @@ import java.util.List;
  * Specification để tạo điều kiện truy vấn động cho các bản ghi của bảng TransactionCategory.
  * <p>
  * Lớp này xây dựng điều kiện lọc dựa trên các thông tin đầu vào được cung cấp qua đối tượng
- * {@link GetListTransactionCategoryRequest}, bao gồm từ khóa (keyword) và loại giao dịch (transaction type).
+ * {@link GetListTransactionCategoryRequest}, bao gồm từ khóa (keyword) và loại phiếu thu/chi (transaction type).
  */
 @Data
 @NoArgsConstructor
@@ -63,9 +63,9 @@ public class TransactionCategorySpecification implements Specification<Transacti
             predicates.add(criteriaBuilder.or(namePredicate, idPredicate));
         }
 
-        // Điều kiện lọc theo loại giao dịch (type)
+        // Điều kiện lọc theo loại phiếu thu/chi (type)
         if (type != null) {
-            // Tạo điều kiện lọc bằng phép so sánh chính xác theo loại giao dịch
+            // Tạo điều kiện lọc bằng phép so sánh chính xác theo loại phiếu thu/chi
             Predicate customStatus = criteriaBuilder.equal(root.get("type"), type);
             predicates.add(customStatus);
         }

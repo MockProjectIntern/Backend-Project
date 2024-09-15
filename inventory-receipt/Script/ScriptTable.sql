@@ -275,6 +275,15 @@ CREATE TABLE transaction_categories
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+INSERT INTO transaction_categories (id, name, description, type)
+VALUES ('TSC00001', 'Tự động', null, 'INCOME');
+INSERT INTO transaction_categories (id, name, description, type)
+VALUES ('TSC00002', 'Tự động', null, 'EXPENSE');
+
+INSERT INTO transaction_category_sequences (id)
+VALUES (1),
+       (2);
+
 CREATE TABLE transactions
 (
     id                      VARCHAR(10) NOT NULL PRIMARY KEY,
@@ -283,11 +292,16 @@ CREATE TABLE transactions
     tags                    TEXT,
     payment_method          ENUM('CASH', 'BANK_TRANSFER', 'CREDIT_CARD') NOT NULL,
     type                    ENUM('INCOME', 'EXPENSE') NOT NULL,
+    status                  ENUM('COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'COMPLETED',
     reference_code          VARCHAR(50),
+    reference_id            VARCHAR(10),
     recipient_group         VARCHAR(50),
     recipient_id            VARCHAR(10),
+    recipient_name          VARCHAR(50),
     transaction_category_id VARCHAR(10),
+    user_created_id         VARCHAR(10),
     created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (transaction_category_id) REFERENCES transaction_categories (id)
+    FOREIGN KEY (transaction_category_id) REFERENCES transaction_categories (id),
+    FOREIGN KEY (user_created_id) REFERENCES users (id)
 );

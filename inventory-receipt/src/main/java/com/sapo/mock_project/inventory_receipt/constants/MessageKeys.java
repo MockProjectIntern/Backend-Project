@@ -24,4 +24,11 @@ public class MessageKeys {
     public static final String TRANSACTION_CATEGORY_GET_DETAIL_SUCCESSFULLY = "transaction_category.get_detail.successfully";
     public static final String TRANSACTION_CATEGORY_GET_ALL_SUCCESSFULLY = "transaction_category.get_all.successfully";
     public static final String TRANSACTION_CATEGORY_DELETE_SUCCESSFULLY = "transaction_category.delete.successfully";
+
+    public static final String TRANSACTION_CREATE_SUCCESSFULLY = "transaction.create.successfully";
+    public static final String TRANSACTION_UPDATE_SUCCESSFULLY = "transaction.update.successfully";
+    public static final String TRANSACTION_GET_DETAIL_SUCCESSFULLY = "transaction.get_detail.successfully";
+    public static final String TRANSACTION_GET_ALL_SUCCESSFULLY = "transaction.get_all.successfully";
+    public static final String TRANSACTION_DELETE_SUCCESSFULLY = "transaction.delete.successfully";
+    public static final String TRANSACTION_CANCEL_SUCCESSFULLY = "transaction.cancel.successfully";
 }
