@@ -264,3 +264,30 @@ CREATE TABLE refund_information_details
     updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (refund_information_id) REFERENCES refund_information (id)
 );
+
+CREATE TABLE transaction_categories
+(
+    id          VARCHAR(10) NOT NULL PRIMARY KEY,
+    name        VARCHAR(50),
+    description TEXT,
+    type        ENUM('INCOME', 'EXPENSE') NOT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE transactions
+(
+    id                      VARCHAR(10) NOT NULL PRIMARY KEY,
+    amount                  DECIMAL(10, 2),
+    note                    TEXT,
+    tags                    TEXT,
+    payment_method          ENUM('CASH', 'BANK_TRANSFER', 'CREDIT_CARD') NOT NULL,
+    type                    ENUM('INCOME', 'EXPENSE') NOT NULL,
+    reference_code          VARCHAR(50),
+    recipient_group         VARCHAR(50),
+    recipient_id            VARCHAR(10),
+    transaction_category_id VARCHAR(10),
+    created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (transaction_category_id) REFERENCES transaction_categories (id)
+);

@@ -1,0 +1,128 @@
+package com.sapo.mock_project.inventory_receipt.services.transaction;
+
+import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
+import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
+import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
+import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.CreateTransactionCategoryRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionCategoryRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTransactionCategoryRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
+import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
+import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.TransactionCategoryGetListResponse;
+import com.sapo.mock_project.inventory_receipt.entities.TransactionCategory;
+import com.sapo.mock_project.inventory_receipt.mappers.TransactionCategoryMapper;
+import com.sapo.mock_project.inventory_receipt.repositories.transaction.TransactionCategoryRepository;
+import com.sapo.mock_project.inventory_receipt.services.specification.TransactionCategorySpecification;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+/**
+ * Dịch vụ để quản lý danh mục giao dịch (Transaction Category), bao gồm các thao tác tạo, cập nhật,
+ * và lấy danh sách các danh mục giao dịch.
+ */
+@Service
+@RequiredArgsConstructor
+public class TransactionCategoryServiceImpl implements TransactionCategoryService {
+    private final TransactionCategoryRepository transactionCategoryRepository;
+    private final TransactionCategoryMapper transactionCategoryMapper;
+    private final LocalizationUtils localizationUtils;
+
+    /**
+     * Tạo một danh mục giao dịch mới.
+     *
+     * @param request Đối tượng yêu cầu chứa thông tin để tạo danh mục giao dịch
+     * @return ResponseEntity chứa phản hồi của server sau khi thực hiện hành động
+     */
+    @Override
+    public ResponseEntity<ResponseObject<Object>> createTransactionCategory(CreateTransactionCategoryRequest request) {
+        try {
+            // Kiểm tra xem ID có tồn tại không
+            if (request.getId() != null && transactionCategoryRepository.existsById(request.getId())) {
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_ID_EXIST));
+            }
+
+            // Kiểm tra xem tên danh mục và loại giao dịch có tồn tại không
+            if (transactionCategoryRepository.existsByNameAndType(request.getName(), request.getType())) {
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXIST));
+            }
+
+            // Chuyển đổi DTO thành entity TransactionCategory và lưu vào cơ sở dữ liệu
+            TransactionCategory newTransactionCategory = transactionCategoryMapper.mapToEntity(request);
+            transactionCategoryRepository.save(newTransactionCategory);
+
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CATEGORY_CREATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    /**
+     * Lấy danh sách các danh mục giao dịch dựa trên các tiêu chí lọc và phân trang.
+     *
+     * @param request Đối tượng chứa các thông tin yêu cầu để lọc danh mục giao dịch
+     * @param page    Số trang muốn lấy
+     * @param size    Số lượng bản ghi mỗi trang
+     * @return ResponseEntity chứa phản hồi của server bao gồm danh sách danh mục giao dịch và thông tin phân trang
+     */
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getListTransactionCategory(GetListTransactionCategoryRequest request, int page, int size) {
+        try {
+            // Tạo Specification để lọc danh mục giao dịch dựa trên yêu cầu
+            TransactionCategorySpecification specification = new TransactionCategorySpecification(request);
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
+
+            // Lấy danh sách phân trang các danh mục giao dịch từ cơ sở dữ liệu
+            Page<TransactionCategory> transactionCategoryPage = transactionCategoryRepository.findAll(specification, pageable);
+
+            // Chuyển đổi entity TransactionCategory sang DTO TransactionCategoryGetListResponse
+            Page<TransactionCategoryGetListResponse> responsePage = transactionCategoryPage.map(transactionCategoryMapper::mapToResponse);
+
+            // Tạo đối tượng Pagination để chứa dữ liệu và thông tin phân trang
+            Pagination response = Pagination.<Object>builder()
+                    .data(responsePage.getContent())
+                    .totalPage(responsePage.getTotalPages())
+                    .totalItems(responsePage.getTotalElements())
+                    .build();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CATEGORY_GET_ALL_SUCCESSFULLY), response);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    /**
+     * Cập nhật thông tin của danh mục giao dịch.
+     *
+     * @param transactionCategoryId ID của danh mục giao dịch cần cập nhật
+     * @param request               Đối tượng chứa thông tin cập nhật
+     * @return ResponseEntity chứa phản hồi của server sau khi thực hiện hành động
+     */
+    @Override
+    public ResponseEntity<ResponseObject<Object>> updateTransactionCategory(String transactionCategoryId, UpdateTransactionCategoryRequest request) {
+        try {
+            // Tìm kiếm danh mục giao dịch theo ID
+            TransactionCategory existTransactionCategory = transactionCategoryRepository.findById(transactionCategoryId)
+                    .orElseThrow(() -> new Exception(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
+
+            // Kiểm tra xem tên mới có trùng với bất kỳ danh mục giao dịch nào khác cùng loại không
+            if (!existTransactionCategory.getName().equals(request.getName()) && transactionCategoryRepository.existsByNameAndType(request.getName(), existTransactionCategory.getType())) {
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXIST));
+            }
+
+            // Cập nhật thông tin danh mục giao dịch và lưu lại vào cơ sở dữ liệu
+            transactionCategoryMapper.updateFromToDTO(request, existTransactionCategory);
+            transactionCategoryRepository.save(existTransactionCategory);
+
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CATEGORY_UPDATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+}

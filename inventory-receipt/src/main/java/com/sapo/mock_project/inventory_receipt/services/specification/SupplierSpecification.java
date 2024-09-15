@@ -24,7 +24,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Supplierspecification implements Specification<Supplier> {
+public class SupplierSpecification implements Specification<Supplier> {
 
     /**
      * Đối tượng chứa các thông tin lọc.

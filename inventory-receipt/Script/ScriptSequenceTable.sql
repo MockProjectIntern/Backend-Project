@@ -82,3 +82,13 @@ CREATE TABLE user_sequences
 (
     id BIGINT AUTO_INCREMENT PRIMARY KEY
 );
+
+CREATE TABLE transaction_sequences
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY
+);
+
+CREATE TABLE transaction_category_sequences
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY
+);
