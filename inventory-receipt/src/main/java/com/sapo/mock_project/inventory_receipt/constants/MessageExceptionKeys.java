@@ -15,4 +15,6 @@ public class MessageExceptionKeys {
 
     public static final String TRANSACTION_NOT_FOUND = "transaction.not_found";
     public static final String TRANSACTION_NOT_CANCELABLE = "transaction.not_cancelable";
+
+    public static final String PRODUCT_NOT_FOUND = "product.not_found";
 }

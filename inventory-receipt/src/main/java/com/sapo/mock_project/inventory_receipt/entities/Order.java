@@ -43,7 +43,7 @@ public class Order extends BaseEntity {
 
     private LocalDate endedAt;
 
-    private LocalDate canceledAt;
+    private LocalDate cancelledAt;
 
     @ManyToOne
     @JoinColumn(name = "user_created_id")
@@ -54,7 +54,7 @@ public class Order extends BaseEntity {
     private User userCompleted;
 
     @ManyToOne
-    @JoinColumn(name = "user_canceled_id")
+    @JoinColumn(name = "user_cancelled_id")
     private User userCancelled;
 
     @ManyToOne

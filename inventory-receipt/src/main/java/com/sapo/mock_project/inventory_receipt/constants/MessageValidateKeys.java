@@ -16,4 +16,6 @@ public class MessageValidateKeys {
     public static final String TRANSACTION_CATEGORY_NAME_EXIST = "transaction_category.name.existed";
 
     public static final String TRANSACTION_ID_EXIST = "transaction.id.existed";
+
+    public static final String GRN_ID_EXISTED = "grn.id.existed";
 }

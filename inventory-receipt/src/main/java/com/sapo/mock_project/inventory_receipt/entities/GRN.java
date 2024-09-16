@@ -36,9 +36,11 @@ public class GRN extends BaseEntity {
             })
     private String id;
 
+    @Enumerated(EnumType.STRING)
     private GRNStatus status;
 
-    private GRNReceiveStatus receiveStatus;
+    @Enumerated(EnumType.STRING)
+    private GRNReceiveStatus receivedStatus;
 
     private LocalDate expectedDeliveryAt;
 
@@ -56,10 +58,13 @@ public class GRN extends BaseEntity {
 
     private BigDecimal totalValue;
 
+    @Enumerated(EnumType.STRING)
     private GRNPaymentStatus paymentStatus;
 
+    @Enumerated(EnumType.STRING)
     private ReturnStatus returnStatus;
 
+    @Enumerated(EnumType.STRING)
     private GRNRefundStatus refundStatus;
 
     private String note;
@@ -67,10 +72,10 @@ public class GRN extends BaseEntity {
     private String tags;
 
     @Convert(converter = GRNImportCostConverter.class)
-    private GRNImportCost importCost;
+    private List<GRNImportCost> importCosts;
 
     @Convert(converter = GRNPaymentMethodConverter.class)
-    private GRNPaymentMethod paymentMethod;
+    private List<GRNPaymentMethod> paymentMethods;
 
     @ManyToOne
     @JoinColumn(name = "user_created_id")
@@ -101,4 +106,29 @@ public class GRN extends BaseEntity {
 
     @OneToMany(mappedBy = "grn")
     private List<GRNProduct> grnProducts;
+
+    public void calculatorValue() {
+        if (totalReceivedQuantity == null) {
+            totalReceivedQuantity = BigDecimal.ZERO;
+        }
+        if (discount == null) {
+            discount = BigDecimal.ZERO;
+        }
+        if (taxAmount == null) {
+            taxAmount = BigDecimal.ZERO;
+        }
+
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (GRNProduct grnProduct : grnProducts) {
+            totalPrice = totalPrice.add(grnProduct.calculateTotal());
+        }
+
+        totalValue = totalPrice.subtract(discount).add(taxAmount);
+
+        if (importCosts != null && !importCosts.isEmpty()) {
+            for (GRNImportCost importCost : importCosts) {
+                totalValue = totalValue.add(importCost.getValue());
+            }
+        }
+    }
 }
