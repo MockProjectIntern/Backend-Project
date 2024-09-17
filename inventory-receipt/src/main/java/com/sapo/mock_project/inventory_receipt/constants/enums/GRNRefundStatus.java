@@ -1,5 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.constants.enums;
 
 public enum GRNRefundStatus {
-    TEST;
+    PARTIAL,
+    FULL,
+    NOT_REFUNDED
 }

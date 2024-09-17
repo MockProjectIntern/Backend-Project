@@ -1,6 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
 import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,4 +44,26 @@ public class GRNProduct extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "grn_id")
     private GRN grn;
+
+    @Transient
+    @JsonProperty("product_id")
+    private String productId;
+
+    public BigDecimal calculateTotal() {
+        return (price.multiply(quantity)).subtract(discount).add(tax);
+    }
+
+    @Override
+    public String toString() {
+        return "GRNProduct{" +
+                "id='" + id + '\'' +
+                ", quantity=" + quantity +
+                ", discount=" + discount +
+                ", tax=" + tax +
+                ", price=" + price +
+                ", product=" + product +
+                ", grn=" + grn +
+                ", productId='" + productId + '\'' +
+                '}';
+    }
 }

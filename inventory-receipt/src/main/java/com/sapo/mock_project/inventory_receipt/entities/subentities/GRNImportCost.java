@@ -1,16 +1,23 @@
 package com.sapo.mock_project.inventory_receipt.entities.subentities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class GRNImportCost {
     private String name;
 
     private BigDecimal value;
+
+    @Override
+    public String toString() {
+        return "GRNImportCost{" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }
