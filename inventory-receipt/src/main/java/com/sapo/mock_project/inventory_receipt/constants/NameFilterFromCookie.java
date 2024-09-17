@@ -4,4 +4,5 @@ public interface NameFilterFromCookie {
     String SUPPLIER = "filter_suppliers";
     String TRANSACTION = "filter_transactions";
     String GRN = "filter_grns";
+    String GIN = "filter_gins";
 }

@@ -18,4 +18,13 @@ public class MessageExceptionKeys {
     public static final String TRANSACTION_NOT_CANCELABLE = "transaction.not_cancelable";
 
     public static final String BRAND_NOT_FOUND = "brand.not_found";
+    //GRN Message exception
+    public static final String GRN_NOT_FOUND = "grn.not_found";
+    public static final String GRN_PRODUCT_NOT_FOUND = "grn_product.not_found";
+
+    // Product
+    public static final String PRODUCT_NOT_FOUND = "product.not_found";
+
+    // GIN Message exception
+    public static final String GIN_NOT_FOUND = "gin.not_found";
 }
