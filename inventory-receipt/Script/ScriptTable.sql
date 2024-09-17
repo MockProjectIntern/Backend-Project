@@ -6,18 +6,19 @@ inventory_receipts;
 
 CREATE TABLE users
 (
-    id         VARCHAR(10) NOT NULL PRIMARY KEY,                                     -- Khóa chính của bảng, bắt đầu bằng "USR" và 5 ký tự số
-    full_name  VARCHAR(50),                                                          -- Tên đầy đủ của người dùng
-    phone      CHAR(10),                                                             -- Số điện thoại của người dùng
-    email      CHAR(50),                                                             -- Địa chỉ email của người dùng
-    password   TEXT,                                                                 -- Mật khẩu của người dùng
-    address    TEXT,                                                                 -- Địa chỉ của người dùng
-    avatar     TEXT,                                                                 -- Ảnh đại diện của người dùng
-    is_active  BOOLEAN,                                                              -- Trạng thái hoạt động của người dùng
-    gender     SMALLINT,                                                             -- Giới tính của người dùng
-    role       ENUM('COORDINATOR', 'WAREHOUSE_STAFF', 'WAREHOUSE_MANAGER') NOT NULL, -- Vai trò của người dùng
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id               VARCHAR(10) NOT NULL PRIMARY KEY,                                     -- Khóa chính của bảng, bắt đầu bằng "USR" và 5 ký tự số
+    full_name        VARCHAR(50),                                                          -- Tên đầy đủ của người dùng
+    phone            CHAR(10),                                                             -- Số điện thoại của người dùng
+    email            CHAR(50),                                                             -- Địa chỉ email của người dùng
+    password         TEXT,                                                                 -- Mật khẩu của người dùng
+    address          TEXT,                                                                 -- Địa chỉ của người dùng
+    avatar           TEXT,                                                                 -- Ảnh đại diện của người dùng
+    is_active        BOOLEAN,                                                              -- Trạng thái hoạt động của người dùng
+    gender           SMALLINT,                                                             -- Giới tính của người dùng
+    role             ENUM('COORDINATOR', 'WAREHOUSE_STAFF', 'WAREHOUSE_MANAGER') NOT NULL, -- Vai trò của người dùng
+    last_change_pass TIMESTAMP,                                                            -- Thời gian thay đổi mật khẩu cuối cùng
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE supplier_groups
