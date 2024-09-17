@@ -59,7 +59,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 User userDetails = userRepository.findById(id).get();
 
-                if (jwtTokenUtil.validateToken(token)) {
+                if (jwtTokenUtil.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -72,7 +72,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write(e.getMessage());
         }
 

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -49,6 +50,8 @@ public class User extends BaseEntity implements UserDetails {
     private String avatar;
 
     private boolean isActive;
+
+    private Date lastChangePass;
 
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
