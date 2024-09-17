@@ -30,6 +30,7 @@ public class PriceAdjustment extends BaseEntity {
             })
     private String id;
 
+    @Enumerated(EnumType.STRING)
     private PriceAdjustmentStatus status;
 
     private String note;

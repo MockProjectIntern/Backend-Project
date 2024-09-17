@@ -1,6 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.dtos.request.transaction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.enums.PriceAdjustmentStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionMethod;
 import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,16 +27,16 @@ public class CreateTransactionRequest {
     /**
      * Số tiền của phiếu thu/chi.
      */
-    @JsonProperty("amount")
+    @JsonProperty("new_price")
     @Schema(description = "Số tiền của phiếu thu/chi", example = "1000.00")
-    private BigDecimal amount;
+    private BigDecimal newPrice;
 
     /**
      * Phương thức thanh toán được sử dụng cho phiếu thu/chi.
      */
-    @JsonProperty("payment_method")
-    @Schema(description = "Phương thức thanh toán được sử dụng cho phiếu thu/chi", example = "CASH")
-    private TransactionMethod paymentMethod;
+    @JsonProperty("status")
+    @Schema(description = "Phương thức thanh toán được sử dụng cho phiếu thu/chi", example = "PriceAdjustmentStatus")
+    private PriceAdjustmentStatus status;
 
     /**
      * Các tag liên quan đến phiếu thu/chi.
@@ -52,37 +53,10 @@ public class CreateTransactionRequest {
     private String note;
 
     /**
-     * Loại phiếu thu/chi.
-     */
-    @JsonProperty("type")
-    @Schema(description = "Loại phiếu thu/chi", example = "EXPENSE")
-    private TransactionType type;
-
-    /**
      * Nhóm người nhận của phiếu thu/chi.
      */
-    @JsonProperty("recipient_group")
-    @Schema(description = "Nhóm người nhận của phiếu thu/chi", example = "Nhóm A")
-    private String recipientGroup;
+//    @JsonProperty("user_cr")
+//    @Schema(description = "Nhóm người nhận của phiếu thu/chi", example = "Nhóm A")
+//    private String productId;
 
-    /**
-     * ID người nhận của phiếu thu/chi.
-     */
-    @JsonProperty("recipient_id")
-    @Schema(description = "ID người nhận của phiếu thu/chi", example = "REC001")
-    private String recipientId;
-
-    /**
-     * Tên người nhận của phiếu thu/chi.
-     */
-    @JsonProperty("recipient_name")
-    @Schema(description = "Tên người nhận của phiếu thu/chi", example = "Nguyễn Văn A")
-    private String recipientName;
-
-    /**
-     * ID danh mục phiếu thu/chi.
-     */
-    @JsonProperty("transaction_category_id")
-    @Schema(description = "ID danh mục phiếu thu/chi", example = "CAT001")
-    private String transactionCategoryId;
 }

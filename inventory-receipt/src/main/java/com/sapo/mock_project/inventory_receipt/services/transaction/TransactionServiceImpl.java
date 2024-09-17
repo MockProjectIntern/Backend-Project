@@ -63,14 +63,14 @@ public class TransactionServiceImpl implements TransactionService {
             if (request.getId() != null && transactionRepository.existsById(request.getId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
-            TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
-                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
+//            TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
+//                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
             User userCreated = authHelper.getUser();
 
             Transaction newTransaction = transactionMapper.mapToEntity(request);
             newTransaction.setStatus(TransactionStatus.COMPLETED);
             newTransaction.setUserCreated(userCreated);
-            newTransaction.setCategory(transactionCategory);
+//            newTransaction.setCategory(transactionCategory);
 
             transactionRepository.save(newTransaction);
 
