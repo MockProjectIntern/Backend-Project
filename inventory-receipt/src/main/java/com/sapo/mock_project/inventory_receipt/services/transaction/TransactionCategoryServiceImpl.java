@@ -45,12 +45,12 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
         try {
             // Kiểm tra xem ID có tồn tại không
             if (request.getId() != null && transactionCategoryRepository.existsById(request.getId())) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_ID_EXIST));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_ID_EXISTED));
             }
 
             // Kiểm tra xem tên danh mục và loại phiếu thu/chi có tồn tại không
             if (transactionCategoryRepository.existsByNameAndType(request.getName(), request.getType())) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXIST));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXISTED));
             }
 
             // Chuyển đổi DTO thành entity TransactionCategory và lưu vào cơ sở dữ liệu
@@ -113,7 +113,7 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
 
             // Kiểm tra xem tên mới có trùng với bất kỳ danh mục phiếu thu/chi nào khác cùng loại không
             if (!existTransactionCategory.getName().equals(request.getName()) && transactionCategoryRepository.existsByNameAndType(request.getName(), existTransactionCategory.getType())) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXIST));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXISTED));
             }
 
             // Cập nhật thông tin danh mục phiếu thu/chi và lưu lại vào cơ sở dữ liệu

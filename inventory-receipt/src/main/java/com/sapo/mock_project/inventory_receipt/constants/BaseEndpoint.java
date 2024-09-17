@@ -11,4 +11,5 @@ public interface BaseEndpoint {
     String USER = "/users";
     String TRANSACTION = "/transactions";
     String TRANSACTION_CATEGORY = "/transaction-categories";
+    String BRAND = "/brands";
 }

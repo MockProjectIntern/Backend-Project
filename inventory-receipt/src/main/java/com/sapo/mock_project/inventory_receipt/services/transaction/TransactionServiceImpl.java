@@ -61,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
     public ResponseEntity<ResponseObject<Object>> createTransaction(CreateTransactionRequest request) {
         try {
             if (request.getId() != null && transactionRepository.existsById(request.getId())) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXIST));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
             TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
@@ -177,7 +177,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_NOT_FOUND)));
 
             if (request.getId() != null && !request.getId().equals(transaction.getId()) && transactionRepository.existsById(request.getId())) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXIST));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
 
             transactionMapper.updateFromToDTO(request, transaction);

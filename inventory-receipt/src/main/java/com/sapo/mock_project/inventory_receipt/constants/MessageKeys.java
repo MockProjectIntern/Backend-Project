@@ -31,4 +31,10 @@ public class MessageKeys {
     public static final String TRANSACTION_GET_ALL_SUCCESSFULLY = "transaction.get_all.successfully";
     public static final String TRANSACTION_DELETE_SUCCESSFULLY = "transaction.delete.successfully";
     public static final String TRANSACTION_CANCEL_SUCCESSFULLY = "transaction.cancel.successfully";
+
+    public static final String BRAND_CREATE_SUCCESSFULLY = "brand.create.successfully";
+    public static final String BRAND_UPDATE_SUCCESSFULLY = "brand.update.successfully";
+    public static final String BRAND_GET_DETAIL_SUCCESSFULLY = "brand.get_detail.successfully";
+    public static final String BRAND_GET_ALL_SUCCESSFULLY = "brand.get_all.successfully";
+    public static final String BRAND_DELETE_SUCCESSFULLY = "brand.delete.successfully";
 }
