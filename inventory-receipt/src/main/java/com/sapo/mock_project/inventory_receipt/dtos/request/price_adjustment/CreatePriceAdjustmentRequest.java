@@ -1,15 +1,17 @@
-package com.sapo.mock_project.inventory_receipt.dtos.request.supplier;
+package com.sapo.mock_project.inventory_receipt.dtos.request.price_adjustment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.enums.PriceAdjustmentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  * DTO yêu cầu để tạo một nhà cung cấp mới.
  */
-    @Data
-public class CreateSupplierRequest {
-
+@Data
+public class CreatePriceAdjustmentRequest {
     /**
      * ID của nhà cung cấp.
      * Trường này có thể không cần thiết khi tạo mới và thường được hệ thống tự động sinh ra.
@@ -19,44 +21,12 @@ public class CreateSupplierRequest {
     private String id;
 
     /**
-     * Tên của nhà cung cấp.
-     * Đây là thông tin bắt buộc.
-     */
-    @Schema(description = "Tên của nhà cung cấp", example = "Công ty ABC", required = true)
-    @JsonProperty("name")
-    private String name;
-
-    /**
-     * Số điện thoại của nhà cung cấp.
-     * Đây là thông tin tùy chọn.
-     */
-    @Schema(description = "Số điện thoại của nhà cung cấp", example = "0123456789", required = false)
-    @JsonProperty("phone")
-    private String phone;
-
-    /**
-     * Địa chỉ email của nhà cung cấp.
-     * Đây là thông tin tùy chọn.
-     */
-    @Schema(description = "Địa chỉ email của nhà cung cấp", example = "info@abc.com", required = false)
-    @JsonProperty("email")
-    private String email;
-
-    /**
-     * Địa chỉ của nhà cung cấp.
-     * Đây là thông tin tùy chọn.
-     */
-    @Schema(description = "Địa chỉ của nhà cung cấp", example = "123 Đường ABC, Quận 1, TP.HCM", required = false)
-    @JsonProperty("address")
-    private String address;
-
-    /**
      * ID của nhóm nhà cung cấp mà nhà cung cấp này thuộc về.
      * Đây là thông tin bắt buộc.
      */
     @Schema(description = "ID của nhóm nhà cung cấp mà nhà cung cấp này thuộc về", example = "GROUP001", required = true)
-    @JsonProperty("supplier_group_id")
-    private String supplierGroupId;
+    @JsonProperty("product_id")
+    private String productId;
 
     /**
      * Các thẻ hoặc tag liên quan đến nhà cung cấp.
@@ -73,4 +43,20 @@ public class CreateSupplierRequest {
     @Schema(description = "Ghi chú về nhà cung cấp", example = "Nhà cung cấp lâu năm, uy tín", required = false)
     @JsonProperty("note")
     private String note;
+
+    /**
+     * Ghi chú về nhà cung cấp.
+     * Đây là thông tin tùy chọn.
+     */
+    @Schema(description = "Ghi chú về nhà cung cấp", example = "Nhà cung cấp lâu năm, uy tín", required = false)
+    @JsonProperty("status")
+    private PriceAdjustmentStatus status;
+
+    /**
+     * Ghi chú về nhà cung cấp.
+     * Đây là thông tin tùy chọn.
+     */
+    @Schema(description = "Ghi chú về nhà cung cấp", example = "Nhà cung cấp lâu năm, uy tín", required = false)
+    @JsonProperty("new_price")
+    private BigDecimal newPrice;
 }
