@@ -1,6 +1,8 @@
 package com.sapo.mock_project.inventory_receipt.constants.enums;
 
 public enum GRNPaymentStatus {
-    TEST;
+    UNPAID,
+    PARTIAL_PAID,
+    PAID
 
 }

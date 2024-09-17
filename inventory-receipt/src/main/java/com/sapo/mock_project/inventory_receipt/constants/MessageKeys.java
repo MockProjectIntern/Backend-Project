@@ -18,4 +18,13 @@ public class MessageKeys {
     public static final String SUPPLIER_GET_DETAIL_SUCCESSFULLY = "supplier.get_detail.successfully";
     public static final String SUPPLIER_GET_ALL_SUCCESSFULLY = "supplier.get_all.successfully";
     public static final String SUPPLIER_DELETE_SUCCESSFULLY = "supplier.delete.successfully";
+
+
+    //GRN Message
+    public static final String GRN_CREATE_SUCCESSFULLY = "grn.create.successfully";
+    public static final String GRN_GET_DETAIL_SUCCESSFULLY = "grn.get_detail.successfully";
+    public static final String GRN_DELETE_SUCCESSFULLY = "grn.delete.successfully";
+    public static final String GRN_UPDATE_SUCCESSFULLY = "grn.update.successfully";
+    public static final String GRN_GET_ALL_SUCCESSFULLY = "grn.get_all.successfully";
+    public static final String GRN_IMPORT_SUCCESSFULLY = "grn.import.successfully";
 }

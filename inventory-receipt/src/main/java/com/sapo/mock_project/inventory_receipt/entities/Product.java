@@ -57,6 +57,7 @@ public class Product extends BaseEntity {
 
     private String tags;
 
+    @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
     @ManyToOne

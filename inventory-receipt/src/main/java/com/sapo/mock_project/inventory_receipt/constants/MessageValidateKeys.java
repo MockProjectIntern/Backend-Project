@@ -11,4 +11,8 @@ public class MessageValidateKeys {
 
     public static final String SUPPLIER_ID_EXISTED = "supplier.id.existed";
     public static final String SUPPLIER_NAME_EXISTED = "supplier.name.existed";
+
+    //GRN Validate Message
+    public static final String GRN_EXISTED = "grn.existed";
+    public static final String GRN_IMPORTED = "grn.imported";
 }
