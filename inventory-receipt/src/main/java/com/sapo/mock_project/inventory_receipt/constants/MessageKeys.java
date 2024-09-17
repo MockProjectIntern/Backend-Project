@@ -27,4 +27,11 @@ public class MessageKeys {
     public static final String GRN_UPDATE_SUCCESSFULLY = "grn.update.successfully";
     public static final String GRN_GET_ALL_SUCCESSFULLY = "grn.get_all.successfully";
     public static final String GRN_IMPORT_SUCCESSFULLY = "grn.import.successfully";
+
+    //GIN Message
+    public static final String GIN_CREATE_SUCCESSFULLY = "gin.create.successfully";
+    public static final String GIN_GET_DETAIL_SUCCESSFULLY = "gin.get_detail.successfully";
+    public static final String GIN_UPDATE_SUCCESSFULLY = "gin.update.successfully";
+    public static final String GIN_DELETE_SUCCESSFULLY = "gin.delete.successfully";
+    public static final String GIN_BALANCE_SUCCESSFULLY = "gin.balance.successfully";
 }

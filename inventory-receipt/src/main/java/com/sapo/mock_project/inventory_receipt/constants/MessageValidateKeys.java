@@ -15,4 +15,5 @@ public class MessageValidateKeys {
     //GRN Validate Message
     public static final String GRN_EXISTED = "grn.existed";
     public static final String GRN_IMPORTED = "grn.imported";
+    public static final String GIN_ID_EXISTED = "gin.id.existed";
 }

@@ -1,5 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.enums.GINProductReason;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +33,8 @@ public class GINProduct extends BaseEntity {
 
     private BigDecimal discrepancyQuantity;
 
-    private String reason;
+    @Enumerated(EnumType.STRING)
+    private GINProductReason reason;
 
     private String note;
 
@@ -42,4 +45,8 @@ public class GINProduct extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "gin_id")
     private GIN gin;
+
+    @Transient
+    @JsonProperty("product_id")
+    private String productId;
 }

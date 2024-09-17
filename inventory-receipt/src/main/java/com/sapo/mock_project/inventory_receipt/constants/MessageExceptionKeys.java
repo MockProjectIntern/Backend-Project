@@ -18,5 +18,7 @@ public class MessageExceptionKeys {
 
     // Product
     public static final String PRODUCT_NOT_FOUND = "product.not_found";
-    
+
+    // GIN Message exception
+    public static final String GIN_NOT_FOUND = "gin.not_found";
 }
