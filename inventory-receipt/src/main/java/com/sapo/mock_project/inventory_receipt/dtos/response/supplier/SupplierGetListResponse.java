@@ -26,6 +26,7 @@ public class SupplierGetListResponse extends BaseResponse {
     private String id;
 
     @JsonProperty("sub_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subId;
 
     /**

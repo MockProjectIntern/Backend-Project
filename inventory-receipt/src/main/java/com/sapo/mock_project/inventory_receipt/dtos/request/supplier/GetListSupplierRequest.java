@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * DTO yêu cầu để lấy danh sách nhà cung cấp dựa trên các tiêu chí lọc.
@@ -26,22 +27,29 @@ public class GetListSupplierRequest {
      * Có thể là ACTIVE, INACTIVE, hoặc DELETED.
      */
     @Schema(description = "Trạng thái của nhà cung cấp để lọc", example = "ACTIVE", required = false)
-    @JsonProperty("status")
-    private SupplierStatus status;
+    @JsonProperty("statuses")
+    private List<SupplierStatus> statuses;
 
     /**
      * ID của nhóm nhà cung cấp để lọc.
      */
     @Schema(description = "ID của nhóm nhà cung cấp để lọc", example = "GROUP001", required = false)
-    @JsonProperty("supplier_group_id")
-    private String supplierGroupId;
+    @JsonProperty("supplier_group_ids")
+    private List<String> supplierGroupIds;
 
     /**
      * Ngày tạo của nhà cung cấp để lọc.
      */
     @Schema(description = "Ngày tạo của nhà cung cấp để lọc", example = "2024-09-15", required = false)
-    @JsonProperty("created_date")
-    private LocalDate createdDate;
+    @JsonProperty("created_date_from")
+    private LocalDate createdDateFrom;
+
+    /**
+     * Ngày tạo của nhà cung cấp để lọc.
+     */
+    @Schema(description = "Ngày tạo của nhà cung cấp để lọc", example = "2024-09-15", required = false)
+    @JsonProperty("created_date_to")
+    private LocalDate createdDateTo;
 
     /**
      * Các thẻ hoặc tag liên quan đến nhà cung cấp để lọc.
