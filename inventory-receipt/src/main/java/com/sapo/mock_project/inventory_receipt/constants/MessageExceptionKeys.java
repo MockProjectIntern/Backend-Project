@@ -16,6 +16,8 @@ public class MessageExceptionKeys {
 
     public static final String TRANSACTION_NOT_FOUND = "transaction.not_found";
     public static final String TRANSACTION_NOT_CANCELABLE = "transaction.not_cancelable";
+    public static final String TRANSACTION_CANNOT_CREATE_AUTO = "transaction.cannot_create_auto";
+    public static final String TRANSACTION_TYPE_NOT_MATCH = "transaction.type.not_match";
 
     public static final String BRAND_NOT_FOUND = "brand.not_found";
     //GRN Message exception

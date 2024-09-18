@@ -28,12 +28,12 @@ public class CreateTransactionRequest {
     /**
      * Số tiền của phiếu thu/chi.
      */
-    @JsonProperty("new_price")
+    @JsonProperty("amount")
     @Schema(description = "Số tiền của phiếu thu/chi", example = "1000.00")
-    private BigDecimal newPrice;
+    private BigDecimal amount;
 
-    @JsonProperty("status")
-    private TransactionStatus status;
+    @JsonProperty("payment_method")
+    private TransactionMethod paymentMethod;
 
     /**
      * Các tag liên quan đến phiếu thu/chi.
@@ -49,4 +49,18 @@ public class CreateTransactionRequest {
     @Schema(description = "Ghi chú hoặc mô tả về phiếu thu/chi", example = "Thanh toán cho hóa đơn tháng 8")
     private String note;
 
+    @JsonProperty("type")
+    private TransactionType type;
+
+    @JsonProperty("recipient_group")
+    private String recipientGroup;
+
+    @JsonProperty("recipient_id")
+    private String recipientId;
+
+    @JsonProperty("recipient_name")
+    private String recipientName;
+
+    @JsonProperty("transaction_category_id")
+    private String transactionCategoryId;
 }

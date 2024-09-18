@@ -7,7 +7,7 @@ import lombok.Data;
 /**
  * DTO yêu cầu để tạo một nhà cung cấp mới.
  */
-    @Data
+@Data
 public class CreateSupplierRequest {
 
     /**
