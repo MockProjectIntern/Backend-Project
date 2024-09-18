@@ -6,6 +6,7 @@ import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.SupplierGroupStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.request.suppliergroup.CreateSupplierGroupRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.suppliergroup.GetListSupplierGroupRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.suppliergroup.UpdateSupplierGroupRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
@@ -16,6 +17,7 @@ import com.sapo.mock_project.inventory_receipt.entities.SupplierGroup;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.mappers.SupplierGroupMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierGroupRepository;
+import com.sapo.mock_project.inventory_receipt.services.specification.SupplierGroupSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -106,14 +108,15 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
      * @return ResponseEntity chứa danh sách các nhóm nhà cung cấp.
      */
     @Override
-    public ResponseEntity<ResponseObject<Object>> getAllSupplierGroup(int page, int size) {
+    public ResponseEntity<ResponseObject<Object>> getAllSupplierGroup(GetListSupplierGroupRequest request, int page, int size) {
         try {
+            SupplierGroupSpecification supplierGroupSpecification = new SupplierGroupSpecification(request);
             // Sắp xếp theo tên nhà cung cấp tăng dần
             Sort sort = Sort.by(Sort.Direction.ASC, "name");
             Pageable pageable = PageRequest.of(page - 1, size, sort);
 
             // Lấy danh sách nhóm nhà cung cấp theo trạng thái ACTIVE
-            Page<SupplierGroup> supplierGroups = supplierGroupRepository.findAllByStatus(SupplierGroupStatus.ACTIVE, pageable);
+            Page<SupplierGroup> supplierGroups = supplierGroupRepository.findAll(supplierGroupSpecification, pageable);
 
             // Chuyển đổi dữ liệu nhóm nhà cung cấp sang response
             Page<SUPGGetAllResponse> supplierGroupResponses = supplierGroups.map(supplierGroup -> {

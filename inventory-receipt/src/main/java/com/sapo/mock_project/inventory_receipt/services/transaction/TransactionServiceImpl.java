@@ -33,7 +33,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -63,14 +63,21 @@ public class TransactionServiceImpl implements TransactionService {
             if (request.getSubId() != null && transactionRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
-//            TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
-//                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
+            TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
+            if (transactionCategory.getId().equals("TSC00001") || transactionCategory.getId().equals("TSC00002")) {
+                throw new NoActionForOperationException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CANNOT_CREATE_AUTO));
+            }
+            if (transactionCategory.getType() != request.getType()) {
+                throw new NoActionForOperationException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_TYPE_NOT_MATCH));
+            }
+
             User userCreated = authHelper.getUser();
 
             Transaction newTransaction = transactionMapper.mapToEntity(request);
             newTransaction.setStatus(TransactionStatus.COMPLETED);
             newTransaction.setUserCreated(userCreated);
-//            newTransaction.setCategory(transactionCategory);
+            newTransaction.setCategory(transactionCategory);
 
             transactionRepository.save(newTransaction);
 
@@ -138,13 +145,24 @@ public class TransactionServiceImpl implements TransactionService {
                             response.setUserCreatedName(transaction.getUserCreated().getFullName());
                         } else {
                             try {
-                                // Lấy phương thức set tương ứng
-                                Method setMethod = response.getClass().getMethod("set" + StringUtils.snakeCaseToCamelCase(field), String.class);
+                                // Lấy giá trị của trường từ đối tượng supplier
+                                Object fieldValue = CommonUtils.getFieldValue(transaction, field);
 
-                                // Gọi phương thức set với giá trị tương ứng từ đối tượng transaction
-                                setMethod.invoke(response, CommonUtils.getFieldValue(transaction, field));
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                // Nếu giá trị không null, tiếp tục xử lý
+                                if (fieldValue != null) {
+                                    // Kiểm tra kiểu dữ liệu của trường cần set
+                                    Field responseField = CommonUtils.getFieldFromClassHierarchy(response.getClass(), StringUtils.snakeCaseToEqualCamelCase(field));
+                                    responseField.setAccessible(true); // Cho phép truy cập vào trường private
+
+                                    // Kiểm tra và chuyển đổi kiểu dữ liệu nếu cần
+                                    Object convertedValue = CommonUtils.convertValueForField(responseField, fieldValue);
+
+                                    // Đặt giá trị cho trường trong đối tượng response
+                                    responseField.set(response, convertedValue);
+                                }
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                // Xử lý lỗi nếu không thể lấy hoặc set giá trị cho trường
+                                throw new RuntimeException("Failed to map field " + field + " using reflection", e);
                             }
                         }
                     }

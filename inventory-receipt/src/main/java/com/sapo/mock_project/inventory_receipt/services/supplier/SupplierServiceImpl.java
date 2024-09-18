@@ -4,6 +4,7 @@ import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
+import com.sapo.mock_project.inventory_receipt.constants.enums.SupplierGroupStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.SupplierStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.request.supplier.CreateSupplierRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.supplier.GetListSupplierRequest;
@@ -30,7 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -68,12 +69,16 @@ public class SupplierServiceImpl implements SupplierService {
             // Lấy nhóm nhà cung cấp
             SupplierGroup existingSupplierGroup = supplierGroupRepository.findById(request.getSupplierGroupId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND)));
+            if (existingSupplierGroup.getStatus() == SupplierGroupStatus.INACTIVE) {
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_INACTIVE));
+            }
 
             // Tạo đối tượng Supplier mới và lưu vào cơ sở dữ liệu
             Supplier newSupplier = supplierMapper.mapToEntity(request);
             newSupplier.setGroup(existingSupplierGroup);
             newSupplier.setStatus(SupplierStatus.ACTIVE);
             newSupplier.setCurrentDebt(BigDecimal.ZERO);
+            newSupplier.setTotalRefund(BigDecimal.ZERO);
 
             supplierRepository.save(newSupplier);
 
@@ -107,19 +112,19 @@ public class SupplierServiceImpl implements SupplierService {
     /**
      * Lọc danh sách nhà cung cấp theo các tiêu chí.
      *
-     * @param request Đối tượng chứa các tiêu chí lọc.
+     * @param request      Đối tượng chứa các tiêu chí lọc.
      * @param filterParams Các trường cần ánh xạ và lọc.
-     * @param page Trang hiện tại.
-     * @param size Số lượng bản ghi trên mỗi trang.
+     * @param page         Trang hiện tại.
+     * @param size         Số lượng bản ghi trên mỗi trang.
      * @return Phản hồi với danh sách nhà cung cấp đã lọc.
      */
     @Override
     public ResponseEntity<ResponseObject<Object>> filterSupplier(GetListSupplierRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
-            SupplierSpecification supplierspecification = new SupplierSpecification(request);
+            SupplierSpecification supplierSpecification = new SupplierSpecification(request);
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
 
-            Page<Supplier> supplierPage = supplierRepository.findAll(supplierspecification, pageable);
+            Page<Supplier> supplierPage = supplierRepository.findAll(supplierSpecification, pageable);
 
             // Ánh xạ các đối tượng Supplier thành SupplierGetListResponse
             List<SupplierGetListResponse> responseList = supplierPage.getContent().stream().map(supplier -> {
@@ -130,16 +135,25 @@ public class SupplierServiceImpl implements SupplierService {
                     String field = entry.getKey();
                     Boolean includeField = entry.getValue();
 
-                    // Ánh xạ các trường dựa trên filterParams
                     if (includeField) {
                         try {
-                            // Lấy phương thức set tương ứng
-                            Method setMethod = response.getClass().getMethod("set" + StringUtils.snakeCaseToCamelCase(field), String.class);
+                            // Lấy giá trị của trường từ đối tượng supplier
+                            Object fieldValue = CommonUtils.getFieldValue(supplier, field);
 
-                            // Gọi phương thức set với giá trị tương ứng từ đối tượng supplier
-                            setMethod.invoke(response, CommonUtils.getFieldValue(supplier, field));
-                        } catch (Exception e) {
-                            // Xử lý lỗi nếu không thể lấy phương thức hoặc gọi phương thức
+                            // Nếu giá trị không null, tiếp tục xử lý
+                            if (fieldValue != null) {
+                                // Kiểm tra kiểu dữ liệu của trường cần set
+                                Field responseField = CommonUtils.getFieldFromClassHierarchy(response.getClass(), StringUtils.snakeCaseToEqualCamelCase(field));
+                                responseField.setAccessible(true); // Cho phép truy cập vào trường private
+
+                                // Kiểm tra và chuyển đổi kiểu dữ liệu nếu cần
+                                Object convertedValue = CommonUtils.convertValueForField(responseField, fieldValue);
+
+                                // Đặt giá trị cho trường trong đối tượng response
+                                responseField.set(response, convertedValue);
+                            }
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            // Xử lý lỗi nếu không thể lấy hoặc set giá trị cho trường
                             throw new RuntimeException("Failed to map field " + field + " using reflection", e);
                         }
                     }
@@ -164,7 +178,7 @@ public class SupplierServiceImpl implements SupplierService {
      * Cập nhật thông tin của nhà cung cấp theo ID.
      *
      * @param supplierId ID của nhà cung cấp cần cập nhật.
-     * @param request Đối tượng chứa thông tin cập nhật.
+     * @param request    Đối tượng chứa thông tin cập nhật.
      * @return Phản hồi với kết quả của thao tác cập nhật.
      */
     @Override

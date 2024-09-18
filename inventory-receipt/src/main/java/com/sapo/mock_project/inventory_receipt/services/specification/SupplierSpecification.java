@@ -45,9 +45,10 @@ public class SupplierSpecification implements Specification<Supplier> {
 
         // Lấy các thông tin lọc từ đối tượng request
         String keyword = request.getKeyword();
-        SupplierStatus status = request.getStatus();
-        String supplierGroupId = request.getSupplierGroupId();
-        LocalDateTime createdDate = DateUtils.getDateTimeFrom(request.getCreatedDate());
+        List<SupplierStatus> statuses = request.getStatuses();
+        List<String> supplierGroupIds = request.getSupplierGroupIds();
+        LocalDateTime createdDateFrom = DateUtils.getDateTimeFrom(request.getCreatedDateFrom());
+        LocalDateTime createdDateTo = DateUtils.getDateTimeTo(request.getCreatedDateTo());
         String tags = request.getTags();
 
         // Điều kiện lọc theo từ khóa
@@ -60,7 +61,7 @@ public class SupplierSpecification implements Specification<Supplier> {
             Predicate phonePredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("phone")),
                     String.format("%%%s%%", keywordUpper));
 
-            Predicate idPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("id")),
+            Predicate idPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("subId")),
                     String.format("%%%s%%", keywordUpper));
 
             predicates.add(criteriaBuilder.or(namePredicate, phonePredicate, idPredicate));
@@ -70,21 +71,25 @@ public class SupplierSpecification implements Specification<Supplier> {
         predicates.add(criteriaBuilder.notEqual(root.get("status"), SupplierStatus.DELETED));
 
         // Điều kiện lọc theo trạng thái
-        if (status != null) {
-            Predicate customStatus = criteriaBuilder.equal(root.get("status"), status);
+        if (statuses != null && !statuses.isEmpty()) {
+            Predicate customStatus = root.get("status").in(statuses);
             predicates.add(customStatus);
         }
 
         // Điều kiện lọc theo nhóm nhà cung cấp
-        if (supplierGroupId != null && !supplierGroupId.isEmpty()) {
-            Predicate customSupplierGroupId = criteriaBuilder.equal(root.get("group").get("id"), supplierGroupId);
+        if (supplierGroupIds != null && !supplierGroupIds.isEmpty()) {
+            Predicate customSupplierGroupId = root.get("supplierGroup").get("id").in(supplierGroupIds);
             predicates.add(customSupplierGroupId);
         }
 
         // Điều kiện lọc theo ngày tạo
-        if (createdDate != null) {
-            Predicate customCreatedDate = criteriaBuilder.equal(root.get("createdAt"), createdDate);
-            predicates.add(customCreatedDate);
+        if (createdDateFrom != null) {
+            Predicate customCreatedDateFrom = criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), createdDateFrom);
+            predicates.add(customCreatedDateFrom);
+        }
+        if (createdDateTo != null) {
+            Predicate customCreatedDateTo = criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), createdDateTo);
+            predicates.add(customCreatedDateTo);
         }
 
         // Điều kiện lọc theo tags

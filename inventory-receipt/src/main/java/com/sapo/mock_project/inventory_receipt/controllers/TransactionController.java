@@ -68,6 +68,12 @@ public class TransactionController {
                                                                     @RequestParam(defaultValue = "10") @Parameter(description = "Kích thước trang, mặc định là 10") int size,
                                                                     HttpServletRequest httpServletRequest) {
         Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.TRANSACTION, httpServletRequest);
+
+        filterParams.put("created_at", true);
+        filterParams.put("sub_id", true);
+        filterParams.put("type", true);
+        filterParams.put("amount", true);
+
         return transactionService.filterTransaction(request, filterParams, sort, sortField, page, size);
     }
 

@@ -1,10 +1,15 @@
 package com.sapo.mock_project.inventory_receipt.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,5 +56,57 @@ public class CommonUtils {
         } catch (Exception e) {
             throw new RuntimeException("Failed to get value for field " + field, e);
         }
+    }
+
+    /**
+     * Chuyển đổi giá trị thành kiểu dữ liệu phù hợp với trường
+     */
+    public static Object convertValueForField(Field field, Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        Class<?> fieldType = field.getType();
+
+        // Kiểm tra kiểu dữ liệu và chuyển đổi nếu cần
+        if (fieldType.isEnum()) {
+            // Nếu là Enum, trả về tên của enum
+            return value;
+        } else if (fieldType == String.class) {
+            // Nếu là chuỗi, chuyển giá trị thành chuỗi
+            return value.toString();
+        } else if (fieldType == Integer.class || fieldType == int.class) {
+            // Nếu là số nguyên
+            return Integer.parseInt(value.toString());
+        } else if (fieldType == Long.class || fieldType == long.class) {
+            // Nếu là số nguyên dài
+            return Long.parseLong(value.toString());
+        } else if (fieldType == BigDecimal.class) {
+            // Nếu là số thập phân
+            return new BigDecimal(value.toString());
+        } else if (fieldType == LocalDateTime.class) {
+            // Nếu là LocalDateTime
+            return LocalDateTime.parse(value.toString(), DateTimeFormatter.ofPattern(DateTimePattern.YYYYMMDDHHMMSS));
+        }
+
+        // Trường hợp mặc định, trả về giá trị ban đầu
+        return value;
+    }
+
+    // Tìm kiếm field trong cả lớp hiện tại và lớp cha
+    public static Field getFieldFromClassHierarchy(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        Class<?> currentClass = clazz;
+
+        // Duyệt qua các lớp cha nếu không tìm thấy field trong lớp hiện tại
+        while (currentClass != null) {
+            try {
+                return currentClass.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                currentClass = currentClass.getSuperclass(); // Chuyển sang lớp cha
+            }
+        }
+
+        // Nếu không tìm thấy field trong cả lớp và lớp cha
+        throw new NoSuchFieldException("Field " + fieldName + " not found in class hierarchy.");
     }
 }

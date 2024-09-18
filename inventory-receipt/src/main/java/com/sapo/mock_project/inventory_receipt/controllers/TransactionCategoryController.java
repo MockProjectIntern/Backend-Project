@@ -7,7 +7,6 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTr
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.transaction.TransactionCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Transaction Category", description = "Các API quản lý danh mục phiếu thu/chi")
 public class TransactionCategoryController {
-
     private final TransactionCategoryService transactionCategoryService;
 
     /**
@@ -40,7 +38,6 @@ public class TransactionCategoryController {
      */
     @PostMapping("/create.json")
     @Operation(summary = "Tạo danh mục phiếu thu/chi", description = "Tạo một danh mục phiếu thu/chi mới.")
-    @RequestBody(description = "Thông tin tạo danh mục phiếu thu/chi")
     @ApiResponse(responseCode = "201", description = "Danh mục phiếu thu/chi được tạo thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
     public ResponseEntity<ResponseObject<Object>> createTransactionCategory(@Valid @RequestBody CreateTransactionCategoryRequest request) {
@@ -60,7 +57,6 @@ public class TransactionCategoryController {
      */
     @PostMapping("/all.json")
     @Operation(summary = "Lấy danh sách danh mục phiếu thu/chi", description = "Lấy danh sách các danh mục phiếu thu/chi với phân trang.")
-    @RequestBody(description = "Thông tin tìm kiếm danh mục phiếu thu/chi")
     @ApiResponse(responseCode = "200", description = "Danh sách danh mục phiếu thu/chi được lấy thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
     public ResponseEntity<ResponseObject<Object>> getListTransactionCategory(@RequestBody GetListTransactionCategoryRequest request,
@@ -81,7 +77,6 @@ public class TransactionCategoryController {
      */
     @PutMapping("/update.json/{id}")
     @Operation(summary = "Cập nhật danh mục phiếu thu/chi", description = "Cập nhật thông tin của một danh mục phiếu thu/chi hiện có.")
-    @RequestBody(description = "Thông tin cập nhật danh mục phiếu thu/chi")
     @ApiResponse(responseCode = "200", description = "Danh mục phiếu thu/chi được cập nhật thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
     @ApiResponse(responseCode = "404", description = "Danh mục phiếu thu/chi không tìm thấy")
