@@ -6,7 +6,7 @@ inventory_receipts;
 
 CREATE TABLE users
 (
-    id               VARCHAR(10) NOT NULL PRIMARY KEY,                          -- Khóa chính của bảng (tự động tăng)
+    id               VARCHAR(10) NOT NULL PRIMARY KEY,                                    -- Khóa chính của bảng (tự động tăng)
     sub_id           VARCHAR(10),                                                         -- Mã định danh ban đầu
     full_name        VARCHAR(50),                                                         -- Tên đầy đủ của người dùng
     phone            CHAR(10),                                                            -- Số điện thoại của người dùng
@@ -24,24 +24,25 @@ CREATE TABLE users
 
 CREATE TABLE supplier_groups
 (
-    id         VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id     VARCHAR(10),                                -- Mã định danh ban đầu
-    name       VARCHAR(50),                                -- Tên nhóm nhà cung cấp
-    note       TEXT,                                       -- Ghi chú
+    id         VARCHAR(10) NOT NULL PRIMARY KEY,                     -- Khóa chính của bảng (tự động tăng)
+    sub_id     VARCHAR(10),                                          -- Mã định danh ban đầu
+    name       VARCHAR(50),                                          -- Tên nhóm nhà cung cấp
+    note       TEXT,                                                 -- Ghi chú
+    status     ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE', -- Trạng thái hoạt động
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE suppliers
 (
-    id                VARCHAR(10) NOT NULL PRIMARY KEY,                      -- Khóa chính của bảng (tự động tăng)
+    id                VARCHAR(10) NOT NULL PRIMARY KEY,                                -- Khóa chính của bảng (tự động tăng)
     sub_id            VARCHAR(10),                                                     -- Mã định danh ban đầu
     name              VARCHAR(50),                                                     -- Tên nhà cung cấp
     phone             CHAR(10),                                                        -- Số điện thoại của nhà cung cấp
     email             CHAR(50),                                                        -- Địa chỉ email của nhà cung cấp
     address           TEXT,                                                            -- Địa chỉ của nhà cung cấp
     status            ENUM('ACTIVE', 'INACTIVE', 'DELETED') NOT NULL DEFAULT 'ACTIVE', -- Trạng thái hoạt động
-    supplier_group_id VARCHAR(10),                                                          -- Nhóm nhà cung cấp
+    supplier_group_id VARCHAR(10),                                                     -- Nhóm nhà cung cấp
     current_debt      DECIMAL(10, 2),                                                  -- Nợ hiện tại
     total_refund      DECIMAL(10, 2),                                                  -- Tổng số tiền đã hoàn trả
     tags              TEXT,                                                            -- Tags
@@ -53,7 +54,7 @@ CREATE TABLE suppliers
 
 CREATE TABLE orders
 (
-    id                VARCHAR(10) NOT NULL PRIMARY KEY,                          -- Khóa chính của bảng (tự động tăng)
+    id                VARCHAR(10) NOT NULL PRIMARY KEY,                                    -- Khóa chính của bảng (tự động tăng)
     sub_id            VARCHAR(10),                                                         -- Mã định danh ban đầu
     status            ENUM('PENDING', 'RECEIVED', 'CANCELLED') NOT NULL DEFAULT 'PENDING', -- Trạng thái đơn hàng
     note              TEXT,
@@ -79,7 +80,7 @@ CREATE TABLE orders
 CREATE TABLE brands
 (
     id         VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id     VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id     VARCHAR(10),                      -- Mã định danh ban đầu
     name       VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -88,7 +89,7 @@ CREATE TABLE brands
 CREATE TABLE products
 (
     id              VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id          VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id          VARCHAR(10),                      -- Mã định danh ban đầu
     name            VARCHAR(50),
     images          TEXT,
     type            TEXT,
@@ -110,7 +111,7 @@ CREATE TABLE products
 CREATE TABLE order_details
 (
     id                VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id            VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id            VARCHAR(10),                      -- Mã định danh ban đầu
     order_id          VARCHAR(10),
     product_id        VARCHAR(10),
     quantity          DECIMAL(10, 2),
@@ -126,7 +127,7 @@ CREATE TABLE order_details
 CREATE TABLE categories
 (
     id         VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id     VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id     VARCHAR(10),                      -- Mã định danh ban đầu
     name       VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -135,7 +136,7 @@ CREATE TABLE categories
 CREATE TABLE category_products
 (
     id          VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id      VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id      VARCHAR(10),                      -- Mã định danh ban đầu
     category_id VARCHAR(10),
     product_id  VARCHAR(10),
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -147,7 +148,7 @@ CREATE TABLE category_products
 CREATE TABLE price_adjustments
 (
     id              VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id          VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id          VARCHAR(10),                      -- Mã định danh ban đầu
     status          ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
     note            TEXT,
     tags            TEXT,
@@ -163,7 +164,7 @@ CREATE TABLE price_adjustments
 CREATE TABLE gins
 (
     id                 VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id             VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id             VARCHAR(10),                      -- Mã định danh ban đầu
     status             ENUM('PENDING', 'BALANCED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
     balanced_at        TIMESTAMP,
     user_created_id    VARCHAR(10),
@@ -180,7 +181,7 @@ CREATE TABLE gins
 CREATE TABLE gins_products
 (
     id                   VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id               VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id               VARCHAR(10),                      -- Mã định danh ban đầu
     actual_stock         DECIMAL(10, 2),
     discrepancy_quantity DECIMAL(10, 2),
     reason               TEXT,
@@ -196,7 +197,7 @@ CREATE TABLE gins_products
 CREATE TABLE grns
 (
     id                VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id            VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id            VARCHAR(10),                      -- Mã định danh ban đầu
     status            ENUM('PENDING', 'COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PENDING',
     histories         TEXT,
     user_created_id   VARCHAR(10),
@@ -218,7 +219,7 @@ CREATE TABLE grns
 CREATE TABLE grns_products
 (
     id                VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id            VARCHAR(10),                                -- Mã định danh ban đầu
+    sub_id            VARCHAR(10),                      -- Mã định danh ban đầu
     quantity          DECIMAL(10, 2),
     imported_quantity DECIMAL(10, 2),
     price             DECIMAL(10, 2),

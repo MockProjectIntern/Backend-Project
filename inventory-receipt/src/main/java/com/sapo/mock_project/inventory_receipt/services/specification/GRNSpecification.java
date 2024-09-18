@@ -53,7 +53,7 @@ public class GRNSpecification implements Specification<GRN> {
         if (keyword != null && !keyword.isEmpty()) {
             String keywordUpper = keyword.toUpperCase();
 
-            Predicate idPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("id")),
+            Predicate idPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("subId")),
                     String.format("%%%s%%", keywordUpper));
             Predicate notePredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("note")),
                     String.format("%%%s%%", keywordUpper));
@@ -96,7 +96,7 @@ public class GRNSpecification implements Specification<GRN> {
 
         // Điều kiện lọc theo nhà cung cấp (supplierId)
         if (supplierId != null && !supplierId.isEmpty()) {
-            Predicate supplierPredicate = criteriaBuilder.equal(root.get("supplier").get("id"), supplierId);
+            Predicate supplierPredicate = criteriaBuilder.equal(root.get("supplier").get("subId"), supplierId);
             predicates.add(supplierPredicate);
         }
 

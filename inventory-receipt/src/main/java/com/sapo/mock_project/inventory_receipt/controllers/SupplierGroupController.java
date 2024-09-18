@@ -2,19 +2,20 @@ package com.sapo.mock_project.inventory_receipt.controllers;
 
 import com.sapo.mock_project.inventory_receipt.constants.BaseEndpoint;
 import com.sapo.mock_project.inventory_receipt.dtos.request.suppliergroup.CreateSupplierGroupRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.suppliergroup.GetListSupplierGroupRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.suppliergroup.UpdateSupplierGroupRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierGroupService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller quản lý nhóm nhà cung cấp.
@@ -70,22 +71,23 @@ public class SupplierGroupController {
      * @param size Kích thước của trang, mặc định là 10.
      * @return Đối tượng phản hồi chứa danh sách các nhóm nhà cung cấp.
      */
-    @Operation(summary = "Lấy danh sách nhóm nhà cung cấp", description = "API này trả về danh sách các nhóm nhà cung cấp đang hoạt động.")
+    @Operation(summary = "Lấy danh sách nhóm nhà cung cấp", description = "API này trả về danh sách các nhóm nhà cung cấp.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Danh sách nhóm nhà cung cấp",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseObject.class))),
             @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
     })
-    @GetMapping("/all-active.json")
-    public ResponseEntity<ResponseObject<Object>> getAllSupplierGroup(@RequestParam(defaultValue = "1") int page,
+    @PostMapping("/all.json")
+    public ResponseEntity<ResponseObject<Object>> getAllSupplierGroup(@Valid @RequestBody GetListSupplierGroupRequest request,
+                                                                      @RequestParam(defaultValue = "1") int page,
                                                                       @RequestParam(defaultValue = "10") int size) {
-        return supplierGroupService.getAllSupplierGroup(page, size);
+        return supplierGroupService.getAllSupplierGroup(request, page, size);
     }
 
     /**
      * API cập nhật thông tin của nhóm nhà cung cấp dựa trên ID.
      *
-     * @param id ID của nhóm nhà cung cấp.
+     * @param id      ID của nhóm nhà cung cấp.
      * @param request Yêu cầu cập nhật nhóm nhà cung cấp.
      * @return Đối tượng phản hồi chứa thông tin nhóm nhà cung cấp đã được cập nhật.
      */

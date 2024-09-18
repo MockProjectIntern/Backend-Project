@@ -60,7 +60,7 @@ public class SupplierSpecification implements Specification<Supplier> {
             Predicate phonePredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("phone")),
                     String.format("%%%s%%", keywordUpper));
 
-            Predicate idPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("id")),
+            Predicate idPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("subId")),
                     String.format("%%%s%%", keywordUpper));
 
             predicates.add(criteriaBuilder.or(namePredicate, phonePredicate, idPredicate));
@@ -77,7 +77,7 @@ public class SupplierSpecification implements Specification<Supplier> {
 
         // Điều kiện lọc theo nhóm nhà cung cấp
         if (supplierGroupId != null && !supplierGroupId.isEmpty()) {
-            Predicate customSupplierGroupId = criteriaBuilder.equal(root.get("group").get("id"), supplierGroupId);
+            Predicate customSupplierGroupId = criteriaBuilder.equal(root.get("group").get("subId"), supplierGroupId);
             predicates.add(customSupplierGroupId);
         }
 
