@@ -52,4 +52,10 @@ public class MessageKeys {
     public static final String GIN_UPDATE_SUCCESSFULLY = "gin.update.successfully";
     public static final String GIN_DELETE_SUCCESSFULLY = "gin.delete.successfully";
     public static final String GIN_BALANCE_SUCCESSFULLY = "gin.balance.successfully";
+
+    public static final String CATEGORY_CREATE_SUCCESSFULLY = "category.create.successfully";
+    public static final String CATEGORY_UPDATE_SUCCESSFULLY = "category.update.successfully";
+    public static final String CATEGORY_GET_DETAIL_SUCCESSFULLY = "category.get_detail.successfully";
+    public static final String CATEGORY_GET_ALL_SUCCESSFULLY = "category.get_all.successfully";
+    public static final String CATEGORY_DELETE_SUCCESSFULLY = "category.delete.successfully";
 }
