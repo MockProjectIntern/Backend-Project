@@ -9,7 +9,6 @@ import lombok.Data;
  */
 @Data
 public class UpdateBrandRequest {
-
     @Schema(description = "Tên mới của thương hiệu", example = "Thương hiệu B")
     @JsonProperty("name")
     private String name;

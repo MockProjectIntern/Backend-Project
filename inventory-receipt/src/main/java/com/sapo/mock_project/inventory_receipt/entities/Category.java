@@ -28,8 +28,17 @@ public class Category extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private String name;
 
     @OneToMany(mappedBy = "category")
     private List<CategoryProduct> categoryProducts;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

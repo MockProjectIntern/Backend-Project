@@ -25,7 +25,7 @@ import java.util.List;
 @Builder
 public class User extends BaseEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequences")
+    @GeneratedValue(generator = "user_sequences")
     @GenericGenerator(
             name = "user_sequences",
             strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
@@ -35,6 +35,8 @@ public class User extends BaseEntity implements UserDetails {
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "user_sequences")
             })
     private String id;
+
+    private String subId;
 
     private String fullName;
 
@@ -114,5 +116,12 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public String getUsername() {
         return phone;
+    }
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
     }
 }

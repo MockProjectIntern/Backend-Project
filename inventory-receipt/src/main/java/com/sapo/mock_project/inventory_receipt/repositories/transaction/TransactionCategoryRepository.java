@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface TransactionCategoryRepository extends JpaRepository<TransactionCategory, String>, JpaSpecificationExecutor<TransactionCategory> {
     boolean existsByNameAndType(String name, TransactionType type);
+
+    boolean existsBySubId(String subId);
 }

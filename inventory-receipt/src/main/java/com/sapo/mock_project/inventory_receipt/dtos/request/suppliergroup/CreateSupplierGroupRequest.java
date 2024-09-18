@@ -16,8 +16,8 @@ public class CreateSupplierGroupRequest {
      * @schema description = "ID nhóm nhà cung cấp"
      */
     @Schema(description = "ID nhóm nhà cung cấp", example = "SUPG001")
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("sub_id")
+    private String subId;
 
     /**
      * Tên của nhóm nhà cung cấp.

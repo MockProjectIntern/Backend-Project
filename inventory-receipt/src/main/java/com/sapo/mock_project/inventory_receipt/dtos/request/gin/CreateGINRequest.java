@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.dtos.request.gin;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.entities.GINProduct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,12 +11,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateGINRequest {
-    private String id;
+    @JsonProperty("sub_id")
+    private String subId;
+
+    @JsonProperty("note")
     private String note;
+
+    @JsonProperty("tags")
     private String tags;
 
+    @JsonProperty("user_inspection_id")
     private String userInspectionId;
 
+    @JsonProperty("products")
     List<GINProduct> products;
-
 }

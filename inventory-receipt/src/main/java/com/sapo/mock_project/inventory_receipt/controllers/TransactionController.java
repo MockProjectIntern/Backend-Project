@@ -61,13 +61,12 @@ public class TransactionController {
     @Operation(summary = "Lọc danh sách phiếu thu/chi", description = "Lọc danh sách phiếu thu/chi dựa trên các tham số và phân trang")
     @ApiResponse(responseCode = "200", description = "Danh sách phiếu thu/chi đã lọc")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
-    public ResponseEntity<ResponseObject<Object>> filterTransaction(
-            @Valid @RequestBody GetListTransactionRequest request,
-            @RequestParam(defaultValue = "ASC") @Parameter(description = "Kiểu sắp xếp, mặc định là ASC") String sort,
-            @RequestParam(value = "sort_field", defaultValue = "createdAt") @Parameter(description = "Trường để sắp xếp, mặc định là createdAt") String sortField,
-            @RequestParam(defaultValue = "0") @Parameter(description = "Số trang hiện tại, mặc định là 0") int page,
-            @RequestParam(defaultValue = "10") @Parameter(description = "Kích thước trang, mặc định là 10") int size,
-            HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ResponseObject<Object>> filterTransaction(@Valid @RequestBody GetListTransactionRequest request,
+                                                                    @RequestParam(defaultValue = "ASC") @Parameter(description = "Kiểu sắp xếp, mặc định là ASC") String sort,
+                                                                    @RequestParam(value = "sort_field", defaultValue = "createdAt") @Parameter(description = "Trường để sắp xếp, mặc định là createdAt") String sortField,
+                                                                    @RequestParam(defaultValue = "0") @Parameter(description = "Số trang hiện tại, mặc định là 0") int page,
+                                                                    @RequestParam(defaultValue = "10") @Parameter(description = "Kích thước trang, mặc định là 10") int size,
+                                                                    HttpServletRequest httpServletRequest) {
         Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.TRANSACTION, httpServletRequest);
         return transactionService.filterTransaction(request, filterParams, sort, sortField, page, size);
     }
@@ -84,9 +83,8 @@ public class TransactionController {
     @ApiResponse(responseCode = "200", description = "Phiếu thu/chi được cập nhật thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
     @ApiResponse(responseCode = "404", description = "Phiếu thu/chi không tìm thấy")
-    public ResponseEntity<ResponseObject<Object>> updateTransaction(
-            @PathVariable String id,
-            @Valid @RequestBody UpdateTransactionRequest request) {
+    public ResponseEntity<ResponseObject<Object>> updateTransaction(@PathVariable String id,
+                                                                    @Valid @RequestBody UpdateTransactionRequest request) {
         return transactionService.updateTransaction(id, request);
     }
 
@@ -100,8 +98,7 @@ public class TransactionController {
     @Operation(summary = "Hủy phiếu thu/chi", description = "Hủy một phiếu thu/chi dựa trên ID")
     @ApiResponse(responseCode = "200", description = "Phiếu thu/chi được hủy thành công")
     @ApiResponse(responseCode = "404", description = "Phiếu thu/chi không tìm thấy")
-    public ResponseEntity<ResponseObject<Object>> cancelTransaction(
-            @PathVariable String id) {
+    public ResponseEntity<ResponseObject<Object>> cancelTransaction(@PathVariable String id) {
         return transactionService.cancelTransaction(id);
     }
 }

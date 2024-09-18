@@ -20,6 +20,9 @@ public class SUPGGetAllResponse extends BaseResponse {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     /**
      * Tên của nhóm nhà cung cấp.
      *

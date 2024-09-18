@@ -27,6 +27,9 @@ public class TransactionGetListResponse extends BaseResponse {
     @Schema(description = "Mã định danh của phiếu thu/chi", example = "TX123456")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     /**
      * Loại phiếu thu/chi (nhập kho, xuất kho, vv.).
      */

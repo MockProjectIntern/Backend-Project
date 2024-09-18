@@ -14,6 +14,9 @@ public class BrandDetailResponse {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     @Schema(description = "Tên thương hiệu", example = "Thương hiệu A")
     @JsonProperty("name")
     private String name;

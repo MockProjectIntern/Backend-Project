@@ -42,12 +42,12 @@ public class GRNSpecification implements Specification<GRN> {
         String tags = request.getTags();
         String note = request.getNote();
 
-        LocalDateTime createdDate = DateUtils.getDateTime(request.getCreatedDate());
-        LocalDateTime expectedDeliveryAt = DateUtils.getDateTime(request.getExpectedDeliveryAt());
-        LocalDateTime receivedAt = DateUtils.getDateTime(request.getReceivedAt());
-        LocalDateTime cancelledAt = DateUtils.getDateTime(request.getCancelledAt());
-        LocalDateTime paymentAt = DateUtils.getDateTime(request.getPaymentAt());
-        LocalDateTime endedAt = DateUtils.getDateTime(request.getEndedAt());
+        LocalDateTime createdDate = DateUtils.getDateTimeTo(request.getCreatedDate());
+        LocalDateTime expectedDeliveryAt = DateUtils.getDateTimeTo(request.getExpectedDeliveryAt());
+        LocalDateTime receivedAt = DateUtils.getDateTimeTo(request.getReceivedAt());
+        LocalDateTime cancelledAt = DateUtils.getDateTimeTo(request.getCancelledAt());
+        LocalDateTime paymentAt = DateUtils.getDateTimeTo(request.getPaymentAt());
+        LocalDateTime endedAt = DateUtils.getDateTimeTo(request.getEndedAt());
 
         // Điều kiện lọc theo từ khóa (keyword)
         if (keyword != null && !keyword.isEmpty()) {

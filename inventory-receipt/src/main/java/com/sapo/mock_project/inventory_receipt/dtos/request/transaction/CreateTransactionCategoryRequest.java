@@ -21,9 +21,9 @@ public class CreateTransactionCategoryRequest {
      * Đây là mã định danh duy nhất của danh mục phiếu thu/chi, có thể được sử dụng để nhận diện danh mục trong cơ sở dữ liệu.
      * </p>
      */
-    @JsonProperty("id")
+    @JsonProperty("sub_id")
     @Schema(description = "ID của danh mục phiếu thu/chi", example = "12345")
-    private String id;
+    private String subId;
 
     /**
      * Tên của danh mục phiếu thu/chi.

@@ -16,8 +16,8 @@ public class UpdateSupplierGroupRequest {
      * @schema description = "ID nhóm nhà cung cấp cần cập nhật"
      */
     @Schema(description = "ID nhóm nhà cung cấp cần cập nhật", example = "SUPG002")
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("sub_id")
+    private String subId;
 
     /**
      * Tên mới của nhóm nhà cung cấp.

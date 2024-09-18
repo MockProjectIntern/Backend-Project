@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface GRNRepository extends JpaRepository<GRN, String>, JpaSpecificationExecutor<GRN> {
-
+    boolean existsBySubId(String subId);
 }

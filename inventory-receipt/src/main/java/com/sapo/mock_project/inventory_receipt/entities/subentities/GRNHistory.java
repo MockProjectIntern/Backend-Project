@@ -10,16 +10,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GRNHistory {
     private LocalDateTime date;
-    private String user_executed;
+
+    private String userExecuted;
+
     private String function;
+
     private String operation;
-    @Override
-    public String toString() {
-        return "GRNHistory{" +
-                "date=" + date +
-                ", user_executed='" + user_executed + '\'' +
-                ", function='" + function + '\'' +
-                ", operation='" + operation + '\'' +
-                '}';
-    }
 }

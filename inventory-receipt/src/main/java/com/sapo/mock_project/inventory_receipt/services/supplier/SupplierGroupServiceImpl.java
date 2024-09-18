@@ -51,7 +51,7 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_NAME_EXISTED));
             }
             // Kiểm tra xem ID nhóm nhà cung cấp đã tồn tại hay chưa
-            if (request.getId() != null && supplierGroupRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && supplierGroupRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_ID_EXISTED));
             }
 
@@ -155,7 +155,7 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_NAME_EXISTED));
             }
             // Kiểm tra ID nhóm nhà cung cấp có bị trùng không
-            if (request.getId() != null && !existingSupplierGroup.getId().equals(request.getId()) && supplierGroupRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && !existingSupplierGroup.getId().equals(request.getSubId()) && supplierGroupRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_ID_EXISTED));
             }
 

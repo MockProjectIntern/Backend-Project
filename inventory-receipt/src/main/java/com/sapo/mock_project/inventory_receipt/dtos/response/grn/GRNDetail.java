@@ -28,6 +28,9 @@ public class GRNDetail extends BaseResponse {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     /**
      * Trạng thái của phiếu nhập kho.
      */
@@ -35,12 +38,19 @@ public class GRNDetail extends BaseResponse {
     @JsonProperty("status")
     private GRNStatus status;
 
+    @JsonProperty("received_status")
     private GRNReceiveStatus receivedStatus;
 
+    @JsonProperty("supplier_name")
     private String supplierName;
+
+    @JsonProperty("supplier_phone")
     private String supplierPhone;
+
+    @JsonProperty("supplier_address")
     private String supplierAddress;
 
+    @JsonProperty("user_created_name")
     private String userCreatedName;
 
     /**
@@ -56,8 +66,6 @@ public class GRNDetail extends BaseResponse {
     @Schema(description = "Ngày nhận hàng", example = "2023-09-20")
     @JsonProperty("received_at")
     private LocalDate receivedAt;
-
-
 
     /**
      * Thời gian thanh toán.
@@ -143,6 +151,7 @@ public class GRNDetail extends BaseResponse {
     @JsonProperty("payment_method")
     private List<GRNPaymentMethod> paymentMethod;
 
+    @JsonProperty("histories")
     private List<GRNHistory> histories;
 
     /**

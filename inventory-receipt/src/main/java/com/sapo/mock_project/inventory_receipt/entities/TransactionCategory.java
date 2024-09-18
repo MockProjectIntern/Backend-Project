@@ -29,6 +29,8 @@ public class TransactionCategory extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private String name;
 
     private String description;
@@ -38,4 +40,11 @@ public class TransactionCategory extends BaseEntity {
 
     @OneToMany(mappedBy = "category")
     private List<Transaction> transactions;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

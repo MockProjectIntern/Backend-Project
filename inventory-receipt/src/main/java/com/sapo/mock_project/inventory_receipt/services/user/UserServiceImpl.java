@@ -27,6 +27,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -60,6 +61,7 @@ public class UserServiceImpl implements UserService {
             User newAccount = userMapper.mapToEntity(request);
             newAccount.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu trước khi lưu
             newAccount.setActive(true);
+            newAccount.setLastChangePass(new Date(System.currentTimeMillis()));
 
             userRepository.save(newAccount);
 
@@ -141,7 +143,7 @@ public class UserServiceImpl implements UserService {
             final String id = jwtTokenUtil.extractId(refreshToken);
             if (id != null) {
                 Optional<User> userDetails = userRepository.findById(id);
-                if (userDetails.isEmpty() || !jwtTokenUtil.validateToken(refreshToken)) {
+                if (userDetails.isEmpty() || !jwtTokenUtil.validateToken(refreshToken, userDetails.get())) {
                     throw new ExpiredTokenException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_TOKEN_EXPIRED));
                 }
 
@@ -189,6 +191,7 @@ public class UserServiceImpl implements UserService {
             }
 
             existingUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            existingUser.setLastChangePass(new Date(System.currentTimeMillis()));
 
             userRepository.save(existingUser);
 

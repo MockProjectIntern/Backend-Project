@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Converter(autoApply = true)
 public class GRNPaymentMethodConverter implements AttributeConverter<List<GRNPaymentMethod>, String> {
-    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());;
+    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Override
     public String convertToDatabaseColumn(List<GRNPaymentMethod> attribute) {

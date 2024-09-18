@@ -26,6 +26,8 @@ public class CategoryProduct extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -33,4 +35,11 @@ public class CategoryProduct extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

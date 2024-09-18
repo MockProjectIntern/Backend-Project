@@ -21,6 +21,9 @@ public class UserDetailResponse extends BaseResponse {
     @Schema(description = "ID của người dùng", example = "12345")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     /**
      * Họ và tên của người dùng.
      * Trường này chứa tên đầy đủ của người dùng.

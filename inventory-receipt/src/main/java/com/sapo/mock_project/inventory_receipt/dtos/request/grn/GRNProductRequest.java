@@ -16,9 +16,9 @@ public class GRNProductRequest {
      * ID của sản phẩm.
      * Đây là thông tin bắt buộc.
      */
-    @JsonProperty("id")
+    @JsonProperty("sub_id")
     @Schema(description = "ID của sản phẩm", example = "PROD12345", required = true)
-    private String id;
+    private String subId;
 
     /**
      * Số lượng của sản phẩm.

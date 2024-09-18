@@ -16,14 +16,13 @@ import java.util.List;
  */
 @Data
 public class CreateGRNRequest {
-
     /**
      * ID của phiếu nhập kho.
      * Trường này có thể không cần thiết khi tạo mới và thường được hệ thống tự động sinh ra.
      */
-    @JsonProperty("id")
+    @JsonProperty("sub_id")
     @Schema(description = "ID của phiếu nhập kho", example = "GRN12345", required = false)
-    private String id;
+    private String subId;
 
     /**
      * Các thẻ hoặc tag liên quan đến phiếu nhập kho.
@@ -66,8 +65,6 @@ public class CreateGRNRequest {
     @Schema(description = "ID của nhà cung cấp", example = "SUP12345", required = true)
     private String supplierId;
 
-
-
     /**
      * Ngày dự kiến giao hàng.
      * Đây là thông tin tùy chọn.
@@ -107,7 +104,4 @@ public class CreateGRNRequest {
     @JsonProperty("order_id")
     @Schema(description = "ID của đơn hàng", example = "ORD12345", required = false)
     private String orderId;
-
-
-
 }

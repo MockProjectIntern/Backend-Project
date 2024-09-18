@@ -43,8 +43,7 @@ public class TransactionCategoryController {
     @RequestBody(description = "Thông tin tạo danh mục phiếu thu/chi")
     @ApiResponse(responseCode = "201", description = "Danh mục phiếu thu/chi được tạo thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
-    public ResponseEntity<ResponseObject<Object>> createTransactionCategory(
-            @Valid @RequestBody CreateTransactionCategoryRequest request) {
+    public ResponseEntity<ResponseObject<Object>> createTransactionCategory(@Valid @RequestBody CreateTransactionCategoryRequest request) {
         return transactionCategoryService.createTransactionCategory(request);
     }
 
@@ -64,10 +63,9 @@ public class TransactionCategoryController {
     @RequestBody(description = "Thông tin tìm kiếm danh mục phiếu thu/chi")
     @ApiResponse(responseCode = "200", description = "Danh sách danh mục phiếu thu/chi được lấy thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
-    public ResponseEntity<ResponseObject<Object>> getListTransactionCategory(
-            @RequestBody GetListTransactionCategoryRequest request,
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+    public ResponseEntity<ResponseObject<Object>> getListTransactionCategory(@RequestBody GetListTransactionCategoryRequest request,
+                                                                             @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                             @RequestParam(value = "size", defaultValue = "10") int size) {
         return transactionCategoryService.getListTransactionCategory(request, page, size);
     }
 
@@ -87,9 +85,8 @@ public class TransactionCategoryController {
     @ApiResponse(responseCode = "200", description = "Danh mục phiếu thu/chi được cập nhật thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
     @ApiResponse(responseCode = "404", description = "Danh mục phiếu thu/chi không tìm thấy")
-    public ResponseEntity<ResponseObject<Object>> updateTransactionCategory(
-            @PathVariable String id,
-            @Valid @RequestBody UpdateTransactionCategoryRequest request) {
+    public ResponseEntity<ResponseObject<Object>> updateTransactionCategory(@PathVariable String id,
+                                                                            @Valid @RequestBody UpdateTransactionCategoryRequest request) {
         return transactionCategoryService.updateTransactionCategory(id, request);
     }
 }

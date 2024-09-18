@@ -15,8 +15,8 @@ public class UpdateSupplierRequest {
      * Trường này bắt buộc phải có để xác định nhà cung cấp cần sửa đổi.
      */
     @Schema(description = "ID của nhà cung cấp cần cập nhật", example = "SUP12345", required = true)
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("sub_id")
+    private String subId;
 
     /**
      * Tên của nhà cung cấp.
