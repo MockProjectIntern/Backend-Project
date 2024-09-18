@@ -44,7 +44,7 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
     public ResponseEntity<ResponseObject<Object>> createTransactionCategory(CreateTransactionCategoryRequest request) {
         try {
             // Kiểm tra xem ID có tồn tại không
-            if (request.getId() != null && transactionCategoryRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && transactionCategoryRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_ID_EXISTED));
             }
 

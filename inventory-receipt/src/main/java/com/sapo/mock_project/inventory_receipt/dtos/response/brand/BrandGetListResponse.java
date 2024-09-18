@@ -8,6 +8,9 @@ public class BrandGetListResponse {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     @JsonProperty("name")
     private String name;
 }

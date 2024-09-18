@@ -25,6 +25,9 @@ public class SupplierGetListResponse extends BaseResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     /**
      * Tên của nhà cung cấp.
      * Trường này có thể là null nếu không có dữ liệu.

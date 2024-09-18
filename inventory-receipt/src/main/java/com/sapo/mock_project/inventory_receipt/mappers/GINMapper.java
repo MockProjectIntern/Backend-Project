@@ -9,8 +9,9 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface GINMapper extends {
+public interface GINMapper {
     GIN mapToEntity(CreateGINRequest request);
+
     GINDetail mapToResponse(GIN gin);
 
     void updateFromDTO(UpdateGINRequest request,@MappingTarget GIN existingGIN);

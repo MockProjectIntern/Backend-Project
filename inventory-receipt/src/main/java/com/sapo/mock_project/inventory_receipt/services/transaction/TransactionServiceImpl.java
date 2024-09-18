@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<ResponseObject<Object>> createTransaction(CreateTransactionRequest request) {
         try {
-            if (request.getId() != null && transactionRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && transactionRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
 //            TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
@@ -115,7 +115,10 @@ public class TransactionServiceImpl implements TransactionService {
      * @return ResponseEntity chứa danh sách phiếu thu/chi đã lọc và thông tin phân trang.
      */
     @Override
-    public ResponseEntity<ResponseObject<Object>> filterTransaction(GetListTransactionRequest request, Map<String, Boolean> filterParams, String sort, String sortField, int page, int size) {
+    public ResponseEntity<ResponseObject<Object>> filterTransaction(GetListTransactionRequest request,
+                                                                    Map<String, Boolean> filterParams,
+                                                                    String sort, String sortField,
+                                                                    int page, int size) {
         try {
             TransactionSpecification specification = new TransactionSpecification(request);
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.fromString(sort), sortField));
@@ -176,7 +179,7 @@ public class TransactionServiceImpl implements TransactionService {
             Transaction transaction = transactionRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_NOT_FOUND)));
 
-            if (request.getId() != null && !request.getId().equals(transaction.getId()) && transactionRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && !request.getSubId().equals(transaction.getId()) && transactionRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
 

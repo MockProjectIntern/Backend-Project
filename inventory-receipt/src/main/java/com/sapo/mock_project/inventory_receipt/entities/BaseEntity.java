@@ -25,10 +25,16 @@ public class BaseEntity {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        customPrePersist();
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    // Phương thức này có thể được ghi đè trong lớp con nếu cần
+    protected void customPrePersist() {
+        // Các xử lý chung nếu cần
     }
 }

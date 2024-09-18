@@ -13,15 +13,16 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINDetail;
-
-import com.sapo.mock_project.inventory_receipt.entities.*;
+import com.sapo.mock_project.inventory_receipt.entities.GIN;
+import com.sapo.mock_project.inventory_receipt.entities.GINProduct;
+import com.sapo.mock_project.inventory_receipt.entities.Product;
+import com.sapo.mock_project.inventory_receipt.entities.User;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.mappers.GINMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.gin.GINProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.gin.GINRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.user.UserRepository;
-
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class GINServiceImpl implements GINService {
-
     private final GINRepository ginRepository;
     private final GINProductRepository ginProductRepository;
     private final GINMapper ginMapper;
@@ -65,13 +65,13 @@ public class GINServiceImpl implements GINService {
     public ResponseEntity<ResponseObject<Object>> createGIN(CreateGINRequest request) {
         try {
             // Kiểm tra xem ID có tồn tại không
-            if (request.getId() != null && ginRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && ginRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GIN_ID_EXISTED));
             }
 
+            // Tạo đối tượng GIN mới và lưu vào cơ sở dữ liệu
+            GIN newGIN = ginMapper.mapToEntity(request);
 
-                    // Tạo đối tượng GIN mới và lưu vào cơ sở dữ liệu
-                    GIN newGIN = ginMapper.mapToEntity(request);
             List<GINProduct> ginProducts = new ArrayList<>();
             for (GINProduct ginProduct : request.getProducts()) {
                 Product product = productRepository.findById(ginProduct.getProductId())
@@ -184,7 +184,7 @@ public class GINServiceImpl implements GINService {
     /**
      * Cập nhật thông tin của phiếu xuất kho theo ID.
      *
-     * @param id ID của phiếu xuất kho cần cập nhật.
+     * @param id      ID của phiếu xuất kho cần cập nhật.
      * @param request Đối tượng chứa thông tin cập nhật.
      * @return Phản hồi với kết quả của thao tác cập nhật.
      */
@@ -248,28 +248,28 @@ public class GINServiceImpl implements GINService {
         }
     }
 
-/**
- * Xóa một phiếu xuất kho theo ID.
- *
- * @param id ID của phiếu xuất kho cần xóa.
- * @return Phản hồi với kết quả của thao tác
- * xóa.
- */
-@Override
-public ResponseEntity<ResponseObject<Object>> deleteGIN(String id) {
-    try {
-        GIN existingGIN = ginRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
+    /**
+     * Xóa một phiếu xuất kho theo ID.
+     *
+     * @param id ID của phiếu xuất kho cần xóa.
+     * @return Phản hồi với kết quả của thao tác
+     * xóa.
+     */
+    @Override
+    public ResponseEntity<ResponseObject<Object>> deleteGIN(String id) {
+        try {
+            GIN existingGIN = ginRepository.findById(id)
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
-        // Đánh dấu phiếu xuất kho là đã xóa
-        existingGIN.setStatus(GINStatus.DELETED);
-        ginRepository.save(existingGIN);
+            // Đánh dấu phiếu xuất kho là đã xóa
+            existingGIN.setStatus(GINStatus.DELETED);
+            ginRepository.save(existingGIN);
 
-        return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_DELETE_SUCCESSFULLY));
-    } catch (Exception e) {
-        return ResponseUtil.error500Response(e.getMessage());
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_DELETE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
     }
-}
 
     /**
      * Cân đối phiếu xuất kho theo ID.

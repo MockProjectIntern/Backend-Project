@@ -28,6 +28,8 @@ public class OrderDetail extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private Long quantity;
 
     private BigDecimal price;
@@ -43,4 +45,11 @@ public class OrderDetail extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

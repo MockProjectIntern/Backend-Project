@@ -6,7 +6,6 @@ import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.PriceAdjustmentStatus;
-import com.sapo.mock_project.inventory_receipt.constants.enums.SupplierStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.request.price_adjustment.CreatePriceAdjustmentRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
@@ -21,11 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
 @Service
 @RequiredArgsConstructor
-public class PriceAdjustmentImpl implements PriceAdjustmentService {
+public class PriceAdjustmentServiceImpl implements PriceAdjustmentService {
     private final PriceAdjustmentRepository priceAdjustmentRepository;
     private final LocalizationUtils localizationUtils;
     private final ProductRepository productRepository;
@@ -36,7 +33,7 @@ public class PriceAdjustmentImpl implements PriceAdjustmentService {
     public ResponseEntity<ResponseObject<Object>> createPriceAdjustment(CreatePriceAdjustmentRequest request) {
         try {
             // Kiểm tra xem ID có tồn tại không
-            if (request.getId() != null && priceAdjustmentRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && priceAdjustmentRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_ID_EXISTED));
             }
             // Lấy nhóm nhà cung cấp

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.enums.PriceAdjustmentStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionMethod;
 import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionType;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -20,9 +21,9 @@ public class CreateTransactionRequest {
      * Mã phiếu thu/chi (ID) của phiếu thu/chi.
      * Trong trường hợp này, mã phiếu thu/chi có thể được hệ thống sinh tự động.
      */
-    @JsonProperty("id")
+    @JsonProperty("sub_id")
     @Schema(description = "Mã phiếu thu/chi (ID) của phiếu thu/chi", example = "TX123456")
-    private String id;
+    private String subId;
 
     /**
      * Số tiền của phiếu thu/chi.
@@ -31,12 +32,8 @@ public class CreateTransactionRequest {
     @Schema(description = "Số tiền của phiếu thu/chi", example = "1000.00")
     private BigDecimal newPrice;
 
-    /**
-     * Phương thức thanh toán được sử dụng cho phiếu thu/chi.
-     */
     @JsonProperty("status")
-    @Schema(description = "Phương thức thanh toán được sử dụng cho phiếu thu/chi", example = "PriceAdjustmentStatus")
-    private PriceAdjustmentStatus status;
+    private TransactionStatus status;
 
     /**
      * Các tag liên quan đến phiếu thu/chi.
@@ -51,12 +48,5 @@ public class CreateTransactionRequest {
     @JsonProperty("note")
     @Schema(description = "Ghi chú hoặc mô tả về phiếu thu/chi", example = "Thanh toán cho hóa đơn tháng 8")
     private String note;
-
-    /**
-     * Nhóm người nhận của phiếu thu/chi.
-     */
-//    @JsonProperty("user_cr")
-//    @Schema(description = "Nhóm người nhận của phiếu thu/chi", example = "Nhóm A")
-//    private String productId;
 
 }

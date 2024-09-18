@@ -30,6 +30,8 @@ public class Order extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -66,4 +68,11 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order")
     private List<GRN> grns;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

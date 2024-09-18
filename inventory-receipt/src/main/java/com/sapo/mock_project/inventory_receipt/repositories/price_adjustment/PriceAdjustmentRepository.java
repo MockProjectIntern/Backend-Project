@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface PriceAdjustmentRepository extends JpaRepository<PriceAdjustment, String>, JpaSpecificationExecutor<PriceAdjustment> {
-
+    boolean existsBySubId(String subId);
 }

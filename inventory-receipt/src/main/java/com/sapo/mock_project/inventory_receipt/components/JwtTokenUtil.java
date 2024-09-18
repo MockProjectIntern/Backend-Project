@@ -19,14 +19,14 @@ import java.util.function.Function;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenUtil {
-//    @Value("${token.expiration}")
-    private int expiration = 30;
+    @Value("${token.expiration}")
+    private int expiration;
 
     @Value("${token.secretKey}")
     private String secretKey;
 
-//    @Value("${token.expiration-refresh-token}")
-    private int expirationRefreshToken = 60;
+    @Value("${token.expiration-refresh-token}")
+    private int expirationRefreshToken;
 
     @Value("${token.type}")
     private String tokenType;
@@ -45,6 +45,7 @@ public class JwtTokenUtil {
             String token = Jwts.builder()
                     .setClaims(claims)
                     .setSubject(String.valueOf(user.getId()))
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                     .signWith(getSignKey(), SignatureAlgorithm.HS256)
                     .compact();
@@ -63,6 +64,7 @@ public class JwtTokenUtil {
         try {
             String token = Jwts.builder()
                     .setClaims(claims)
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setSubject(String.valueOf(user.getId()))
                     .setExpiration(new Date(System.currentTimeMillis() + expirationRefreshToken * 1000L))
                     .signWith(getSignKey(), SignatureAlgorithm.HS256)

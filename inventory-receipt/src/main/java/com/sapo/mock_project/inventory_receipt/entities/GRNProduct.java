@@ -1,7 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
-import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,6 +29,8 @@ public class GRNProduct extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private BigDecimal quantity;
 
     private BigDecimal discount;
@@ -54,16 +56,9 @@ public class GRNProduct extends BaseEntity {
     }
 
     @Override
-    public String toString() {
-        return "GRNProduct{" +
-                "id='" + id + '\'' +
-                ", quantity=" + quantity +
-                ", discount=" + discount +
-                ", tax=" + tax +
-                ", price=" + price +
-                ", product=" + product +
-                ", grn=" + grn +
-                ", productId='" + productId + '\'' +
-                '}';
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
     }
 }

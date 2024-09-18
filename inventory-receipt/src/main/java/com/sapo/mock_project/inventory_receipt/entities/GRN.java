@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 public class GRN extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "grn_sequences")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "grn_sequences")
     @GenericGenerator(
             name = "grn_sequences",
             strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
@@ -39,6 +39,8 @@ public class GRN extends BaseEntity {
                     @org.hibernate.annotations.Parameter(name = StringPrefixSequenceGenerator.SEQUENCE_TABLE_PARAMETER, value = "grn_sequences")
             })
     private String id;
+
+    private String subId;
 
     @Enumerated(EnumType.STRING)
     private GRNStatus status;
@@ -201,6 +203,10 @@ public class GRN extends BaseEntity {
         }
     }
 
-
-
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

@@ -29,6 +29,8 @@ public class SupplierGroup extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private String name;
 
     private String note;
@@ -38,4 +40,11 @@ public class SupplierGroup extends BaseEntity {
 
     @OneToMany(mappedBy = "group")
     private List<Supplier> suppliers;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

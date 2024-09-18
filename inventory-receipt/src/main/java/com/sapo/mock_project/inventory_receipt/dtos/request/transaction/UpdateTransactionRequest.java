@@ -14,9 +14,9 @@ public class UpdateTransactionRequest {
     /**
      * Mã định danh của phiếu thu/chi cần cập nhật.
      */
-    @JsonProperty("id")
+    @JsonProperty("sub_id")
     @Schema(description = "Mã định danh của phiếu thu/chi cần cập nhật", example = "TX123456")
-    private String id;
+    private String subId;
 
     /**
      * Ghi chú cập nhật cho phiếu thu/chi.

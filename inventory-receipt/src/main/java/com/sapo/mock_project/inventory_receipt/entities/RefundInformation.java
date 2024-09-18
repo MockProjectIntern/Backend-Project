@@ -32,6 +32,8 @@ public class RefundInformation extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private BigDecimal totalRefundedQuantity;
 
     private BigDecimal totalRefundedValue;
@@ -64,4 +66,11 @@ public class RefundInformation extends BaseEntity {
 
     @OneToMany(mappedBy = "refundInformation")
     private List<RefundInformationDetail> refundInformationDetails;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

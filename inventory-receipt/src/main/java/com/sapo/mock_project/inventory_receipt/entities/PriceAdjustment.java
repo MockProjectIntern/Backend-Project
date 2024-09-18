@@ -30,6 +30,8 @@ public class PriceAdjustment extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     @Enumerated(EnumType.STRING)
     private PriceAdjustmentStatus status;
 
@@ -49,4 +51,11 @@ public class PriceAdjustment extends BaseEntity {
 
     @OneToMany(mappedBy = "priceAdjustment")
     private List<RefundInformationDetail> refundInformationDetails;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

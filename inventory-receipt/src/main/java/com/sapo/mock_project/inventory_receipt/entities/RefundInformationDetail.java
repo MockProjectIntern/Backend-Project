@@ -28,6 +28,8 @@ public class RefundInformationDetail extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private BigDecimal quantity;
 
     private BigDecimal refundedPrice;
@@ -41,4 +43,11 @@ public class RefundInformationDetail extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "grn_product_id")
     private PriceAdjustment priceAdjustment;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

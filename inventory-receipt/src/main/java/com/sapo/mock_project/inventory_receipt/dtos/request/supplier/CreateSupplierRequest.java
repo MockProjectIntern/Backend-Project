@@ -15,8 +15,8 @@ public class CreateSupplierRequest {
      * Trường này có thể không cần thiết khi tạo mới và thường được hệ thống tự động sinh ra.
      */
     @Schema(description = "ID của nhà cung cấp", example = "SUP12345", required = false)
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("sub_id")
+    private String subId;
 
     /**
      * Tên của nhà cung cấp.

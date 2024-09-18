@@ -30,6 +30,8 @@ public class GIN extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private GINStatus status;
 
     private LocalDate balancedAt;
@@ -50,4 +52,11 @@ public class GIN extends BaseEntity {
 
     @OneToMany(mappedBy = "gin")
     private List<GINProduct> products;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

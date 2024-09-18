@@ -7,19 +7,16 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Converter(autoApply = true)
 public class ProductTypeConverter implements AttributeConverter<List<ProductType>, String> {
-    private static final ObjectMapper objectMapper;
-
-    static {
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-    }
+    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Override
     public String convertToDatabaseColumn(List<ProductType> attribute) {

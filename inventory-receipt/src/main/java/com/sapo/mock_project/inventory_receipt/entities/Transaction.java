@@ -31,6 +31,8 @@ public class Transaction extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
@@ -63,4 +65,11 @@ public class Transaction extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_created_id")
     private User userCreated;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

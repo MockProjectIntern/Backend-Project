@@ -34,6 +34,8 @@ public class Product extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private String name;
 
     @Convert(converter = ProductImageConverter.class)
@@ -76,4 +78,11 @@ public class Product extends BaseEntity {
 
     @OneToMany(mappedBy = "product")
     private List<GRNProduct> grnProducts;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

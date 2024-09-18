@@ -30,6 +30,8 @@ public class Supplier extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private String name;
 
     private String phone;
@@ -55,4 +57,11 @@ public class Supplier extends BaseEntity {
 
     @OneToMany(mappedBy = "supplier")
     private List<GRN> grns;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

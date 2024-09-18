@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SupplierGroupRepository extends JpaRepository<SupplierGroup, String> {
     boolean existsByName(String name);
 
-    boolean existsById(String id);
+    boolean existsBySubId(String subId);
 
     Page<SupplierGroup> findAllByStatus(SupplierGroupStatus status, Pageable pageable);
 }

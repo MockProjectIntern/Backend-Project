@@ -58,7 +58,7 @@ public class SupplierServiceImpl implements SupplierService {
     public ResponseEntity<ResponseObject<Object>> createSupplier(CreateSupplierRequest request) {
         try {
             // Kiểm tra xem ID có tồn tại không
-            if (request.getId() != null && supplierRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && supplierRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_ID_EXISTED));
             }
             // Kiểm tra xem tên có tồn tại không
@@ -177,7 +177,7 @@ public class SupplierServiceImpl implements SupplierService {
             if (request.getName() != null && !request.getName().equals(existingSupplier.getName()) && supplierRepository.existsByName(request.getName())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_NAME_EXISTED));
             }
-            if (request.getId() != null && !request.getId().equals(existingSupplier.getId()) && supplierRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && !request.getSubId().equals(existingSupplier.getId()) && supplierRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_ID_EXISTED));
             }
             if (request.getSupplierGroupId() != null && !request.getSupplierGroupId().equals(existingSupplier.getGroup().getId())) {

@@ -24,7 +24,7 @@ import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNHistory;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.mappers.GRNMapper;
 import com.sapo.mock_project.inventory_receipt.mappers.GRNProductMapper;
-import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNProductRepoiotry;
+import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.order.OrderRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
@@ -58,7 +58,7 @@ import java.util.Map;
 public class GRNServiceImpl implements GRNService {
 
     private final GRNRepository grnRepository;
-    private final GRNProductRepoiotry grnProductRepository;
+    private final GRNProductRepository grnProductRepository;
     private final ProductRepository productRepository;
     private final GRNMapper grnMapper;
     private final GRNProductMapper grnProductMapper;
@@ -66,6 +66,7 @@ public class GRNServiceImpl implements GRNService {
     private final LocalizationUtils localizationUtils;
     private final AuthHelper authHelper;
     private final OrderRepository orderRepository;
+
     /**
      * Tạo mới một GRN.
      *
@@ -76,7 +77,7 @@ public class GRNServiceImpl implements GRNService {
     public ResponseEntity<ResponseObject<Object>> createGRN(CreateGRNRequest request) {
         try {
             // Kiểm tra xem GRN đã tồn tại chưa
-            if (request.getId() != null && grnRepository.existsById(request.getId())) {
+            if (request.getSubId() != null && grnRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GRN_EXISTED));
             }
 
@@ -87,14 +88,11 @@ public class GRNServiceImpl implements GRNService {
             newGRN.setStatus(GRNStatus.TRADING);
             newGRN.setReceivedStatus(GRNReceiveStatus.NOT_ENTERED);
 
-
-
             // Kiểm tra xem nhà cung cấp có tồn tại không
-            if(request.getSupplierId() != null) {
+            if (request.getSupplierId() != null) {
                 newGRN.setSupplier(supplierRepository.findById(request.getSupplierId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND))));
             }
-
 
 
             // Thêm các sản phẩm vào GRN
@@ -110,14 +108,11 @@ public class GRNServiceImpl implements GRNService {
             }
             newGRN.setGrnProducts(grnProducts);
 
-
-
             // Nếu nhập hàng từ order thì set order cho GRN
-            if(request.getOrderId()!=null) {
+            if (request.getOrderId() != null) {
                 newGRN.setOrder(orderRepository.findById(request.getOrderId())
                         .orElseThrow(() -> new DataNotFoundException("Order Not found")));
             }
-
 
             // Tính toán giá trị của GRN
             newGRN.calculatorValue();
@@ -125,11 +120,10 @@ public class GRNServiceImpl implements GRNService {
             // Thêm lịch sử tạo mới GRN
             newGRN.setHistories(new ArrayList<>());
             GRNHistory grnHistory = GRNHistory.builder().date(LocalDateTime.now())
-                    .user_executed(user.getFullName())
+                    .userExecuted(user.getFullName())
                     .function("Nhập hàng")
                     .operation("Tạo đơn nhập hàng").build();
             newGRN.getHistories().add(grnHistory);
-
 
 
             grnRepository.save(newGRN);
@@ -140,7 +134,6 @@ public class GRNServiceImpl implements GRNService {
             return ResponseUtil.error500Response(e.getMessage());
         }
     }
-
 
 
     /**
@@ -239,7 +232,7 @@ public class GRNServiceImpl implements GRNService {
             existingGRN.calculatorValue();
 
             GRNHistory grnHistory = GRNHistory.builder().date(LocalDateTime.now())
-                    .user_executed(user.getFullName())
+                    .userExecuted(user.getFullName())
                     .function(existingGRN.getReceivedStatus() == GRNReceiveStatus.ENTERED ? "Nhập hàng" : "Cập nhật")
                     .operation("Cập nhật thông tin đơn nhập").build();
 
@@ -260,13 +253,11 @@ public class GRNServiceImpl implements GRNService {
             grnRepository.save(existingGRN);
 
 
-
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_UPDATE_SUCCESSFULLY));
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }
     }
-
 
 
     /**
@@ -278,7 +269,7 @@ public class GRNServiceImpl implements GRNService {
     @Override
     public ResponseEntity<ResponseObject<Object>> deleteGRN(String id) {
         try {
-            GRN grn = grnRepository.findById(id).orElseThrow(()->new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
+            GRN grn = grnRepository.findById(id).orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
             grn.setStatus(GRNStatus.CANCELLED);
             User user = authHelper.getUser();
@@ -299,10 +290,10 @@ public class GRNServiceImpl implements GRNService {
     /**
      * Lấy danh sách GRN dựa trên các tiêu chí lọc.
      *
-     * @param request       Đối tượng chứa các tiêu chí lọc.
-     * @param filterParams  Các trường cần lọc.
-     * @param page          Trang cần lấy.
-     * @param size          Số lượng phần tử trên mỗi trang.
+     * @param request      Đối tượng chứa các tiêu chí lọc.
+     * @param filterParams Các trường cần lọc.
+     * @param page         Trang cần lấy.
+     * @param size         Số lượng phần tử trên mỗi trang.
      * @return Phản hồi với danh sách GRN theo các tiêu chí lọc.
      */
     @Override
@@ -359,11 +350,10 @@ public class GRNServiceImpl implements GRNService {
     @Override
     public ResponseEntity<ResponseObject<Object>> importGRN(String id) {
         try {
-
             // Lấy thông tin GRN từ cơ sở dữ liệu
-            GRN grn = grnRepository.findById(id).orElseThrow(()->new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
+            GRN grn = grnRepository.findById(id).orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
-            if(grn.getReceivedStatus() == GRNReceiveStatus.ENTERED) {
+            if (grn.getReceivedStatus() == GRNReceiveStatus.ENTERED) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GRN_IMPORTED));
             }
             grn.setReceivedStatus(GRNReceiveStatus.ENTERED);
@@ -372,7 +362,7 @@ public class GRNServiceImpl implements GRNService {
 
             // Thêm lịch sử nhập hàng cho GRN
             grn.getHistories().add(GRNHistory.builder().date(LocalDateTime.now())
-                    .user_executed(authHelper.getUser().getFullName())
+                    .userExecuted(authHelper.getUser().getFullName())
                     .function("Nhập hàng")
                     .operation("Nhập hàng").build());
 
@@ -387,10 +377,7 @@ public class GRNServiceImpl implements GRNService {
         }
     }
 
-
     private void updateProductQuantity(GRN existingGRN) {
 
     }
-
-
 }

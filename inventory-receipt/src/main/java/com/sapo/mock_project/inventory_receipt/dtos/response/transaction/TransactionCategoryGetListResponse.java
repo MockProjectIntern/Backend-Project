@@ -26,6 +26,9 @@ public class TransactionCategoryGetListResponse extends BaseResponse {
     @Schema(description = "ID của danh mục phiếu thu/chi", example = "12345")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     /**
      * Tên của danh mục phiếu thu/chi.
      * <p>

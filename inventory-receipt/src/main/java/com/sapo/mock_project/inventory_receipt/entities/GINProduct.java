@@ -1,7 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
-import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GINProductReason;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
@@ -30,6 +30,8 @@ public class GINProduct extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private BigDecimal actualStock;
 
     private BigDecimal discrepancyQuantity;
@@ -50,4 +52,11 @@ public class GINProduct extends BaseEntity {
     @Transient
     @JsonProperty("product_id")
     private String productId;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

@@ -19,6 +19,9 @@ public class GRNProductDetail {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("sub_id")
+    private String subId;
+
     /**
      * Số lượng của sản phẩm trong phiếu nhập kho.
      */

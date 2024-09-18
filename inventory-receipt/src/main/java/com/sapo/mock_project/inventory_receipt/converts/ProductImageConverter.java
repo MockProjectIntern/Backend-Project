@@ -13,14 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Converter(autoApply = true)
 public class ProductImageConverter implements AttributeConverter<List<ProductImage>, String> {
-    private static final ObjectMapper objectMapper;
-
-    static {
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-    }
+    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Override
     public String convertToDatabaseColumn(List<ProductImage> attribute) {

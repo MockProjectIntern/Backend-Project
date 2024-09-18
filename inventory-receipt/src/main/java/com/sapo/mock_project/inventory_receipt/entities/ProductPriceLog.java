@@ -29,6 +29,8 @@ public class ProductPriceLog extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private ProductPriceLogStatus status;
 
     private String note;
@@ -42,4 +44,11 @@ public class ProductPriceLog extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

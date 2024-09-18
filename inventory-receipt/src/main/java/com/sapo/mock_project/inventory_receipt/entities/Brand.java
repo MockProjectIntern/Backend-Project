@@ -29,8 +29,17 @@ public class Brand extends BaseEntity {
             })
     private String id;
 
+    private String subId;
+
     private String name;
 
     @OneToMany(mappedBy = "brand")
     private List<Product> products;
+
+    @Override
+    protected void customPrePersist() {
+        if (subId == null && id != null) {
+            subId = id;
+        }
+    }
 }

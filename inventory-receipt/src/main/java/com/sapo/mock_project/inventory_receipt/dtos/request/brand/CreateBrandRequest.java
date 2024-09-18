@@ -9,7 +9,6 @@ import lombok.Data;
  */
 @Data
 public class CreateBrandRequest {
-
     @Schema(description = "Tên thương hiệu", example = "Thương hiệu A")
     @JsonProperty("name")
     private String name;
