@@ -58,4 +58,10 @@ public class MessageKeys {
     public static final String CATEGORY_GET_DETAIL_SUCCESSFULLY = "category.get_detail.successfully";
     public static final String CATEGORY_GET_ALL_SUCCESSFULLY = "category.get_all.successfully";
     public static final String CATEGORY_DELETE_SUCCESSFULLY = "category.delete.successfully";
+
+    public static final String PRODUCT_CREATED_SUCCESSFULLY = "product.created.successfully";
+    public static final String PRODUCT_UPDATED_SUCCESSFULLY = "product.updated.successfully";
+    public static final String PRODUCT_DELETED_SUCCESSFULLY = "product.deleted.successfully";
+    public static final String PRODUCT_GET_DETAIL_SUCCESSFULLY = "product.get_detail.successfully";
+    public static final String PRODUCT_GET_ALL_SUCCESSFULLY = "product.get_all.successfully";
 }

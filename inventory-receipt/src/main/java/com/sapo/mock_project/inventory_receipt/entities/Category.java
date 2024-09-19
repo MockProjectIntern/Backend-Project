@@ -33,7 +33,7 @@ public class Category extends BaseEntity {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    private List<CategoryProduct> categoryProducts;
+    private List<Product> products;
 
     @Override
     protected void customPrePersist() {
