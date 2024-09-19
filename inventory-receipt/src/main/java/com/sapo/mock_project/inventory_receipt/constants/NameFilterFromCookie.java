@@ -6,4 +6,5 @@ public interface NameFilterFromCookie {
     String GRN = "filter_grns";
     String GIN = "filter_gins";
     String PRODUCT = "filter_products";
+    String ORDER = "filter_orders";
 }

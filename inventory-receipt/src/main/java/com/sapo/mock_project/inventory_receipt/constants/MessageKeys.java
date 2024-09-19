@@ -64,4 +64,11 @@ public class MessageKeys {
     public static final String PRODUCT_DELETED_SUCCESSFULLY = "product.deleted.successfully";
     public static final String PRODUCT_GET_DETAIL_SUCCESSFULLY = "product.get_detail.successfully";
     public static final String PRODUCT_GET_ALL_SUCCESSFULLY = "product.get_all.successfully";
+
+    public static final String ORDER_CREATE_SUCCESSFULLY = "order.create.successfully";
+    public static final String ORDER_GET_DETAIL_SUCCESSFULLY = "order.get_detail.successfully";
+    public static final String ORDER_GET_ALL_SUCCESSFULLY = "order.get_all.successfully";
+    public static final String ORDER_CANCEL_SUCCESSFULLY = "order.cancel.successfully";
+    public static final String ORDER_UPDATE_SUCCESSFULLY = "order.update.successfully";
+
 }
