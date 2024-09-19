@@ -92,7 +92,7 @@ CREATE TABLE products
     sub_id          VARCHAR(10),                      -- Mã định danh ban đầu
     name            VARCHAR(50),
     images          TEXT,
-    type            TEXT,
+    types           TEXT,
     quantity        DECIMAL(10, 2),
     sold            DECIMAL(10, 2),
     description     TEXT,
@@ -102,10 +102,12 @@ CREATE TABLE products
     retail_price    DECIMAL(10, 2),
     tags            TEXT,
     status          ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
+    category_id     VARCHAR(10),
     brand_id        VARCHAR(10),
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (brand_id) REFERENCES brands (id)
+    FOREIGN KEY (brand_id) REFERENCES brands (id),
+    FOREIGN KEY (category_id) REFERENCES categories (id)
 );
 
 CREATE TABLE order_details
@@ -131,18 +133,6 @@ CREATE TABLE categories
     name       VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE category_products
-(
-    id          VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id      VARCHAR(10),                      -- Mã định danh ban đầu
-    category_id VARCHAR(10),
-    product_id  VARCHAR(10),
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories (id),
-    FOREIGN KEY (product_id) REFERENCES products (id)
 );
 
 CREATE TABLE price_adjustments
@@ -243,10 +233,13 @@ CREATE TABLE transaction_categories -- Loại giao dịch
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO transaction_categories (id, sub_id, name, description, type) VALUES ('TSC00001', 'TSC00001', 'Tự động', 'Loại phiếu tự động', 'INCOME'),
-                                                                                ('TSC00002', 'TSC00002', 'Tự động', 'Loại phiếu tự động', 'EXPENSE');
+INSERT INTO transaction_categories (id, sub_id, name, description, type)
+VALUES ('TSC00001', 'TSC00001', 'Tự động', 'Loại phiếu tự động', 'INCOME'),
+       ('TSC00002', 'TSC00002', 'Tự động', 'Loại phiếu tự động', 'EXPENSE');
 
-INSERT INTO transaction_category_sequences (id) VALUES (1), (2);
+INSERT INTO transaction_category_sequences (id)
+VALUES (1),
+       (2);
 
 CREATE TABLE transactions
 (

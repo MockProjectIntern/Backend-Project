@@ -70,8 +70,9 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private List<GINProduct> gins;
 
-    @OneToMany(mappedBy = "product")
-    private List<CategoryProduct> categoryProducts;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @OneToMany(mappedBy = "product")
     private List<PriceAdjustment> priceAdjustments;
@@ -83,6 +84,33 @@ public class Product extends BaseEntity {
     protected void customPrePersist() {
         if (subId == null && id != null) {
             subId = id;
+        }
+    }
+
+    public void calculatorValue() {
+        if (images == null) {
+            images = List.of();
+        }
+        if (types == null) {
+            types = List.of();
+        }
+        if (quantity == null) {
+            quantity = BigDecimal.ZERO;
+        }
+        if (sold == null) {
+            sold = BigDecimal.ZERO;
+        }
+        if (costPrice == null) {
+            costPrice = BigDecimal.ZERO;
+        }
+        if (wholesalePrice == null) {
+            wholesalePrice = BigDecimal.ZERO;
+        }
+        if (retailPrice == null) {
+            retailPrice = BigDecimal.ZERO;
+        }
+        if (status == null) {
+            status = ProductStatus.ACTIVE;
         }
     }
 }

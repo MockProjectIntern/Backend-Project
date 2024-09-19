@@ -49,7 +49,7 @@ public class CategoryController {
     @PostMapping("/all.json")
     public ResponseEntity<ResponseObject<Object>> getListCategory(@Valid @RequestBody GetListCategoryRequest request,
                                                                   @RequestParam(value = "page", defaultValue = "1") int page,
-                                                                  @RequestParam(value = "limit", defaultValue = "10") int size) {
+                                                                  @RequestParam(value = "size", defaultValue = "10") int size) {
         return categoryService.getListCategory(request, page, size);
     }
 }

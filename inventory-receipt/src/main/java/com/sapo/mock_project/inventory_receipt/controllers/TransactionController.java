@@ -64,7 +64,7 @@ public class TransactionController {
     public ResponseEntity<ResponseObject<Object>> filterTransaction(@Valid @RequestBody GetListTransactionRequest request,
                                                                     @RequestParam(defaultValue = "ASC") @Parameter(description = "Kiểu sắp xếp, mặc định là ASC") String sort,
                                                                     @RequestParam(value = "sort_field", defaultValue = "createdAt") @Parameter(description = "Trường để sắp xếp, mặc định là createdAt") String sortField,
-                                                                    @RequestParam(defaultValue = "0") @Parameter(description = "Số trang hiện tại, mặc định là 0") int page,
+                                                                    @RequestParam(defaultValue = "1") @Parameter(description = "Số trang hiện tại, mặc định là 1") int page,
                                                                     @RequestParam(defaultValue = "10") @Parameter(description = "Kích thước trang, mặc định là 10") int size,
                                                                     HttpServletRequest httpServletRequest) {
         Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.TRANSACTION, httpServletRequest);
