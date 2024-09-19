@@ -58,6 +58,9 @@ public class Supplier extends BaseEntity {
     @OneToMany(mappedBy = "supplier")
     private List<GRN> grns;
 
+    @OneToMany(mappedBy = "supplier")
+    private List<Order> orders;
+
     @Override
     protected void customPrePersist() {
         if (subId == null && id != null) {

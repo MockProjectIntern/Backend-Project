@@ -36,6 +36,8 @@ public class OrderDetail extends BaseEntity {
 
     private BigDecimal discount;
 
+    private BigDecimal tax;
+
     private BigDecimal importedQuantity;
 
     @ManyToOne

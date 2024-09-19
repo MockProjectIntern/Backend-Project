@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,6 +40,12 @@ public class Order extends BaseEntity {
 
     private String tags;
 
+    private BigDecimal discount;
+
+    private BigDecimal tax;
+
+    private BigDecimal totalPrice;
+
     private LocalDate expectedAt;
 
     private LocalDate completedAt;
@@ -46,6 +53,10 @@ public class Order extends BaseEntity {
     private LocalDate endedAt;
 
     private LocalDate cancelledAt;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 
     @ManyToOne
     @JoinColumn(name = "user_created_id")
@@ -74,5 +85,31 @@ public class Order extends BaseEntity {
         if (subId == null && id != null) {
             subId = id;
         }
+    }
+
+    public void initializeOrder() {
+        if (discount == null) {
+            discount = BigDecimal.ZERO;
+        }
+
+        if (tax == null) {
+            tax = BigDecimal.ZERO;
+        }
+
+        if (totalPrice == null) {
+            totalPrice = BigDecimal.ZERO;
+        }
+
+        for (OrderDetail detail : orderDetails) {
+            detail.setImportedQuantity(BigDecimal.ZERO);
+        }
+    }
+
+    public void calculateTotalPrice() {
+        BigDecimal totalDetailsPrice = orderDetails.stream()
+                .map(detail -> detail.getPrice().subtract(detail.getDiscount()).add(detail.getTax()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        this.totalPrice = totalDetailsPrice.add(this.tax).subtract(this.discount);
     }
 }

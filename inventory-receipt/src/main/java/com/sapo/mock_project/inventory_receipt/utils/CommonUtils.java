@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CommonUtils {
 
@@ -108,5 +110,13 @@ public class CommonUtils {
 
         // Nếu không tìm thấy field trong cả lớp và lớp cha
         throw new NoSuchFieldException("Field " + fieldName + " not found in class hierarchy.");
+    }
+
+    public static <T> String joinParams(List<T> paramValue) {
+        return (paramValue == null || paramValue.isEmpty())
+                ? null
+                : paramValue.stream()
+                .map(Object::toString) // Ensure all values are converted to String
+                .collect(Collectors.joining(","));
     }
 }

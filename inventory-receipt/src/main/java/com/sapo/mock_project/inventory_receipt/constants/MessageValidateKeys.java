@@ -25,4 +25,6 @@ public class MessageValidateKeys {
     public static final String GIN_ID_EXISTED = "gin.id.existed";
 
     public static final String CATEGORY_NAME_EXISTED = "category.name.existed";
+
+    public static final String ORDER_SUB_ID_EXISTED = "order.sub_id.existed";
 }
