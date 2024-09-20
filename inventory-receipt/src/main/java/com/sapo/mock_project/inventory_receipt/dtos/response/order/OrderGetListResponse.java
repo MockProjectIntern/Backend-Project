@@ -17,6 +17,10 @@ public class OrderGetListResponse extends BaseResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String id;
 
+    @JsonProperty("sub_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String subId;
+
     @JsonProperty("status")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private OrderStatus status;

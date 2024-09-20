@@ -10,5 +10,7 @@ import java.util.Map;
 public interface OrderService {
     ResponseEntity<ResponseObject<Object>> createOrder(CreateOrderRequest request);
 
-    ResponseEntity<ResponseObject<Object>> filterOrder(GetListOrderRequest request, Map<String, Boolean> filterParams, int page, int size);
+    ResponseEntity<ResponseObject<Object>> filterOrder(GetListOrderRequest request,
+                                                       Map<String, Boolean> filterParams,
+                                                       int page, int size);
 }
