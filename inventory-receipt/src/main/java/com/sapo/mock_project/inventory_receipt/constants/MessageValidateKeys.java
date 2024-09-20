@@ -20,7 +20,7 @@ public class MessageValidateKeys {
 
     public static final String BRAND_NAME_EXISTED = "brand.name.existed";
     //GRN Validate Message
-    public static final String GRN_EXISTED = "grn.existed";
+    public static final String GRN_SUB_ID_EXISTED = "grn.sub_id.existed";
     public static final String GRN_IMPORTED = "grn.imported";
     public static final String GIN_ID_EXISTED = "gin.id.existed";
 

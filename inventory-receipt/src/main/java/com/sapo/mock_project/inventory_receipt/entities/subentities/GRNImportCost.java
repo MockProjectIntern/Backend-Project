@@ -12,12 +12,4 @@ public class GRNImportCost {
     private String name;
 
     private BigDecimal value;
-
-    @Override
-    public String toString() {
-        return "GRNImportCost{" +
-                "name='" + name + '\'' +
-                ", value=" + value +
-                '}';
-    }
 }

@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.grn;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
@@ -8,6 +9,7 @@ import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNPaymentStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNStatus;
+import com.sapo.mock_project.inventory_receipt.dtos.request.grn.CreateGRNProductRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.CreateGRNRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.GetListGRNRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.UpdateGRNRequest;
@@ -15,33 +17,25 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNDetail;
+import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNGetListResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNProductDetail;
-import com.sapo.mock_project.inventory_receipt.entities.GRN;
-import com.sapo.mock_project.inventory_receipt.entities.GRNProduct;
-import com.sapo.mock_project.inventory_receipt.entities.Product;
-import com.sapo.mock_project.inventory_receipt.entities.User;
+import com.sapo.mock_project.inventory_receipt.entities.*;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNHistory;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.mappers.GRNMapper;
 import com.sapo.mock_project.inventory_receipt.mappers.GRNProductMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepository;
+import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepositoryCustom;
 import com.sapo.mock_project.inventory_receipt.repositories.order.OrderRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
-import com.sapo.mock_project.inventory_receipt.services.specification.GRNSpecification;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
-import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,16 +50,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class GRNServiceImpl implements GRNService {
-
     private final GRNRepository grnRepository;
+    private final GRNRepositoryCustom grnRepositoryCustom;
     private final GRNProductRepository grnProductRepository;
     private final ProductRepository productRepository;
+    private final SupplierRepository supplierRepository;
+    private final OrderRepository orderRepository;
+
     private final GRNMapper grnMapper;
     private final GRNProductMapper grnProductMapper;
-    private final SupplierRepository supplierRepository;
     private final LocalizationUtils localizationUtils;
     private final AuthHelper authHelper;
-    private final OrderRepository orderRepository;
 
     /**
      * Tạo mới một GRN.
@@ -78,28 +73,25 @@ public class GRNServiceImpl implements GRNService {
         try {
             // Kiểm tra xem GRN đã tồn tại chưa
             if (request.getSubId() != null && grnRepository.existsBySubId(request.getSubId())) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GRN_EXISTED));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GRN_SUB_ID_EXISTED));
             }
+
+            // Kiểm tra xem nhà cung cấp có tồn tại không
+            Supplier existingSupplier = supplierRepository.findById(request.getSupplierId())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND)));
+
+            User user = authHelper.getUser();
 
             // Ánh xạ thông tin từ request sang entity và lưu vào cơ sở dữ liệu
             GRN newGRN = grnMapper.mapToEntity(request);
-            User user = authHelper.getUser();
-            newGRN.setUserCreated(user);
-            newGRN.setStatus(GRNStatus.TRADING);
-            newGRN.setReceivedStatus(GRNReceiveStatus.NOT_ENTERED);
-
-            // Kiểm tra xem nhà cung cấp có tồn tại không
-            if (request.getSupplierId() != null) {
-                newGRN.setSupplier(supplierRepository.findById(request.getSupplierId())
-                        .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND))));
-            }
-
 
             // Thêm các sản phẩm vào GRN
             List<GRNProduct> grnProducts = new ArrayList<>();
-            for (GRNProduct grnProduct : request.getProducts()) {
-                Product product = productRepository.findById(grnProduct.getProductId())
+            for (CreateGRNProductRequest productRequest : request.getProducts()) {
+                Product product = productRepository.findById(productRequest.getProductId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
+
+                GRNProduct grnProduct = grnProductMapper.mapToEntityProduct(productRequest);
 
                 grnProduct.setProduct(product);
                 grnProduct.setGrn(newGRN);
@@ -107,6 +99,8 @@ public class GRNServiceImpl implements GRNService {
                 grnProducts.add(grnProduct);
             }
             newGRN.setGrnProducts(grnProducts);
+            newGRN.setSupplier(existingSupplier);
+            newGRN.setUserCreated(user);
 
             // Nếu nhập hàng từ order thì set order cho GRN
             if (request.getOrderId() != null) {
@@ -118,13 +112,13 @@ public class GRNServiceImpl implements GRNService {
             newGRN.calculatorValue();
 
             // Thêm lịch sử tạo mới GRN
-            newGRN.setHistories(new ArrayList<>());
-            GRNHistory grnHistory = GRNHistory.builder().date(LocalDateTime.now())
+            GRNHistory grnHistory = GRNHistory.builder()
+                    .date(LocalDateTime.now())
                     .userExecuted(user.getFullName())
                     .function("Nhập hàng")
-                    .operation("Tạo đơn nhập hàng").build();
-            newGRN.getHistories().add(grnHistory);
-
+                    .operation("Tạo đơn nhập hàng")
+                    .build();
+            newGRN.setHistories(List.of(grnHistory));
 
             grnRepository.save(newGRN);
             grnProductRepository.saveAll(newGRN.getGrnProducts());
@@ -134,7 +128,6 @@ public class GRNServiceImpl implements GRNService {
             return ResponseUtil.error500Response(e.getMessage());
         }
     }
-
 
     /**
      * Lấy thông tin chi tiết của GRN theo ID.
@@ -188,8 +181,8 @@ public class GRNServiceImpl implements GRNService {
             // Xử lý các sản phẩm trong GRN
             List<GRNProduct> updatedProducts = new ArrayList<>();
             for (GRNProduct requestGrnProduct : request.getProducts()) {
-                Product product = productRepository.findById(requestGrnProduct.getProductId())
-                        .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
+//                Product product = productRepository.findById(requestGrnProduct.getProductId())
+//                        .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
 
                 if (requestGrnProduct.getId() != null) {
                     // Cập nhật sản phẩm hiện tại
@@ -201,14 +194,14 @@ public class GRNServiceImpl implements GRNService {
                     existingGRNProduct.setPrice(requestGrnProduct.getPrice());
                     existingGRNProduct.setDiscount(requestGrnProduct.getDiscount());
                     existingGRNProduct.setTax(requestGrnProduct.getTax());
-                    existingGRNProduct.setProduct(product);
+//                    existingGRNProduct.setProduct(product);
                     existingGRNProduct.setGrn(existingGRN);
 
                     updatedProducts.add(existingGRNProduct);
                 } else {
                     // Thêm sản phẩm mới
                     log.info("UpProduct: {}", requestGrnProduct.toString());
-                    requestGrnProduct.setProduct(product);
+//                    requestGrnProduct.setProduct(product);
                     requestGrnProduct.setGrn(existingGRN);
                     updatedProducts.add(requestGrnProduct);
                 }
@@ -239,8 +232,6 @@ public class GRNServiceImpl implements GRNService {
             if (request.getPaymentMethods() != null) {
                 if (existingGRN.getPaymentStatus() == GRNPaymentStatus.PAID) {
                     grnHistory.setFunction("Thanh toán");
-                    existingGRN.setUserEnded(user);
-                    existingGRN.setEndedAt(LocalDate.now());
                 } else if (existingGRN.getPaymentStatus() == GRNPaymentStatus.PARTIAL_PAID) {
                     grnHistory.setFunction("Thanh toán một phần");
                 }
@@ -274,9 +265,7 @@ public class GRNServiceImpl implements GRNService {
             grn.setStatus(GRNStatus.CANCELLED);
             User user = authHelper.getUser();
             grn.setUserCancelled(user);
-            grn.setUserEnded(user);
             grn.setCancelledAt(LocalDate.now());
-            grn.setEndedAt(LocalDate.now());
 
             grnRepository.save(grn);
 
@@ -299,43 +288,47 @@ public class GRNServiceImpl implements GRNService {
     @Override
     public ResponseEntity<ResponseObject<Object>> filterGRN(GetListGRNRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
-            GRNSpecification grnSpecification = new GRNSpecification(request);
-            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
+            ObjectMapper objectMapper = new ObjectMapper();
+            String filterJson = objectMapper.writeValueAsString(filterParams);
 
-            Page<GRN> grnPage = grnRepository.findAll(grnSpecification, pageable);
+            List<GRNGetListResponse> grnGetListResponses = grnRepositoryCustom.getFilterGRN(
+                    filterJson, request.getKeyword(),
+                    CommonUtils.joinParams(request.getStatuses()),
+                    CommonUtils.joinParams(request.getReceivedStatuses()),
+                    CommonUtils.joinParams(request.getSupplierIds()),
+                    CommonUtils.joinParams(request.getProductIds()),
+                    request.getStartCreatedAt(),
+                    request.getEndCreatedAt(),
+                    request.getStartExpectedAt(),
+                    request.getEndExpectedAt(),
+                    CommonUtils.joinParams(request.getUserCreatedIds()),
+                    CommonUtils.joinParams(request.getUserCompletedIds()),
+                    CommonUtils.joinParams(request.getUserCancelledIds()),
+                    page, size);
 
-            // Ánh xạ các đối tượng GRN thành GRNDetailResponse
-            List<GRNDetail> responseList = grnPage.getContent().stream().map(grn -> {
-                GRNDetail response = new GRNDetail();
+            int totalGRN = grnRepositoryCustom.countTotalGRN(
+                    filterJson, request.getKeyword(),
+                    CommonUtils.joinParams(request.getStatuses()),
+                    CommonUtils.joinParams(request.getReceivedStatuses()),
+                    CommonUtils.joinParams(request.getSupplierIds()),
+                    CommonUtils.joinParams(request.getProductIds()),
+                    request.getStartCreatedAt(),
+                    request.getEndCreatedAt(),
+                    request.getStartExpectedAt(),
+                    request.getEndExpectedAt(),
+                    CommonUtils.joinParams(request.getUserCreatedIds()),
+                    CommonUtils.joinParams(request.getUserCompletedIds()),
+                    CommonUtils.joinParams(request.getUserCancelledIds()));
 
-                // Duyệt qua các entry trong filterParams
-                for (Map.Entry<String, Boolean> entry : filterParams.entrySet()) {
-                    String field = entry.getKey();
-                    Boolean includeField = entry.getValue();
+            int totalPages = (int) Math.ceil((double) totalGRN / size);
 
-                    if (includeField) {
-                        try {
-                            // Lấy phương thức set tương ứng
-                            Method setMethod = response.getClass().getMethod("set" + StringUtils.snakeCaseToCamelCase(field), String.class);
-
-                            // Gọi phương thức set với giá trị tương ứng từ đối tượng grn
-                            setMethod.invoke(response, CommonUtils.getFieldValue(grn, field));
-                        } catch (Exception e) {
-                            throw new RuntimeException("Failed to map field " + field + " using reflection", e);
-                        }
-                    }
-                }
-
-                return response;
-            }).toList();
-
-            Pagination<Object> responsePageable = Pagination.<Object>builder()
-                    .data(responseList)
-                    .totalItems(grnPage.getTotalElements())
-                    .totalPage(grnPage.getTotalPages())
+            Pagination pagination = Pagination.<Object>builder()
+                    .data(grnGetListResponses)
+                    .totalPage(totalPages)
+                    .totalItems(totalGRN)
                     .build();
 
-            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_ALL_SUCCESSFULLY), responsePageable);
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_ALL_SUCCESSFULLY), pagination);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }
@@ -357,7 +350,7 @@ public class GRNServiceImpl implements GRNService {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GRN_IMPORTED));
             }
             grn.setReceivedStatus(GRNReceiveStatus.ENTERED);
-            grn.setUserImported(authHelper.getUser());
+            grn.setUserCompleted(authHelper.getUser());
             grn.setReceivedAt(LocalDate.now());
 
             // Thêm lịch sử nhập hàng cho GRN

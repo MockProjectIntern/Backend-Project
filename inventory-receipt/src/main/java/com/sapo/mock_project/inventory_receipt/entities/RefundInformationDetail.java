@@ -40,10 +40,6 @@ public class RefundInformationDetail extends BaseEntity {
     @JoinColumn(name = "refund_information_id")
     private RefundInformation refundInformation;
 
-    @ManyToOne
-    @JoinColumn(name = "grn_product_id")
-    private PriceAdjustment priceAdjustment;
-
     @Override
     protected void customPrePersist() {
         if (subId == null && id != null) {

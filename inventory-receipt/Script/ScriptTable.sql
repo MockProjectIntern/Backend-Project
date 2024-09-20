@@ -135,22 +135,6 @@ CREATE TABLE categories
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE price_adjustments
-(
-    id              VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id          VARCHAR(10),                      -- Mã định danh ban đầu
-    status          ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
-    note            TEXT,
-    tags            TEXT,
-    new_price       DECIMAL(10, 2),
-    user_created_id VARCHAR(10),
-    product_id      VARCHAR(10),
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_created_id) REFERENCES users (id),
-    FOREIGN KEY (product_id) REFERENCES products (id)
-);
-
 CREATE TABLE gins
 (
     id                 VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
@@ -206,7 +190,7 @@ CREATE TABLE grns
     FOREIGN KEY (order_id) REFERENCES orders (id)
 );
 
-CREATE TABLE grns_products
+CREATE TABLE grn_products
 (
     id                VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
     sub_id            VARCHAR(10),                      -- Mã định danh ban đầu
@@ -214,6 +198,9 @@ CREATE TABLE grns_products
     imported_quantity DECIMAL(10, 2),
     price             DECIMAL(10, 2),
     discount          DECIMAL(10, 2),
+    tax               DECIMAL(10, 2),
+    unit              VARCHAR(50),
+    note              TEXT,
     grn_id            VARCHAR(10),
     product_id        VARCHAR(10),
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

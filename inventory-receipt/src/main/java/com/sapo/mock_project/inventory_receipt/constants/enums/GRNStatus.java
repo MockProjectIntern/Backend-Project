@@ -4,6 +4,5 @@ public enum GRNStatus {
     ORDERING,
     TRADING,
     CANCELLED,
-    ENDED,
     COMPLETED
 }

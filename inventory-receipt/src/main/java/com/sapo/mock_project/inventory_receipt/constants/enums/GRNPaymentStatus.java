@@ -4,5 +4,4 @@ public enum GRNPaymentStatus {
     UNPAID,
     PARTIAL_PAID,
     PAID
-
 }

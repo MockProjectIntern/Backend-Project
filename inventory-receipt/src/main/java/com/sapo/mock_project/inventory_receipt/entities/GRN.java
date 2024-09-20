@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 public class GRN extends BaseEntity {
     @Id
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "grn_sequences")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "grn_sequences")
     @GenericGenerator(
             name = "grn_sequences",
             strategy = "com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator",
@@ -51,8 +51,6 @@ public class GRN extends BaseEntity {
     private LocalDate expectedDeliveryAt;
 
     private LocalDate receivedAt;
-
-    private LocalDate endedAt;
 
     private LocalDate cancelledAt;
 
@@ -98,16 +96,12 @@ public class GRN extends BaseEntity {
     private User userCreated;
 
     @ManyToOne
-    @JoinColumn(name = "user_imported_id")
-    private User userImported;
+    @JoinColumn(name = "user_completed_id")
+    private User userCompleted;
 
     @ManyToOne
     @JoinColumn(name = "user_cancelled_id")
     private User userCancelled;
-
-    @ManyToOne
-    @JoinColumn(name = "user_ended_id")
-    private User userEnded;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
@@ -124,82 +118,37 @@ public class GRN extends BaseEntity {
     private List<GRNProduct> grnProducts;
 
     public void calculatorValue() {
-        if (totalReceivedQuantity == null) {
-            totalReceivedQuantity = BigDecimal.ZERO;
-        }
         if (discount == null) {
             discount = BigDecimal.ZERO;
         }
         if (taxAmount == null) {
             taxAmount = BigDecimal.ZERO;
         }
-
         if (totalPaid == null) {
             totalPaid = BigDecimal.ZERO;
         }
 
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        BigDecimal totalQuantity = BigDecimal.ZERO;
-        BigDecimal preTotalPaid = totalPaid;
-        BigDecimal totalTax = BigDecimal.ZERO;
-        BigDecimal calPaidNow = BigDecimal.ZERO;
+        BigDecimal totalValueProduct = grnProducts.stream()
+                .map(detail -> (detail.getPrice().multiply(detail.getQuantity())).subtract(detail.getDiscount()).add(detail.getTax()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Tính toán tổng số lượng và tổng thuế cho từng sản phẩm trong danh sách
-        for (GRNProduct grnProduct : grnProducts) {
-            log.info("GRN product: {} ", grnProduct.toString());
-            totalPrice = totalPrice.add(grnProduct.calculateTotal());
-            totalQuantity = totalQuantity.add(grnProduct.getQuantity());
-            totalTax = totalTax.add(grnProduct.getTax().multiply(grnProduct.getQuantity()));
-        }
+        totalValue = totalValueProduct.add(taxAmount).subtract(discount);
+        totalReceivedQuantity = grnProducts.stream()
+                .map(GRNProduct::getQuantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        totalReceivedQuantity = totalQuantity;
-        taxAmount = totalTax;
-        totalValue = totalPrice.subtract(discount);
-
-        // Tính toán tổng chi phí nhập khẩu (nếu có)
         if (importCosts != null && !importCosts.isEmpty()) {
-            for (GRNImportCost importCost : importCosts) {
-                log.info("Import cost: {} ", importCost.toString());
-                totalValue = totalValue.add(importCost.getValue());
-            }
+            BigDecimal totalImportCost = importCosts.stream()
+                    .map(GRNImportCost::getValue)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            totalValue = totalValue.add(totalImportCost);
         }
-        log.info("Total value: {} , Total tax : {} , Total receive quantity: {}", totalValue, totalTax, totalQuantity);
 
-        // Tính toán tổng số tiền đã thanh toán từ các phương thức thanh toán
         if (paymentMethods != null && !paymentMethods.isEmpty()) {
-            for (GRNPaymentMethod paymentMethod : paymentMethods) {
-                log.info("Payment method: {} ", paymentMethod.toString());
-                BigDecimal money = paymentMethod.getAmount();
-                if (money.compareTo(BigDecimal.ZERO) > 0) {
-                    if (calPaidNow.add(money).compareTo(totalValue) > 0) {
-                        throw new RuntimeException("Total paid must be less than or equal to total value");
-                    }
-                    // Cập nhật giá trị calPaidNow với số tiền mới
-                    calPaidNow = calPaidNow.add(money);
-                    log.info("Updated paid amount: {} ", calPaidNow);
-                }
-            }
-        }
-        totalPaid = calPaidNow;
-
-        // Xác định trạng thái thanh toán dựa trên tổng số tiền đã trả và tổng giá trị
-        if (totalPaid.compareTo(totalValue) == 0) {
-            paymentStatus = GRNPaymentStatus.PAID;
-            status = GRNStatus.COMPLETED;
-            paymentAt = LocalDateTime.now();
-        } else if (totalPaid.compareTo(BigDecimal.ZERO) > 0) {
-            paymentStatus = GRNPaymentStatus.PARTIAL_PAID;
-            if (preTotalPaid.compareTo(totalPaid) < 0) {
-                paymentAt = LocalDateTime.now();
-            }
-        } else {
-            paymentStatus = GRNPaymentStatus.UNPAID;
-        }
-
-        // Xử lý trạng thái hoàn trả và hoàn tiền
-        if (refundInformations == null) {
-            refundStatus = GRNRefundStatus.NOT_REFUNDED;
-            returnStatus = ReturnStatus.NOT_RETURNED;
+            BigDecimal totalPaid = paymentMethods.stream()
+                    .map(GRNPaymentMethod::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            this.totalPaid = totalPaid;
         }
     }
 

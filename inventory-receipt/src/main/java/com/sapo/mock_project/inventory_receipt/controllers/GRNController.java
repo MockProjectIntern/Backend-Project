@@ -36,7 +36,6 @@ public class GRNController {
      */
     @PostMapping("/create.json")
     public ResponseEntity<ResponseObject<Object>> createGRN(@Valid @RequestBody CreateGRNRequest request) {
-        log.info(request.toString());
         return grnService.createGRN(request);
     }
 
@@ -85,10 +84,9 @@ public class GRNController {
      */
     @PostMapping("/filter.json")
     public ResponseEntity<ResponseObject<Object>> filterGRN(@RequestBody GetListGRNRequest request,
-                                                                 @RequestParam(defaultValue = "1") int page,
-                                                                 @RequestParam(defaultValue = "10") int size,
-                                                                 HttpServletRequest httpServletRequest) {
-        log.info(httpServletRequest.getRequestURI());
+                                                            @RequestParam(defaultValue = "1") int page,
+                                                            @RequestParam(defaultValue = "10") int size,
+                                                            HttpServletRequest httpServletRequest) {
         Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.GRN, httpServletRequest);
 
         return grnService.filterGRN(request, filterParams, page, size);

@@ -1,66 +1,48 @@
 package com.sapo.mock_project.inventory_receipt.dtos.request.grn;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
+import com.sapo.mock_project.inventory_receipt.constants.enums.GRNStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class GetListGRNRequest {
     @JsonProperty("keyword")
     private String keyword;
 
-    @JsonProperty("status")
-    private String status;
+    @JsonProperty("statuses")
+    private List<GRNStatus> statuses;
 
-    @JsonProperty("received_status")
-    private String receivedStatus;
+    @JsonProperty("received_statuses")
+    private List<GRNReceiveStatus> receivedStatuses;
 
-    @JsonProperty("payment_status")
-    private String paymentStatus;
+    @JsonProperty("supplier_ids")
+    private List<String> supplierIds;
 
-    @JsonProperty("return_status")
-    private String returnStatus;
+    @JsonProperty("start_created_at")
+    private LocalDate startCreatedAt;
 
-    @JsonProperty("refund_status")
-    private String refundStatus;
+    @JsonProperty("end_created_at")
+    private LocalDate endCreatedAt;
 
-    @JsonProperty("supplier_id")
-    private String supplierId;
+    @JsonProperty("start_expected_at")
+    private LocalDate startExpectedAt;
 
-    @JsonProperty("created_date")
-    private LocalDate createdDate;
+    @JsonProperty("end_expected_at")
+    private LocalDate endExpectedAt;
 
-    @JsonProperty("expected_delivery_at")
-    private LocalDate expectedDeliveryAt;
+    @JsonProperty("product_ids")
+    private List<String> productIds;
 
-    @JsonProperty("received_at")
-    private LocalDate receivedAt;
+    @JsonProperty("user_created_ids")
+    private List<String> userCreatedIds;
 
-    @JsonProperty("cancelled_at")
-    private LocalDate cancelledAt;
+    @JsonProperty("user_completed_ids")
+    private List<String> userCompletedIds;
 
-    @JsonProperty("payment_at")
-    private LocalDate paymentAt;
-
-    @JsonProperty("return_at")
-    private LocalDate endedAt;
-
-    @JsonProperty("user_created_id")
-    private String userCreatedId;
-
-    @JsonProperty("user_imported_id")
-    private String userImportedId;
-
-    @JsonProperty("user_cancelled_id")
-    private String userCancelledId;
-
-    @JsonProperty("user_ended_id")
-    private String userEndedId;
-
-    @JsonProperty("tags")
-    private String tags;
-
-    @JsonProperty("note")
-    private String note;
+    @JsonProperty("user_cancelled_ids")
+    private List<String> userCancelledIds;
 }

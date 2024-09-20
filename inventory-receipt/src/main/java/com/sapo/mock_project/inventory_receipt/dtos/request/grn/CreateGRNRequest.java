@@ -1,6 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.dtos.request.grn;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNStatus;
 import com.sapo.mock_project.inventory_receipt.entities.GRNProduct;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNImportCost;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -23,6 +25,22 @@ public class CreateGRNRequest {
     @JsonProperty("sub_id")
     @Schema(description = "ID của phiếu nhập kho", example = "GRN12345", required = false)
     private String subId;
+
+    /**
+     * Ngày dự kiến giao hàng.
+     * Đây là thông tin tùy chọn.
+     */
+    @JsonProperty("expected_delivery_at")
+    @Schema(description = "Ngày dự kiến giao hàng", example = "2023-09-15", required = false)
+    private LocalDate expectedDeliveryAt;
+
+    /**
+     * ID của nhà cung cấp liên quan đến phiếu nhập kho.
+     * Đây là thông tin bắt buộc.
+     */
+    @JsonProperty("supplier_id")
+    @Schema(description = "ID của nhà cung cấp", example = "SUP12345", required = true)
+    private String supplierId;
 
     /**
      * Các thẻ hoặc tag liên quan đến phiếu nhập kho.
@@ -48,7 +66,6 @@ public class CreateGRNRequest {
     @Schema(description = "Trạng thái của phiếu nhập kho", example = "PENDING", required = true)
     private GRNStatus status;
 
-
     /**
      * Số tiền giảm giá cho phiếu nhập kho.
      * Đây là thông tin bắt buộc.
@@ -56,30 +73,6 @@ public class CreateGRNRequest {
     @JsonProperty("discount")
     @Schema(description = "Số tiền giảm giá cho phiếu nhập kho", example = "500000.00", required = true)
     private BigDecimal discount;
-
-    /**
-     * ID của nhà cung cấp liên quan đến phiếu nhập kho.
-     * Đây là thông tin bắt buộc.
-     */
-    @JsonProperty("supplier_id")
-    @Schema(description = "ID của nhà cung cấp", example = "SUP12345", required = true)
-    private String supplierId;
-
-    /**
-     * Ngày dự kiến giao hàng.
-     * Đây là thông tin tùy chọn.
-     */
-    @JsonProperty("expected_delivery_at")
-    @Schema(description = "Ngày dự kiến giao hàng", example = "2023-09-15", required = false)
-    private String expectedDeliveryAt;
-
-    /**
-     * Danh sách các sản phẩm liên quan đến phiếu nhập kho.
-     * Đây là thông tin bắt buộc.
-     */
-    @JsonProperty("products")
-    @Schema(description = "Danh sách các sản phẩm", required = true)
-    private List<GRNProduct> products;
 
     /**
      * Danh sách chi phí nhập khẩu liên quan đến phiếu nhập kho.
@@ -98,10 +91,25 @@ public class CreateGRNRequest {
     private List<GRNPaymentMethod> paymentMethods;
 
     /**
+     * Danh sách các sản phẩm liên quan đến phiếu nhập kho.
+     * Đây là thông tin bắt buộc.
+     */
+    @JsonProperty("products")
+    @Schema(description = "Danh sách các sản phẩm", required = true)
+    private List<CreateGRNProductRequest> products;
+
+    /**
      * ID của đơn hàng liên quan đến phiếu nhập kho.
      * Đây là thông tin tùy chọn.
      */
     @JsonProperty("order_id")
     @Schema(description = "ID của đơn hàng", example = "ORD12345", required = false)
     private String orderId;
+
+    /**
+     * Trạng thái nhận hàng của phiếu nhập kho.
+     * Đây là thông tin tùy chọn.
+     */
+    @JsonProperty("received_status")
+    private GRNReceiveStatus receivedStatus;
 }

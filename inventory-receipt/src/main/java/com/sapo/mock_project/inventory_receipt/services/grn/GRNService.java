@@ -17,7 +17,9 @@ public interface GRNService {
 
     ResponseEntity<ResponseObject<Object>> deleteGRN(String id);
 
-    ResponseEntity<ResponseObject<Object>> filterGRN(GetListGRNRequest request, Map<String, Boolean> filterParams, int page, int size);
+    ResponseEntity<ResponseObject<Object>> filterGRN(GetListGRNRequest request,
+                                                     Map<String, Boolean> filterParams,
+                                                     int page, int size);
 
     ResponseEntity<ResponseObject<Object>> importGRN(String id);
 }

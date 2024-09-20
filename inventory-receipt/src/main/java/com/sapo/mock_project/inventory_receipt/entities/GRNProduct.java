@@ -39,6 +39,8 @@ public class GRNProduct extends BaseEntity {
 
     private BigDecimal price;
 
+    private String note;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -46,10 +48,6 @@ public class GRNProduct extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "grn_id")
     private GRN grn;
-
-    @Transient
-    @JsonProperty("product_id")
-    private String productId;
 
     public BigDecimal calculateTotal() {
         return (price.multiply(quantity)).subtract(discount).add(tax);

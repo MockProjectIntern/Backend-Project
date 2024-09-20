@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.mappers;
 
+import com.sapo.mock_project.inventory_receipt.dtos.request.grn.CreateGRNProductRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.GRNProductRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNProductDetail;
 import com.sapo.mock_project.inventory_receipt.entities.GRNProduct;
@@ -11,6 +12,8 @@ public interface GRNProductMapper {
     GRNProduct mapToEntity(GRNProductRequest request);
 
     GRNProductDetail mapToResponse(GRNProduct grnProduct);
+
+    GRNProduct mapToEntityProduct(CreateGRNProductRequest request);
 
 //    void updateFromDTO(UpdateGRNRequest request, GRN existingGRN);
 }

@@ -76,26 +76,17 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "userCancelled")
     private List<Order> cancelledOrders;
 
-    @OneToMany(mappedBy = "userEnded")
-    private List<Order> endedOrders;
-
-    @OneToMany(mappedBy = "userCreated")
-    private List<PriceAdjustment> createdPriceAdjustments;
-
     @OneToMany(mappedBy = "userCreated")
     private List<RefundInformation> createdRefundInformations;
 
     @OneToMany(mappedBy = "userCreated")
     private List<GRN> createdGRNs;
 
-    @OneToMany(mappedBy = "userImported")
-    private List<GRN> importedGRNs;
+    @OneToMany(mappedBy = "userCompleted")
+    private List<GRN> completedGRNs;
 
     @OneToMany(mappedBy = "userCancelled")
     private List<GRN> cancelledGRNs;
-
-    @OneToMany(mappedBy = "userEnded")
-    private List<GRN> endedGRNs;
 
     @OneToMany(mappedBy = "userCreated")
     private List<Transaction> createdTransactions;

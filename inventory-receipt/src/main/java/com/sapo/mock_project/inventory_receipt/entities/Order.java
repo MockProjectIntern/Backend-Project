@@ -70,10 +70,6 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "user_cancelled_id")
     private User userCancelled;
 
-    @ManyToOne
-    @JoinColumn(name = "user_ended_id")
-    private User userEnded;
-
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails;
 

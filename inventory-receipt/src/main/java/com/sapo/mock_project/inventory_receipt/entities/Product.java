@@ -75,9 +75,6 @@ public class Product extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "product")
-    private List<PriceAdjustment> priceAdjustments;
-
-    @OneToMany(mappedBy = "product")
     private List<GRNProduct> grnProducts;
 
     @Override
