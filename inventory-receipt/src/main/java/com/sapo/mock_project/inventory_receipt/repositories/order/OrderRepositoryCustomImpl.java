@@ -22,17 +22,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<OrderGetListResponse> getFilteredOrders(String filterJson, String statuses,
-                                                        String supplierIds, LocalDate startCreatedAt,
-                                                        LocalDate endCreatedAt, LocalDate startExpectedAt,
-                                                        LocalDate endExpectedAt, String productIds,
-                                                        String userCreatedIds, String userCompletedIds,
-                                                        String userCancelledIds,
+    public List<OrderGetListResponse> getFilteredOrders(String filterJson, String keyword,
+                                                        String statuses, String supplierIds,
+                                                        LocalDate startCreatedAt, LocalDate endCreatedAt,
+                                                        LocalDate startExpectedAt, LocalDate endExpectedAt,
+                                                        String productIds, String userCreatedIds,
+                                                        String userCompletedIds, String userCancelledIds,
                                                         int page, int size) {
         try {
-            String sqlQuery = "{CALL filter_orders(:filterJson, :status, :supplierIds, :startCreatedAt, :endCreatedAt, :startExpectedAt, :endExpectedAt, :productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, :page, :size)}";
+            String sqlQuery = "{CALL filter_orders(:keyword, :filterJson, :status, :supplierIds, :startCreatedAt, :endCreatedAt, :startExpectedAt, :endExpectedAt, :productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, :page, :size)}";
 
             MapSqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue("keyword", keyword)
                     .addValue("filterJson", filterJson)
                     .addValue("status", statuses)
                     .addValue("supplierIds", supplierIds)
@@ -141,22 +142,17 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
     // Tính tổng số sản phẩm
     @Override
-    public int countTotalOrders(
-            String filterJson,
-            String status,
-            String supplierIds,
-            LocalDate startCreatedAt,
-            LocalDate endCreatedAt,
-            LocalDate startExpectedAt,
-            LocalDate endExpectedAt,
-            String productIds,
-            String userCreatedIds,
-            String userCompletedIds,
-            String userCancelledIds
+    public int countTotalOrders(String filterJson, String keyword,
+                                String status, String supplierIds,
+                                LocalDate startCreatedAt, LocalDate endCreatedAt,
+                                LocalDate startExpectedAt, LocalDate endExpectedAt,
+                                String productIds, String userCreatedIds,
+                                String userCompletedIds, String userCancelledIds
     ) {
         String sql = "SELECT COUNT(*) FROM orders o LEFT JOIN order_details od ON o.id = od.order_id WHERE 1=1";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("keyword", keyword)
                 .addValue("filterJson", filterJson)
                 .addValue("status", status)
                 .addValue("supplierIds", supplierIds)
@@ -170,6 +166,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 .addValue("userCancelledIds", userCancelledIds);
 
         // Thêm điều kiện tìm kiếm vào truy vấn
+        if (keyword != null) {
+            sql += " AND (o.id LIKE :keyword OR o.sub_id LIKE :keyword)";
+        }
         if (status != null) {
             sql += " AND FIND_IN_SET(o.status, :status)";
         }

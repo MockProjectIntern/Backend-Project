@@ -90,13 +90,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseEntity<ResponseObject<Object>> filterOrder(GetListOrderRequest request, Map<String, Boolean> filterParams, int page, int size) {
+    public ResponseEntity<ResponseObject<Object>> filterOrder(GetListOrderRequest request,
+                                                              Map<String, Boolean> filterParams,
+                                                              int page, int size) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String filterJson = objectMapper.writeValueAsString(filterParams);
 
             List<OrderGetListResponse> orderGetListResponses = orderRepositoryCustom.getFilteredOrders(
                     filterJson,
+                    request.getKeyword(),
                     CommonUtils.joinParams(request.getStatuses()),
                     CommonUtils.joinParams(request.getSupplierIds()),
                     request.getStartCreatedAt(),
@@ -113,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
 
             int totalOrders = orderRepositoryCustom.countTotalOrders(
                     filterJson,
+                    request.getKeyword(),
                     CommonUtils.joinParams(request.getStatuses()),
                     CommonUtils.joinParams(request.getSupplierIds()),
                     request.getStartCreatedAt(),
