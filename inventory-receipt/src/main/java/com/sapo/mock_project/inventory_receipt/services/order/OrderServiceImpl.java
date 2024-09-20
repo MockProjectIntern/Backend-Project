@@ -28,10 +28,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -127,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
                     CommonUtils.joinParams(request.getUserCreatedIds()),
                     CommonUtils.joinParams(request.getUserCompletedIds()),
                     CommonUtils.joinParams(request.getUserCancelledIds())
-                    );
+            );
 
             int totalPages = (int) Math.ceil((double) totalOrders / size);
 

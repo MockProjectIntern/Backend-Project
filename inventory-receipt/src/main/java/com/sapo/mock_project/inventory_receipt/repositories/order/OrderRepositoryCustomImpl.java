@@ -30,11 +30,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                                                         String userCompletedIds, String userCancelledIds,
                                                         int page, int size) {
         try {
-            String sqlQuery = "{CALL filter_orders(:keyword, :filterJson, :status, :supplierIds, :startCreatedAt, :endCreatedAt, :startExpectedAt, :endExpectedAt, :productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, :page, :size)}";
+            String sqlQuery = "{CALL filter_orders(:filterJson, :keyword, :status, :supplierIds, :startCreatedAt, :endCreatedAt, :startExpectedAt, :endExpectedAt, :productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, :page, :size)}";
 
             MapSqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue("keyword", keyword)
                     .addValue("filterJson", filterJson)
+                    .addValue("keyword", keyword)
                     .addValue("status", statuses)
                     .addValue("supplierIds", supplierIds)
                     .addValue("startCreatedAt", startCreatedAt)
@@ -72,6 +72,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 switch (columnName) {
                     case "order_id":
                         response.setId(rs.getString("order_id"));
+                        break;
+                    case "order_sub_id":
+                        response.setSubId(rs.getString("order_sub_id"));
                         break;
                     case "order_status":
                         response.setStatus(OrderStatus.valueOf(rs.getString("order_status")));
@@ -149,11 +152,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                                 String productIds, String userCreatedIds,
                                 String userCompletedIds, String userCancelledIds
     ) {
-        String sql = "SELECT COUNT(*) FROM orders o LEFT JOIN order_details od ON o.id = od.order_id WHERE 1=1";
+        String sql = "SELECT COUNT(DISTINCT o.id) FROM orders o LEFT JOIN order_details od ON o.id = od.order_id WHERE 1=1";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("keyword", keyword)
                 .addValue("filterJson", filterJson)
+                .addValue("keyword", keyword)
                 .addValue("status", status)
                 .addValue("supplierIds", supplierIds)
                 .addValue("startCreatedAt", startCreatedAt)
