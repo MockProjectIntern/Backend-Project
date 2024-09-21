@@ -17,7 +17,7 @@ public interface GINService {
 
     ResponseEntity<ResponseObject<Object>> deleteGIN(String id);
 
-//    ResponseEntity<ResponseObject<Object>> filterGIN(GetListGINRequest request, Map<String, Boolean> filterParams, int page, int size);
+    ResponseEntity<ResponseObject<Object>> filterGIN(GetListGINRequest request, Map<String, Boolean> filterParams, int page, int size);
 
     ResponseEntity<ResponseObject<Object>> balanceGIN(String id);
 }

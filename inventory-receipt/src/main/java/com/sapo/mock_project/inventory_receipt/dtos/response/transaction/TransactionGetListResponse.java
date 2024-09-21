@@ -2,8 +2,8 @@ package com.sapo.mock_project.inventory_receipt.dtos.response.transaction;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionMethod;
-import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionType;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionMethod;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;

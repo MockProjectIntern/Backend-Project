@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -32,9 +32,10 @@ public class GIN extends BaseEntity {
 
     private String subId;
 
+    @Enumerated(EnumType.STRING)
     private GINStatus status;
 
-    private LocalDate balancedAt;
+    private LocalDateTime balancedAt;
 
     private String note;
 

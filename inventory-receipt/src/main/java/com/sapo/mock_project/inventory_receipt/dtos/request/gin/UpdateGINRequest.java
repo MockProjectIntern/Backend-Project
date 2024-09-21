@@ -21,5 +21,8 @@ public class UpdateGINRequest {
     private String userInspectionId;
 
     @JsonProperty("products")
-    List<GINProduct> products;
+    List<UpdateGINProductRequest> products;
+
+    @JsonProperty("is_balance")
+    private boolean isBalance;
 }

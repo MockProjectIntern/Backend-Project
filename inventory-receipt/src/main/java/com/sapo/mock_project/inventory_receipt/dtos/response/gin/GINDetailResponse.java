@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GINDetail extends BaseResponse {
+public class GINDetailResponse extends BaseResponse {
     @JsonProperty("id")
     private String id;
 
@@ -22,9 +22,6 @@ public class GINDetail extends BaseResponse {
 
     @JsonProperty("status")
     private GINStatus status;
-
-    @JsonProperty("balanced_at")
-    private LocalDate balancedAt;
 
     @JsonProperty("user_created_name")
     private String userCreatedName;
@@ -41,6 +38,9 @@ public class GINDetail extends BaseResponse {
     @JsonProperty("note")
     private String note;
 
+    @JsonProperty("balanced_at")
+    private LocalDate balancedAt;
+
     @JsonProperty("products")
-    private List<GINProduct> products;
+    private List<GINProductDetailResponse> products;
 }

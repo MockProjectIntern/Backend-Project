@@ -45,16 +45,15 @@ public class GINController {
         return ginService.deleteGIN(id);
     }
 
-//    @PostMapping("/filter.json")
-//    public ResponseEntity<ResponseObject<Object>> filterGIN(@RequestBody GetListGINRequest request,
-//                                                            @RequestParam(defaultValue = "1") int page,
-//                                                            @RequestParam(defaultValue = "10") int size,
-//                                                            HttpServletRequest httpServletRequest) {
-//        log.info(httpServletRequest.getRequestURI());
-//        Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.GIN, httpServletRequest);
-//
-//        return ginService.filterGIN(request, filterParams, page, size);
-//    }
+    @PostMapping("/filter.json")
+    public ResponseEntity<ResponseObject<Object>> filterGIN(@RequestBody GetListGINRequest request,
+                                                            @RequestParam(defaultValue = "1") int page,
+                                                            @RequestParam(defaultValue = "10") int size,
+                                                            HttpServletRequest httpServletRequest) {
+        Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.GIN, httpServletRequest);
+
+        return ginService.filterGIN(request, filterParams, page, size);
+    }
 
     @PutMapping("balance.json/{id}")
     public ResponseEntity<ResponseObject<Object>> balanceGIN(@PathVariable String id) {

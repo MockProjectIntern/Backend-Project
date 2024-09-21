@@ -152,7 +152,7 @@ CREATE TABLE gins
     FOREIGN KEY (user_inspection_id) REFERENCES users (id)
 );
 
-CREATE TABLE gins_products
+CREATE TABLE gin_products
 (
     id                   VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
     sub_id               VARCHAR(10),                      -- Mã định danh ban đầu
@@ -160,6 +160,7 @@ CREATE TABLE gins_products
     discrepancy_quantity DECIMAL(10, 2),
     reason               TEXT,
     note                 TEXT,
+    unit                 VARCHAR(50),
     gin_id               VARCHAR(10),
     product_id           VARCHAR(10),
     created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

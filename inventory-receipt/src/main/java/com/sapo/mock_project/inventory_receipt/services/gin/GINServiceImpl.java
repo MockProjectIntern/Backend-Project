@@ -6,23 +6,21 @@ import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GINStatus;
-import com.sapo.mock_project.inventory_receipt.dtos.request.gin.CreateGINRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.gin.GetListGINRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.gin.UpdateGINRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.gin.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
-import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINDetail;
-import com.sapo.mock_project.inventory_receipt.entities.GIN;
-import com.sapo.mock_project.inventory_receipt.entities.GINProduct;
-import com.sapo.mock_project.inventory_receipt.entities.Product;
-import com.sapo.mock_project.inventory_receipt.entities.User;
+import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINDetailResponse;
+import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINGetListResponse;
+import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINProductDetailResponse;
+import com.sapo.mock_project.inventory_receipt.entities.*;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.mappers.GINMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.gin.GINProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.gin.GINRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.user.UserRepository;
+import com.sapo.mock_project.inventory_receipt.services.specification.GINSpecification;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +32,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +48,12 @@ import java.util.Map;
 public class GINServiceImpl implements GINService {
     private final GINRepository ginRepository;
     private final GINProductRepository ginProductRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+
     private final GINMapper ginMapper;
     private final AuthHelper authHelper;
     private final LocalizationUtils localizationUtils;
-    private final ProductRepository productRepository;
-    private final UserRepository userRepository;
 
     /**
      * Tạo mới một phiếu xuất kho.
@@ -66,31 +66,43 @@ public class GINServiceImpl implements GINService {
         try {
             // Kiểm tra xem ID có tồn tại không
             if (request.getSubId() != null && ginRepository.existsBySubId(request.getSubId())) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GIN_ID_EXISTED));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GIN_SUB_ID_EXISTED));
             }
+            User userInspection = userRepository.findById(request.getUserInspectionId())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND)));
+            User userCreated = authHelper.getUser();
 
             // Tạo đối tượng GIN mới và lưu vào cơ sở dữ liệu
             GIN newGIN = ginMapper.mapToEntity(request);
 
             List<GINProduct> ginProducts = new ArrayList<>();
-            for (GINProduct ginProduct : request.getProducts()) {
-                Product product = productRepository.findById(ginProduct.getProductId())
+            for (CreateGINProductRequest productRequest : request.getProducts()) {
+                Product product = productRepository.findById(productRequest.getProductId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
 
-                ginProduct.setDiscrepancyQuantity(ginProduct.getActualStock().subtract(ginProduct.getProduct().getQuantity()));
+                GINProduct ginProduct = ginMapper.mapToEntity(productRequest);
                 ginProduct.setProduct(product);
                 ginProduct.setGin(newGIN);
 
                 ginProducts.add(ginProduct);
             }
-            newGIN.setProducts(ginProducts);
 
-            newGIN.setUserInspection(userRepository.findById(request.getUserInspectionId())
-                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND))));
-            User userCreated = authHelper.getUser();
+            newGIN.setProducts(ginProducts);
             newGIN.setUserCreated(userCreated);
-            newGIN.setUserBalanced(userCreated);
-            newGIN.setStatus(GINStatus.CHECKING);
+            newGIN.setUserInspection(userInspection);
+            if (request.isBalance()) {
+                newGIN.setUserBalanced(userCreated);
+                newGIN.setStatus(GINStatus.BALANCED);
+                newGIN.setBalancedAt(LocalDateTime.now());
+
+                for (GINProduct ginProduct : newGIN.getProducts()) {
+                    Product product = ginProduct.getProduct();
+                    product.setQuantity(ginProduct.getActualStock());
+                    productRepository.save(product);
+                }
+            } else {
+                newGIN.setStatus(GINStatus.CHECKING);
+            }
 
             ginRepository.save(newGIN);
             ginProductRepository.saveAll(newGIN.getProducts());
@@ -113,11 +125,26 @@ public class GINServiceImpl implements GINService {
             GIN gin = ginRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
-            GINDetail response = ginMapper.mapToResponse(gin);
+            GINDetailResponse response = ginMapper.mapToResponse(gin);
 
-            response.setUserCreatedName(gin.getUserCreated().getFullName());
-            response.setUserBalancedName(gin.getUserBalanced().getFullName());
-            response.setUserInspectionName(gin.getUserInspection().getFullName());
+            List<GINProductDetailResponse> productDetailResponses = new ArrayList<>();
+            for (GINProduct ginProduct : gin.getProducts()) {
+                GINProductDetailResponse productDetailResponse = ginMapper.mapToResponse(ginProduct);
+
+                productDetailResponse.setProductId(ginProduct.getProduct().getId());
+                productDetailResponse.setProductSubId(ginProduct.getProduct().getSubId());
+                productDetailResponse.setName(ginProduct.getProduct().getName());
+                productDetailResponse.setImage(!ginProduct.getProduct().getImages().isEmpty()
+                        ? ginProduct.getProduct().getImages().get(0)
+                        : null);
+
+                productDetailResponses.add(productDetailResponse);
+            }
+
+            response.setProducts(productDetailResponses);
+            response.setUserCreatedName(gin.getUserCreated() != null ? gin.getUserCreated().getFullName() : null);
+            response.setUserBalancedName(gin.getUserBalanced() != null ? gin.getUserBalanced().getFullName() : null);
+            response.setUserInspectionName(gin.getUserInspection() != null ? gin.getUserInspection().getFullName() : null);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_GET_DETAIL_SUCCESSFULLY), response);
         } catch (Exception e) {
@@ -128,58 +155,76 @@ public class GINServiceImpl implements GINService {
     /**
      * Lọc danh sách phiếu xuất kho theo các tiêu chí.
      *
-     * @param request Đối tượng chứa các tiêu chí lọc.
+     * @param request      Đối tượng chứa các tiêu chí lọc.
      * @param filterParams Các trường cần ánh xạ và lọc.
-     * @param page Trang hiện tại.
-     * @param size Số lượng bản ghi trên mỗi trang.
+     * @param page         Trang hiện tại.
+     * @param size         Số lượng bản ghi trên mỗi trang.
      * @return Phản hồi với danh sách phiếu xuất kho đã lọc.
      */
-//    @Override
-//    public ResponseEntity<ResponseObject<Object>> filterGIN(GetListGINRequest request, Map<String, Boolean> filterParams, int page, int size) {
-//        try {
-//            GINSpecification ginSpecification = new GINSpecification(request);
-//            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
-//
-//            Page<GIN> ginPage = ginRepository.findAll(ginSpecification, pageable);
-//
-//            // Ánh xạ các đối tượng GIN thành GINGetListResponse
-//            List<GINGetListResponse> responseList = ginPage.getContent().stream().map(gin -> {
-//                GINGetListResponse response = new GINGetListResponse();
-//
-//                // Duyệt qua các entry trong filterParams
-//                for (Map.Entry<String, Boolean> entry : filterParams.entrySet()) {
-//                    String field = entry.getKey();
-//                    Boolean includeField = entry.getValue();
-//
-//                    // Ánh xạ các trường dựa trên filterParams
-//                    if (includeField) {
-//                        try {
-//                            // Lấy phương thức set tương ứng
-//                            Method setMethod = response.getClass().getMethod("set" + StringUtils.snakeCaseToCamelCase(field), String.class);
-//
-//                            // Gọi phương thức set với giá trị tương ứng từ đối tượng gin
-//                            setMethod.invoke(response, CommonUtils.getFieldValue(gin, field));
-//                        } catch (Exception e) {
-//                            // Xử lý lỗi nếu không thể lấy phương thức hoặc gọi phương thức
-//                            throw new RuntimeException("Failed to map field " + field + " using reflection", e);
-//                        }
-//                    }
-//                }
-//
-//                return response;
-//            }).toList();
-//
-//            Pagination<Object> responsePageable = Pagination.<Object>builder()
-//                    .data(responseList)
-//                    .totalItems(ginPage.getTotalElements())
-//                    .totalPage(ginPage.getTotalPages())
-//                    .build();
-//
-//            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_GET_ALL_SUCCESSFULLY), responsePageable);
-//        } catch (Exception e) {
-//            return ResponseUtil.error500Response(e.getMessage());
-//        }
-//    }
+    @Override
+    public ResponseEntity<ResponseObject<Object>> filterGIN(GetListGINRequest request, Map<String, Boolean> filterParams, int page, int size) {
+        try {
+            GINSpecification ginSpecification = new GINSpecification(request);
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
+
+            Page<GIN> ginPage = ginRepository.findAll(ginSpecification, pageable);
+
+            // Ánh xạ các đối tượng GIN thành GINGetListResponse
+            List<GINGetListResponse> responseList = ginPage.getContent().stream().map(gin -> {
+                GINGetListResponse response = new GINGetListResponse();
+
+                // Duyệt qua các entry trong filterParams
+                for (Map.Entry<String, Boolean> entry : filterParams.entrySet()) {
+                    String field = entry.getKey();
+                    Boolean includeField = entry.getValue();
+
+                    // Ánh xạ các trường dựa trên filterParams
+                    if (includeField) {
+                        if (field.equals("user_created_name")) {
+                            response.setUserCreatedName(gin.getUserCreated() != null ? gin.getUserCreated().getFullName() : null);
+                        } else if (field.equals("user_balanced_name")) {
+                            response.setUserBalancedName(gin.getUserBalanced() != null ? gin.getUserBalanced().getFullName() : null);
+                        } else if (field.equals("user_inspection_name")) {
+                            response.setUserInspectionName(gin.getUserInspection() != null ? gin.getUserInspection().getFullName() : null);
+                        } else {
+                            try {
+                                // Lấy giá trị của trường từ đối tượng supplier
+                                Object fieldValue = CommonUtils.getFieldValue(gin, field);
+
+                                // Nếu giá trị không null, tiếp tục xử lý
+                                if (fieldValue != null) {
+                                    // Kiểm tra kiểu dữ liệu của trường cần set
+                                    Field responseField = CommonUtils.getFieldFromClassHierarchy(response.getClass(), StringUtils.snakeCaseToEqualCamelCase(field));
+                                    responseField.setAccessible(true); // Cho phép truy cập vào trường private
+
+                                    // Kiểm tra và chuyển đổi kiểu dữ liệu nếu cần
+                                    Object convertedValue = CommonUtils.convertValueForField(responseField, fieldValue);
+
+                                    // Đặt giá trị cho trường trong đối tượng response
+                                    responseField.set(response, convertedValue);
+                                }
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                // Xử lý lỗi nếu không thể lấy hoặc set giá trị cho trường
+                                throw new RuntimeException("Failed to map field " + field + " using reflection", e);
+                            }
+                        }
+                    }
+                }
+
+                return response;
+            }).toList();
+
+            Pagination<Object> responsePageable = Pagination.<Object>builder()
+                    .data(responseList)
+                    .totalItems(ginPage.getTotalElements())
+                    .totalPage(ginPage.getTotalPages())
+                    .build();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_GET_ALL_SUCCESSFULLY), responsePageable);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
 
     /**
      * Cập nhật thông tin của phiếu xuất kho theo ID.
@@ -194,53 +239,42 @@ public class GINServiceImpl implements GINService {
             GIN existingGIN = ginRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
+            if (existingGIN.getStatus() == GINStatus.BALANCED) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageValidateKeys.GIN_BALANCED_CANNOT_DELETE));
+            }
+            List<GINProduct> existingProducts = new ArrayList<>(existingGIN.getProducts());
+
             // Cập nhật thông tin của phiếu xuất kho
             ginMapper.updateFromDTO(request, existingGIN);
-
-            List<GINProduct> updatedProducts = new ArrayList<>();
-            for (GINProduct requestGinProduct : request.getProducts()) {
-                Product product = productRepository.findById(requestGinProduct.getProductId())
-                        .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
-
-                if (requestGinProduct.getId() != null) {
-                    // Cập nhật sản phẩm hiện tại
-                    GINProduct existingGINProduct = ginProductRepository.findById(requestGinProduct.getId())
-                            .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_PRODUCT_NOT_FOUND)));
-
-                    // Cập nhật các trường dữ liệu của sản phẩm
-                    existingGINProduct.setNote(requestGinProduct.getNote());
-                    existingGINProduct.setActualStock(requestGinProduct.getActualStock());
-                    existingGINProduct.setDiscrepancyQuantity(requestGinProduct.getActualStock().subtract(requestGinProduct.getProduct().getQuantity()));
-                    existingGINProduct.setReason(requestGinProduct.getReason());
-                    existingGINProduct.setProduct(product);
-                    existingGINProduct.setGin(existingGIN);
-
-                    updatedProducts.add(existingGINProduct);
-                } else {
-                    // Thêm sản phẩm mới
-                    log.info("UpProduct: {}", requestGinProduct.toString());
-                    requestGinProduct.setProduct(product);
-                    requestGinProduct.setGin(existingGIN);
-                    updatedProducts.add(requestGinProduct);
-                }
+            if (request.isBalance()) {
+                existingGIN.setStatus(GINStatus.BALANCED);
             }
 
-            // Xóa các sản phẩm không còn tồn tại trong request
-            List<String> requestProductIds = request.getProducts().stream()
-                    .filter(p -> p.getId() != null)
-                    .map(GINProduct::getId)
+            List<GINProduct> updatedProducts = new ArrayList<>();
+            for (UpdateGINProductRequest updateGINRequest : request.getProducts()) {
+                Product product = productRepository.findById(updateGINRequest.getProductId())
+                        .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
+
+                if (request.isBalance()) {
+                    product.setQuantity(updateGINRequest.getActualStock());
+                    productRepository.save(product);
+                }
+
+                GINProduct ginProduct = ginMapper.mapToEntity(updateGINRequest);
+                ginProduct.setProduct(product);
+                ginProduct.setGin(existingGIN);
+
+                updatedProducts.add(ginProduct);
+            }
+
+            List<GINProduct> productsToDelete = existingProducts.stream()
+                    .filter(existingProduct -> updatedProducts.stream()
+                            .noneMatch(updatedProduct -> updatedProduct.getProduct().getId().equals(existingProduct.getProduct().getId())))
                     .toList();
 
-            requestProductIds.stream().map(idProduct -> {
-                if (updatedProducts.stream().noneMatch(p -> p.getId().equals(idProduct))) {
-                    ginProductRepository.deleteById(idProduct);
-                }
-                return idProduct;
-            }).toList();
-
-            existingGIN.setProducts(updatedProducts);
-
+            ginProductRepository.deleteAll(productsToDelete);
             ginRepository.save(existingGIN);
+            ginProductRepository.saveAll(updatedProducts);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_UPDATE_SUCCESSFULLY));
         } catch (Exception e) {
@@ -261,6 +295,10 @@ public class GINServiceImpl implements GINService {
             GIN existingGIN = ginRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
+            if (existingGIN.getStatus() == GINStatus.BALANCED) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageValidateKeys.GIN_BALANCED_CANNOT_DELETE));
+            }
+
             // Đánh dấu phiếu xuất kho là đã xóa
             existingGIN.setStatus(GINStatus.DELETED);
             ginRepository.save(existingGIN);
@@ -280,7 +318,22 @@ public class GINServiceImpl implements GINService {
     @Override
     public ResponseEntity<ResponseObject<Object>> balanceGIN(String id) {
         try {
+            GIN existingGIN = ginRepository.findById(id)
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
+            User userBalanced = authHelper.getUser();
+
+            for (GINProduct ginProduct : existingGIN.getProducts()) {
+                Product product = ginProduct.getProduct();
+                product.setQuantity(ginProduct.getActualStock());
+                productRepository.save(product);
+            }
+
+            existingGIN.setUserBalanced(userBalanced);
+            existingGIN.setBalancedAt(LocalDateTime.now());
+            existingGIN.setStatus(GINStatus.BALANCED);
+
+            ginRepository.save(existingGIN);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_BALANCE_SUCCESSFULLY));
         } catch (Exception e) {
