@@ -1,6 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.specification;
 
-import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionType;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionCategoryRequest;
 import com.sapo.mock_project.inventory_receipt.entities.TransactionCategory;
 import jakarta.persistence.criteria.CriteriaBuilder;

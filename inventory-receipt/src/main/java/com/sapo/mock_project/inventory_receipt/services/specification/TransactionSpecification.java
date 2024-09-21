@@ -1,6 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.specification;
 
-import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionMethod;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionMethod;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.entities.Transaction;

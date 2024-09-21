@@ -24,5 +24,8 @@ public class CreateGINRequest {
     private String userInspectionId;
 
     @JsonProperty("products")
-    List<GINProduct> products;
+    List<CreateGINProductRequest> products;
+
+    @JsonProperty("is_balance")
+    private boolean isBalance;
 }

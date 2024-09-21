@@ -1,7 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities;
 
 import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
-import com.sapo.mock_project.inventory_receipt.constants.enums.TransactionType;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
 import jakarta.persistence.*;
 import lombok.*;

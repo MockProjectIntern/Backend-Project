@@ -1,4 +1,4 @@
-package com.sapo.mock_project.inventory_receipt.constants.enums;
+package com.sapo.mock_project.inventory_receipt.constants.enums.transaction;
 
 public enum TransactionMethod {
     CASH,

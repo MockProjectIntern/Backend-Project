@@ -2,13 +2,15 @@ package com.sapo.mock_project.inventory_receipt.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
-import com.sapo.mock_project.inventory_receipt.constants.enums.GINProductReason;
+import com.sapo.mock_project.inventory_receipt.converts.ProductImageConverter;
 import com.sapo.mock_project.inventory_receipt.entities.sequence.StringPrefixSequenceGenerator;
+import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductImage;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "gin_products")
@@ -36,10 +38,11 @@ public class GINProduct extends BaseEntity {
 
     private BigDecimal discrepancyQuantity;
 
-    @Enumerated(EnumType.STRING)
-    private GINProductReason reason;
+    private String reason;
 
     private String note;
+
+    private String unit;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -48,10 +51,6 @@ public class GINProduct extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "gin_id")
     private GIN gin;
-
-    @Transient
-    @JsonProperty("product_id")
-    private String productId;
 
     @Override
     protected void customPrePersist() {
