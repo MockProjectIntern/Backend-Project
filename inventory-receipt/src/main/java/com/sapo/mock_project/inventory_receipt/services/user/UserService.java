@@ -1,9 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.user;
 
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.ChangePasswordRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.LoginAccountRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.RefreshTokenRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.RegisterAccountRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.user.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import org.springframework.http.ResponseEntity;
 
@@ -17,4 +14,14 @@ public interface UserService {
     ResponseEntity<ResponseObject<Object>> refreshToken(RefreshTokenRequest request);
 
     ResponseEntity<ResponseObject<Object>> changePasswordAccount(ChangePasswordRequest request);
+
+    ResponseEntity<ResponseObject<Object>> adminCreateAccount(AdminCreateStaffRequest request);
+
+    ResponseEntity<ResponseObject<Object>> getListAccount(GetListAccountRequest request, int page, int size);
+
+    ResponseEntity<ResponseObject<Object>> adminUpdateAccount(String accountId, AdminUpdateAccountRequest request);
+
+    ResponseEntity<ResponseObject<Object>> deleteAccount(String accountId);
+
+    ResponseEntity<ResponseObject<Object>> getListName(int page, int size);
 }

@@ -231,4 +231,48 @@ public class SupplierServiceImpl implements SupplierService {
             return ResponseUtil.error500Response(e.getMessage());
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getListNameSupplier(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "name");
+            Page<Object[]> inforPage = supplierRepository.findAllNameAndPhone(pageable);
+
+            List<Map<String, String>> dataResponses = inforPage.getContent().stream()
+                    .map(infor -> {
+                        Map<String, String> response = Map.of(
+                                "id", infor[0].toString(),
+                                "name", infor[1].toString(),
+                                "phone", infor[2].toString()
+                        );
+                        return response;
+                    }).toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_GET_ALL_SUCCESSFULLY), dataResponses);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getDetailMoney(String supplierId) {
+        try {
+            List<Object[]> supplierInfor = supplierRepository.getDetailMoney(supplierId);
+
+            Map<String, Object> response = Map.of(
+                    "id", supplierInfor.get(0)[0].toString(),
+                    "name", supplierInfor.get(0)[1].toString(),
+                    "phone" , supplierInfor.get(0)[2].toString(),
+                    "address", supplierInfor.get(0)[3].toString(),
+                    "current_debt", (BigDecimal) supplierInfor.get(0)[4],
+                    "total_refund", (BigDecimal) supplierInfor.get(0)[5],
+                    "grn_count", (Long) supplierInfor.get(0)[6],
+                    "grn_total_value", (BigDecimal) supplierInfor.get(0)[7]
+            );
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_GET_DETAIL_SUCCESSFULLY), response);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
 }

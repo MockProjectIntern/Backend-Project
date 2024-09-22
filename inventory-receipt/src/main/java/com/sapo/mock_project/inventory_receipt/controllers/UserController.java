@@ -1,10 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.controllers;
 
 import com.sapo.mock_project.inventory_receipt.constants.BaseEndpoint;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.ChangePasswordRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.LoginAccountRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.RefreshTokenRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.RegisterAccountRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.user.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -131,5 +128,34 @@ public class UserController {
     @PatchMapping("/change-password.json")
     public ResponseEntity<ResponseObject<Object>> changePasswordAccount(@Valid @RequestBody ChangePasswordRequest request) {
         return userService.changePasswordAccount(request);
+    }
+
+    @PostMapping("/admin-create.json")
+    public ResponseEntity<ResponseObject<Object>> adminCreateAccount(@Valid @RequestBody AdminCreateStaffRequest request) {
+        return userService.adminCreateAccount(request);
+    }
+
+    @PostMapping("/list.json")
+    public ResponseEntity<ResponseObject<Object>> getListAccount(@Valid @RequestBody GetListAccountRequest request,
+                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                 @RequestParam(value = "size", defaultValue = "10") int size) {
+        return userService.getListAccount(request, page, size);
+    }
+
+    @PatchMapping("/admin-update-account.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> adminUpdateAccount(@PathVariable String id,
+                                                                  @Valid @RequestBody AdminUpdateAccountRequest request) {
+        return userService.adminUpdateAccount(id, request);
+    }
+
+    @DeleteMapping("/delete-account.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> deleteAccount(@PathVariable String id) {
+        return userService.deleteAccount(id);
+    }
+
+    @GetMapping("/list-name.json")
+    public ResponseEntity<ResponseObject<Object>> getListName(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                              @RequestParam(value = "size", defaultValue = "10") int size) {
+        return userService.getListName(page, size);
     }
 }

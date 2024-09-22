@@ -15,6 +15,7 @@ CREATE TABLE users
     address          TEXT,                                                                -- Địa chỉ của người dùng
     avatar           TEXT,                                                                -- Ảnh đại diện của người dùng
     is_active        BOOLEAN,                                                             -- Trạng thái hoạt động của người dùng
+    is_deleted       BOOLEAN,                                                             -- Trạng thái xóa của người dùng
     gender           SMALLINT,                                                            -- Giới tính của người dùng
     role             ENUM('COORDINATOR', 'WAREHOUSE_STAFF', 'WAREHOUSE_MANAGER') NOT NULL,-- Vai trò của người dùng
     last_change_pass TIMESTAMP,                                                           -- Thời gian thay đổi mật khẩu cuối cùng

@@ -6,6 +6,9 @@ public class MessageKeys {
     public static final String USER_REFRESH_TOKEN_SUCCESSFULLY = "user.refresh_token.successfully";
     public static final String USER_GET_DETAIL_SUCCESSFULLY = "user.get_detail.successfully";
     public static final String USER_CHANGE_PASSWORD_SUCCESSFULLY = "user.change_password.successfully";
+    public static final String USER_GET_ALL_SUCCESSFULLY = "user.get_all.successfully";
+    public static final String USER_UPDATE_SUCCESSFULLY = "user.update.successfully";
+    public static final String USER_DELETE_SUCCESSFULLY = "user.delete.successfully";
 
     public static final String SUPPLIER_GROUP_CREATE_SUCCESSFULLY = "supplier_group.create.successfully";
     public static final String SUPPLIER_GROUP_UPDATE_SUCCESSFULLY = "supplier_group.update.successfully";

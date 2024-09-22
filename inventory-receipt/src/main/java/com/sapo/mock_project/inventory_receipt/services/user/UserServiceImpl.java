@@ -6,12 +6,11 @@ import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.ChangePasswordRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.LoginAccountRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.RefreshTokenRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.user.RegisterAccountRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.user.*;
+import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.user.GetListAccountResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.user.LoginResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.user.UserDetailResponse;
 import com.sapo.mock_project.inventory_receipt.entities.User;
@@ -19,7 +18,12 @@ import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.exceptions.ExpiredTokenException;
 import com.sapo.mock_project.inventory_receipt.mappers.UserMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.user.UserRepository;
+import com.sapo.mock_project.inventory_receipt.services.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +32,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -55,7 +61,7 @@ public class UserServiceImpl implements UserService {
         try {
             if (userRepository.existsByPhone(request.getPhone())) {
                 // Nếu số điện thoại đã tồn tại, trả về lỗi xác thực
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.USER_USERNAME_EXISTED));
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.USER_PHONE_EXISTED));
             }
 
             User newAccount = userMapper.mapToEntity(request);
@@ -199,6 +205,120 @@ public class UserServiceImpl implements UserService {
         } catch (BadCredentialsException e) {
             // Xử lý lỗi khi mật khẩu cũ không đúng
             return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_OLD_PASSWORD_INCORRECT));
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> adminCreateAccount(AdminCreateStaffRequest request) {
+        try {
+            if (userRepository.existsByPhone(request.getPhone())) {
+                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.USER_PHONE_EXISTED));
+            }
+
+            User newAccount = User.builder()
+                    .fullName(request.getFullName())
+                    .phone(request.getPhone())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(request.getRole())
+                    .isActive(true)
+                    .build();
+
+            userRepository.save(newAccount);
+
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_CREATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getListAccount(GetListAccountRequest request, int page, int size) {
+        try {
+            UserSpecification specification = new UserSpecification(request);
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "fullName");
+
+            Page<User> userPage = userRepository.findAll(specification, pageable);
+
+            List<GetListAccountResponse> userList = userPage.getContent().stream()
+                    .map(userMapper::mapToGetListResponse)
+                    .toList();
+
+            Pagination pagination = Pagination.builder()
+                    .data(userList)
+                    .totalPage(userPage.getTotalPages())
+                    .totalItems(userPage.getTotalElements())
+                    .build();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_ALL_SUCCESSFULLY), pagination);
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> adminUpdateAccount(String accountId, AdminUpdateAccountRequest request) {
+        try {
+            Optional<User> userOptional = userRepository.findById(accountId);
+            if (userOptional.isEmpty()) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND));
+            }
+
+            User user = userOptional.get();
+            user.setRole(request.getRole());
+            user.setActive(request.isActive());
+
+            userRepository.save(user);
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_UPDATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> deleteAccount(String accountId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(accountId);
+            if (userOptional.isEmpty()) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND));
+            }
+
+            User account = userOptional.get();
+            account.setDeleted(true);
+
+            userRepository.save(account);
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_DELETE_SUCCESSFULLY));
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getListName(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "fullName");
+            Page<Object[]> userPage = userRepository.findAllFullName(pageable);
+
+            List<Map<String, String>> nameList = userPage.getContent().stream()
+                    .map(objects -> {
+                        Map<String, String> nameMap = Map.of(
+                                "id", (String) objects[0],
+                                "full_name", (String) objects[1]
+                        );
+
+                        return nameMap;
+                    })
+                    .toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_ALL_SUCCESSFULLY), nameList);
         } catch (Exception e) {
             // Xử lý các lỗi không mong muốn
             return ResponseUtil.error500Response(e.getMessage());

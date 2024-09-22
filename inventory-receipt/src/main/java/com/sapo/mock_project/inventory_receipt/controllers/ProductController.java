@@ -45,15 +45,6 @@ public class ProductController {
                                                                 @RequestParam(value = "size", defaultValue = "10") int size,
                                                                 HttpServletRequest httpServletRequest) {
         Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.PRODUCT, httpServletRequest);
-        filterParams.put("images", true);
-        filterParams.put("name", true);
-        filterParams.put("category_name", true);
-        filterParams.put("brand_name", true);
-        filterParams.put("quantity", true);
-        filterParams.put("status", true);
-        filterParams.put("created_at", true);
-        filterParams.put("updated_at", true);
-        filterParams.put("id", true);
 
         return productService.filterProduct(request, filterParams, page, size);
     }
