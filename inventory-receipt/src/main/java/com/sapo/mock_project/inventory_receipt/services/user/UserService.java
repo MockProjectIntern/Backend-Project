@@ -22,4 +22,6 @@ public interface UserService {
     ResponseEntity<ResponseObject<Object>> adminUpdateAccount(String accountId, AdminUpdateAccountRequest request);
 
     ResponseEntity<ResponseObject<Object>> deleteAccount(String accountId);
+
+    ResponseEntity<ResponseObject<Object>> getListName(int page, int size);
 }

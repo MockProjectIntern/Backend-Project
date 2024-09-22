@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -294,6 +295,30 @@ public class UserServiceImpl implements UserService {
             userRepository.save(account);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_DELETE_SUCCESSFULLY));
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getListName(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "fullName");
+            Page<Object[]> userPage = userRepository.findAllFullName(pageable);
+
+            List<Map<String, String>> nameList = userPage.getContent().stream()
+                    .map(objects -> {
+                        Map<String, String> nameMap = Map.of(
+                                "id", (String) objects[0],
+                                "full_name", (String) objects[1]
+                        );
+
+                        return nameMap;
+                    })
+                    .toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_ALL_SUCCESSFULLY), nameList);
         } catch (Exception e) {
             // Xử lý các lỗi không mong muốn
             return ResponseUtil.error500Response(e.getMessage());

@@ -152,4 +152,10 @@ public class UserController {
     public ResponseEntity<ResponseObject<Object>> deleteAccount(@PathVariable String id) {
         return userService.deleteAccount(id);
     }
+
+    @GetMapping("/list-name.json")
+    public ResponseEntity<ResponseObject<Object>> getListName(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                              @RequestParam(value = "size", defaultValue = "10") int size) {
+        return userService.getListName(page, size);
+    }
 }
