@@ -103,4 +103,9 @@ public class SupplierController {
                                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
         return supplierService.getListNameSupplier(page, size);
     }
+
+    @GetMapping("/detail-money.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> getDetailMoney(@PathVariable String id) {
+        return supplierService.getDetailMoney(id);
+    }
 }

@@ -253,4 +253,26 @@ public class SupplierServiceImpl implements SupplierService {
             return ResponseUtil.error500Response(e.getMessage());
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getDetailMoney(String supplierId) {
+        try {
+            List<Object[]> supplierInfor = supplierRepository.getDetailMoney(supplierId);
+
+            Map<String, Object> response = Map.of(
+                    "id", supplierInfor.get(0)[0].toString(),
+                    "name", supplierInfor.get(0)[1].toString(),
+                    "phone" , supplierInfor.get(0)[2].toString(),
+                    "address", supplierInfor.get(0)[3].toString(),
+                    "current_debt", (BigDecimal) supplierInfor.get(0)[4],
+                    "total_refund", (BigDecimal) supplierInfor.get(0)[5],
+                    "grn_count", (Long) supplierInfor.get(0)[6],
+                    "grn_total_value", (BigDecimal) supplierInfor.get(0)[7]
+            );
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_GET_DETAIL_SUCCESSFULLY), response);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
 }

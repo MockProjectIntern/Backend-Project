@@ -20,4 +20,6 @@ public interface SupplierService {
     ResponseEntity<ResponseObject<Object>> deleteSupplier(String supplierId);
 
     ResponseEntity<ResponseObject<Object>> getListNameSupplier(int page, int size);
+
+    ResponseEntity<ResponseObject<Object>> getDetailMoney(String supplierId);
 }
