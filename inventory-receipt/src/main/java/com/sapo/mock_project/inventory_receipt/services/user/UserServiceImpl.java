@@ -304,7 +304,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getListName(int page, int size) {
         try {
-            Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "fullName");
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "fullName");
             Page<Object[]> userPage = userRepository.findAllFullName(pageable);
 
             List<Map<String, String>> nameList = userPage.getContent().stream()

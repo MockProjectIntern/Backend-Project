@@ -154,7 +154,7 @@ public class UserController {
     }
 
     @GetMapping("/list-name.json")
-    public ResponseEntity<ResponseObject<Object>> getListName(@RequestParam(value = "page", defaultValue = "0") int page,
+    public ResponseEntity<ResponseObject<Object>> getListName(@RequestParam(value = "page", defaultValue = "1") int page,
                                                               @RequestParam(value = "size", defaultValue = "10") int size) {
         return userService.getListName(page, size);
     }
