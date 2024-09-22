@@ -31,8 +31,10 @@ public class CategorySpecification implements Specification<Category> {
 
             Predicate namePredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("name")),
                     String.format("%%%s%%", keywordUpper));
+            Predicate subIdPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("subId")),
+                    String.format("%%%s%%", keywordUpper));
 
-            predicates.add(criteriaBuilder.or(namePredicate));
+            predicates.add(criteriaBuilder.or(namePredicate, subIdPredicate));
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
