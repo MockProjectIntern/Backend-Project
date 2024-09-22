@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -52,6 +53,8 @@ public class User extends BaseEntity implements UserDetails {
     private String avatar;
 
     private boolean isActive;
+
+    private boolean isDeleted;
 
     private Date lastChangePass;
 
@@ -114,5 +117,13 @@ public class User extends BaseEntity implements UserDetails {
         if (subId == null && id != null) {
             subId = id;
         }
+    }
+
+    @Override
+    protected void onCreate() {
+        super.onCreate();
+
+        lastChangePass = new Date(System.currentTimeMillis());
+        isDeleted = false;
     }
 }
