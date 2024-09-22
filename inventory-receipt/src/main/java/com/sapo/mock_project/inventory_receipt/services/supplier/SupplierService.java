@@ -18,4 +18,6 @@ public interface SupplierService {
     ResponseEntity<ResponseObject<Object>> updateSupplier(String supplierId, UpdateSupplierRequest request);
 
     ResponseEntity<ResponseObject<Object>> deleteSupplier(String supplierId);
+
+    ResponseEntity<ResponseObject<Object>> getListNameSupplier(int page, int size);
 }

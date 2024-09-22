@@ -90,4 +90,17 @@ public class SupplierController {
     public ResponseEntity<ResponseObject<Object>> deleteSupplier(@PathVariable("id") String id) {
         return supplierService.deleteSupplier(id);
     }
+
+    /**
+     * Lấy danh sách tên nhà cung cấp.
+     *
+     * @param page Trang hiện tại để phân trang.
+     * @param size Kích thước trang để phân trang.
+     * @return ResponseEntity chứa danh sách tên nhà cung cấp.
+     */
+    @GetMapping("/list-name.json")
+    public ResponseEntity<ResponseObject<Object>> getListNameSupplier(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+        return supplierService.getListNameSupplier(page, size);
+    }
 }
