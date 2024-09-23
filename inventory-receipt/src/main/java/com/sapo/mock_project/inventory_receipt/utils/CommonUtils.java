@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -27,7 +29,7 @@ public class CommonUtils {
                 // Kiểm tra nếu cookie có tên là "filter_suppliers"
                 if (cookie.getName().equals(name)) {
                     // Lấy giá trị của cookie name
-                    String cookieValue = cookie.getValue();
+                    String cookieValue = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
 
                     ObjectMapper objectMapper = new ObjectMapper();
                     try {
