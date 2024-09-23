@@ -2,7 +2,6 @@ package com.sapo.mock_project.inventory_receipt.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.lang.reflect.Field;
@@ -19,28 +18,19 @@ public class CommonUtils {
 
     public static Map<String, Boolean> getFilterParamsFromCookie(String name, HttpServletRequest request) {
         // Lấy tất cả các cookie từ request
-        Cookie[] cookies = request.getCookies();
+        String stringCookie = request.getHeader(name);
 
-        if (cookies != null) {
-            // Duyệt qua mảng các cookie
-            for (Cookie cookie : cookies) {
-                // Kiểm tra nếu cookie có tên là "filter_suppliers"
-                if (cookie.getName().equals(name)) {
-                    // Lấy giá trị của cookie name
-                    String cookieValue = cookie.getValue();
+        if (stringCookie != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                // Chuyển giá trị của cookie thành Map
+                Map<String, Boolean> filterParams = objectMapper.readValue(stringCookie, Map.class);
 
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    try {
-                        // Chuyển giá trị của cookie thành Map
-                        Map<String, Boolean> filterParams = objectMapper.readValue(cookieValue, Map.class);
-
-                        return filterParams;
-                    } catch (Exception e) {
-                        // Xử lý ngoại lệ (ví dụ: lỗi JSON không hợp lệ)
-                        e.printStackTrace();
-                        return new HashMap<>(); // Trả về map rỗng nếu có lỗi
-                    }
-                }
+                return filterParams;
+            } catch (Exception e) {
+                // Xử lý ngoại lệ (ví dụ: lỗi JSON không hợp lệ)
+                e.printStackTrace();
+                return new HashMap<>(); // Trả về map rỗng nếu có lỗi
             }
         }
 
