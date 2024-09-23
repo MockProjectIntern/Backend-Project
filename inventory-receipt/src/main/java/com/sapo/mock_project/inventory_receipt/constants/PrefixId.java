@@ -20,4 +20,5 @@ public interface PrefixId {
     String TRANSACTION = "TSN";
     String TRANSACTION_CATEGORY = "TSC";
     String USER = "USR";
+    String DEBT_SUPPLIER = "DESUP";
 }

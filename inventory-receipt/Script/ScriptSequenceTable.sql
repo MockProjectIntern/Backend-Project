@@ -92,3 +92,8 @@ CREATE TABLE transaction_category_sequences
 (
     id BIGINT AUTO_INCREMENT PRIMARY KEY
 );
+
+CREATE TABLE debt_supplier_sequences
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY
+);

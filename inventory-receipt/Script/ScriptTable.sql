@@ -252,3 +252,20 @@ CREATE TABLE transactions
     FOREIGN KEY (transaction_category_id) REFERENCES transaction_categories (id),
     FOREIGN KEY (user_created_id) REFERENCES users (id)
 );
+
+CREATE TABLE debt_suppliers -- Nợ nhà cung cấp
+(
+    id              VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
+    sub_id          VARCHAR(10),                      -- Mã định danh ban đầu
+    supplier_id     VARCHAR(10),
+    amount          DECIMAL(10, 2),
+    debt_after      DECIMAL(10, 2),
+    reference_code  VARCHAR(50),
+    reference_id    VARCHAR(10),
+    note            TEXT,
+    user_created_id VARCHAR(10),
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers (id),
+    FOREIGN KEY (user_created_id) REFERENCES users (id)
+);

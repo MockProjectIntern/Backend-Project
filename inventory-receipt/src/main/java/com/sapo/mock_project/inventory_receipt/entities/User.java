@@ -94,6 +94,9 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "userCreated")
     private List<Transaction> createdTransactions;
 
+    @OneToMany(mappedBy = "userCreated")
+    private List<DebtSupplier> createdDebtSuppliers;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
