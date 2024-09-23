@@ -5,7 +5,9 @@ import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
+import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.dtos.internal.transaction.AutoCreateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.CreateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
@@ -14,12 +16,14 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.TransactionGetListResponse;
+import com.sapo.mock_project.inventory_receipt.entities.Supplier;
 import com.sapo.mock_project.inventory_receipt.entities.Transaction;
 import com.sapo.mock_project.inventory_receipt.entities.TransactionCategory;
 import com.sapo.mock_project.inventory_receipt.entities.User;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.exceptions.NoActionForOperationException;
 import com.sapo.mock_project.inventory_receipt.mappers.TransactionMapper;
+import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.transaction.TransactionCategoryRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.transaction.TransactionRepository;
 import com.sapo.mock_project.inventory_receipt.services.specification.TransactionSpecification;
@@ -36,6 +40,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Dịch vụ xử lý các thao tác liên quan đến  (transaction).
@@ -45,6 +50,7 @@ import java.util.Map;
 public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionCategoryRepository transactionCategoryRepository;
+    private final SupplierRepository supplierRepository;
 
     private final TransactionMapper transactionMapper;
     private final LocalizationUtils localizationUtils;
@@ -78,6 +84,24 @@ public class TransactionServiceImpl implements TransactionService {
             newTransaction.setStatus(TransactionStatus.COMPLETED);
             newTransaction.setUserCreated(userCreated);
             newTransaction.setCategory(transactionCategory);
+
+            if (request.isAutoDebt()) {
+                if (request.getRecipientGroup().equals(PrefixId.SUPPLIER)) {
+                    Optional<Supplier> supplierOptional = supplierRepository.findById(request.getRecipientId());
+                    if (supplierOptional.isEmpty()) {
+                        return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND));
+                    }
+
+                    Supplier supplier = supplierOptional.get();
+                    if (request.getType().equals(TransactionType.INCOME)) {
+                        supplier.setCurrentDebt(supplier.getCurrentDebt().add(request.getAmount()));
+                    } else {
+                        supplier.setCurrentDebt(supplier.getCurrentDebt().subtract(request.getAmount()));
+                    }
+
+                    supplierRepository.save(supplier);
+                }
+            }
 
             transactionRepository.save(newTransaction);
 

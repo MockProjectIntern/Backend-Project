@@ -11,4 +11,4 @@ spring:
           uri: https://github.com/MockProjectIntern/Config-repo.git
           clone-on-start: true
           username: VanNguyenHust
-          password: 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
+          password: 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
