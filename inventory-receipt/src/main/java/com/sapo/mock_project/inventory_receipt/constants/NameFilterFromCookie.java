@@ -7,4 +7,5 @@ public interface NameFilterFromCookie {
     String GIN = "filter_gins";
     String PRODUCT = "filter_products";
     String ORDER = "filter_orders";
+    String DEPT_SUPPLIER = "filter_debt_suppliers";
 }

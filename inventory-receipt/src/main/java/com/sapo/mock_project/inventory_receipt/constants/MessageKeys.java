@@ -75,4 +75,6 @@ public class MessageKeys {
     public static final String ORDER_CANCEL_SUCCESSFULLY = "order.cancel.successfully";
     public static final String ORDER_UPDATE_SUCCESSFULLY = "order.update.successfully";
 
+    public static final String DEBT_SUPPLIER_GET_ALL_SUCCESSFULLY = "debt_supplier.get_all.successfully";
+
 }
