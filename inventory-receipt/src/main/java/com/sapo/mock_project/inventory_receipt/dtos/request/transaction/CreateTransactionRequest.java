@@ -61,4 +61,7 @@ public class CreateTransactionRequest {
 
     @JsonProperty("transaction_category_id")
     private String transactionCategoryId;
+
+    @JsonProperty("is_auto_debt")
+    private boolean isAutoDebt;
 }
