@@ -2,10 +2,7 @@ package com.sapo.mock_project.inventory_receipt.controllers;
 
 import com.sapo.mock_project.inventory_receipt.constants.BaseEndpoint;
 import com.sapo.mock_project.inventory_receipt.constants.NameFilterFromCookie;
-import com.sapo.mock_project.inventory_receipt.dtos.request.product.CreateProductRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.product.GetListProductRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.product.QuickCreateProductRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.product.UpdateProductRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.product.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.product.ProductService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
@@ -47,5 +44,15 @@ public class ProductController {
         Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.PRODUCT, httpServletRequest);
 
         return productService.filterProduct(request, filterParams, page, size);
+    }
+
+    @PostMapping("/filter-warehouse.json")
+    public ResponseEntity<ResponseObject<Object>> filterProductInWarehouse(@RequestBody GetListProductManageRequest request,
+                                                                @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                HttpServletRequest httpServletRequest) {
+        Map<String, Boolean> filterParams = CommonUtils.getFilterParamsFromCookie(NameFilterFromCookie.PRODUCT_MANAGE, httpServletRequest);
+
+        return productService.filterProductInWarehouse(request, filterParams, page, size);
     }
 }

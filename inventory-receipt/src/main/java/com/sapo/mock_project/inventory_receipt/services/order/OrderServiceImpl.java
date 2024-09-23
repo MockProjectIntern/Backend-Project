@@ -73,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
             newOrder.setSupplier(exstingSupplier);
             newOrder.setUserCreated(userCreated);
             newOrder.setOrderDetails(newOrderDetail);
-            newOrder.setStatus(OrderStatus.NOT_ENTERED);
+            newOrder.setStatus(OrderStatus.PENDING);
 
             newOrder.initializeOrder();
             newOrder.calculateTotalPrice();

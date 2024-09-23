@@ -57,7 +57,7 @@ CREATE TABLE orders
 (
     id                VARCHAR(10) NOT NULL PRIMARY KEY,                                    -- Khóa chính của bảng (tự động tăng)
     sub_id            VARCHAR(10),                                                         -- Mã định danh ban đầu
-    status            ENUM('PENDING', 'RECEIVED', 'CANCELLED') NOT NULL DEFAULT 'PENDING', -- Trạng thái đơn hàng
+    status            ENUM('PENDING', 'PARTIAL','COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PENDING', -- Trạng thái đơn hàng
     note              TEXT,
     tags              TEXT,
     expected_at       TIMESTAMP,
