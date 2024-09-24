@@ -121,13 +121,20 @@ public class TransactionServiceImpl implements TransactionService {
     public ResponseEntity<ResponseObject<Object>> autoCreateTransaction(AutoCreateTransactionRequest request) {
         try {
             User userCreated = authHelper.getUser();
+            Optional<TransactionCategory> transactionCategory = transactionCategoryRepository
+                    .findBySubId(request.getType() == TransactionType.INCOME ? "TSC00001" : "TSC00002");
+            if (transactionCategory.isEmpty()) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND));
+            }
 
             Transaction newTransaction = transactionMapper.mapToEntity(request);
             newTransaction.setUserCreated(userCreated);
+            newTransaction.setStatus(TransactionStatus.COMPLETED);
+            newTransaction.setCategory(transactionCategory.get());
 
             transactionRepository.save(newTransaction);
 
-            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CREATE_SUCCESSFULLY));
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CREATE_SUCCESSFULLY), newTransaction.getId());
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

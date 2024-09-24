@@ -75,4 +75,9 @@ public class MessageKeys {
     public static final String ORDER_CANCEL_SUCCESSFULLY = "order.cancel.successfully";
     public static final String ORDER_UPDATE_SUCCESSFULLY = "order.update.successfully";
 
+    public static final String REFUND_CREATE_SUCCESSFULLY = "refund.create.successfully";
+    public static final String REFUND_GET_DETAIL_SUCCESSFULLY = "refund.get_detail.successfully";
+    public static final String REFUND_GET_ALL_SUCCESSFULLY = "refund.get_all.successfully";
+    public static final String REFUND_CANCEL_SUCCESSFULLY = "refund.cancel.successfully";
+    public static final String REFUND_UPDATE_SUCCESSFULLY = "refund.update.successfully";
 }

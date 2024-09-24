@@ -158,4 +158,21 @@ public class GRN extends BaseEntity {
             subId = id;
         }
     }
+
+    public void calculatorRefundStatus() {
+        if (refundInformations != null && !refundInformations.isEmpty()) {
+            BigDecimal totalRefund = refundInformations.stream()
+                    .map(RefundInformation::getTotalRefundedQuantity)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            if (totalRefund.compareTo(totalReceivedQuantity) >= 0) {
+                refundStatus = GRNRefundStatus.FULL;
+            } else {
+                refundStatus = GRNRefundStatus.PARTIAL;
+            }
+        }  else {
+            refundStatus = GRNRefundStatus.NOT_REFUNDED;
+        }
+    }
+
 }

@@ -55,8 +55,8 @@ CREATE TABLE suppliers
 
 CREATE TABLE orders
 (
-    id                VARCHAR(10) NOT NULL PRIMARY KEY,                                    -- Khóa chính của bảng (tự động tăng)
-    sub_id            VARCHAR(10),                                                         -- Mã định danh ban đầu
+    id                VARCHAR(10) NOT NULL PRIMARY KEY,                                               -- Khóa chính của bảng (tự động tăng)
+    sub_id            VARCHAR(10),                                                                    -- Mã định danh ban đầu
     status            ENUM('PENDING', 'PARTIAL','COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PENDING', -- Trạng thái đơn hàng
     note              TEXT,
     tags              TEXT,
@@ -268,4 +268,45 @@ CREATE TABLE debt_suppliers -- Nợ nhà cung cấp
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (supplier_id) REFERENCES suppliers (id),
     FOREIGN KEY (user_created_id) REFERENCES users (id)
+);
+
+CREATE TABLE refund_informations
+(
+    id                      VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
+    sub_id                  VARCHAR(10),                      -- Mã định danh ban đầu
+    supplier_id             VARCHAR(10),
+    supplier_name           VARCHAR(50),
+    total_refunded_quantity DECIMAL(10, 2),
+    total_refunded_value    DECIMAL(10, 2),
+    total_refunded_cost     DECIMAL(10, 2),
+    total_refunded_tax      DECIMAL(10, 2),
+    total_refunded_discount DECIMAL(10, 2),
+    refund_amount           DECIMAL(10, 2),
+    reason                  TEXT,
+    status                  ENUM('REFUNDED', 'PARTIAL', 'NOT_REFUNDED') NOT NULL DEFAULT 'REFUNDED',
+    refund_payment_status   ENUM('FULL', 'PARTIAL', 'NOT_REFUNDED') NOT NULL DEFAULT 'NOT_REFUNDED',
+    refund_received_date    TIMESTAMP,
+    user_created_id         VARCHAR(10),
+    grn_id                  VARCHAR(10),
+    created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_created_id) REFERENCES users (id),
+    FOREIGN KEY (grn_id) REFERENCES grns (id)
+);
+
+CREATE TABLE refund_information_details
+(
+    id                    VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
+    sub_id                VARCHAR(10),                      -- Mã định danh ban đầu
+    refund_information_id VARCHAR(10),
+    product_id            VARCHAR(10),
+    quantity              DECIMAL(10, 2),
+    refunded_price         DECIMAL(10, 2),
+    amount                DECIMAL(10, 2),
+    tax                   DECIMAL(10, 2),
+    note                  TEXT,
+    created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (refund_information_id) REFERENCES refund_informations (id),
+    FOREIGN KEY (product_id) REFERENCES products (id)
 );
