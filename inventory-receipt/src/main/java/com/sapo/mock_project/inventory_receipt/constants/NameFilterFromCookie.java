@@ -8,4 +8,5 @@ public interface NameFilterFromCookie {
     String PRODUCT = "filter_products";
     String ORDER = "filter_orders";
     String PRODUCT_MANAGE = "filter_products_manage";
+    String DEPT_SUPPLIER = "filter_debt_suppliers";
 }
