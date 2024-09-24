@@ -62,6 +62,23 @@ public class ResponseUtil {
     }
 
     /**
+     * Tạo phản hồi thành công với mã trạng thái HTTP 201 và thông điệp.
+     *
+     * @param message Thông điệp trả về.
+     * @return Đối tượng {@link ResponseEntity} chứa {@link ResponseObject} với mã trạng thái 201.
+     */
+    public static ResponseEntity<ResponseObject<Object>> success201Response(String message, Object data) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ResponseObject.<Object>builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .status(HttpStatus.CREATED.getReasonPhrase())
+                        .message(message)
+                        .data(data)
+                        .build());
+    }
+
+    /**
      * Tạo phản hồi lỗi với mã trạng thái HTTP 400 và thông điệp lỗi xác thực.
      *
      * @param message Thông điệp lỗi xác thực.

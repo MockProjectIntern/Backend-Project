@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.Data;
 
 /**
  * Lớp đại diện cho đối tượng phản hồi API chung, bao gồm mã trạng thái, thông điệp và dữ liệu.
@@ -11,6 +12,7 @@ import lombok.Builder;
  * @param <T> kiểu dữ liệu của dữ liệu phản hồi.
  */
 @Builder
+@Data
 public class ResponseObject<T> {
 
     /**

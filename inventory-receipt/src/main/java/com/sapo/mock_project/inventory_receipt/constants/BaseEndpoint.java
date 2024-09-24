@@ -15,5 +15,5 @@ public interface BaseEndpoint {
     String TRANSACTION = "/transactions";
     String TRANSACTION_CATEGORY = "/transaction-categories";
     String BRAND = "/brands";
-    String PRICE_ADJUSTMENT = "/price-adjustments";
+    String REFUND_INFORMATION = "/refund-informations";
 }

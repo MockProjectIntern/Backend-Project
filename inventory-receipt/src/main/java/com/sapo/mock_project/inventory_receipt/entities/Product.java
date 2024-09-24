@@ -80,6 +80,9 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetails;
 
+    @OneToMany(mappedBy = "product")
+    private List<RefundInformationDetail> refundInformationDetails;
+
     @Override
     protected void customPrePersist() {
         if (subId == null && id != null) {

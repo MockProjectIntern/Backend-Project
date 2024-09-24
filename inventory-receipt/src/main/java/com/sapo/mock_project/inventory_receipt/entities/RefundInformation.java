@@ -9,7 +9,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -34,27 +34,31 @@ public class RefundInformation extends BaseEntity {
 
     private String subId;
 
+    private String supplierId;
+
+    private String supplierName;
+
     private BigDecimal totalRefundedQuantity;
 
     private BigDecimal totalRefundedValue;
 
     private BigDecimal totalRefundedCost;
 
-    private BigDecimal totalRefundTax;
+    private BigDecimal totalRefundedTax;
 
-    private BigDecimal totalRefundDiscount;
-
-    private String reason;
-
-    private String refundType;
+    private BigDecimal totalRefundedDiscount;
 
     private BigDecimal refundAmount;
 
+    private String reason;
+
+    @Enumerated(EnumType.STRING)
     private RefundInformationStatus status;
 
+    @Enumerated(EnumType.STRING)
     private RefundPaymentStatus refundPaymentStatus;
 
-    private LocalDate refundReceivedDate;
+    private LocalDateTime refundReceivedDate;
 
     @ManyToOne
     @JoinColumn(name = "user_created_id")
@@ -71,6 +75,38 @@ public class RefundInformation extends BaseEntity {
     protected void customPrePersist() {
         if (subId == null && id != null) {
             subId = id;
+        }
+    }
+
+    public void calculator() {
+        if (totalRefundedTax == null) {
+            totalRefundedTax = BigDecimal.ZERO;
+        }
+        if (totalRefundedDiscount == null) {
+            totalRefundedDiscount = BigDecimal.ZERO;
+        }
+        if (totalRefundedCost == null) {
+            totalRefundedCost = BigDecimal.ZERO;
+        }
+
+        this.totalRefundedQuantity = this.refundInformationDetails.stream()
+                .map(RefundInformationDetail::getQuantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        this.totalRefundedValue = this.refundInformationDetails.stream()
+                .map(RefundInformationDetail::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        this.refundAmount = this.totalRefundedValue.subtract(this.totalRefundedTax).subtract(this.totalRefundedDiscount);
+    }
+
+    public void calculatorRefundPaymentStatus(BigDecimal paymentAmount) {
+        if (paymentAmount.compareTo(refundAmount) == 0) {
+            this.refundPaymentStatus = RefundPaymentStatus.FULL;
+        } else if (paymentAmount.compareTo(BigDecimal.ZERO) == 0) {
+            this.refundPaymentStatus = RefundPaymentStatus.NOT_REFUNDED;
+        } else {
+            this.refundPaymentStatus = RefundPaymentStatus.PARTIAL;
         }
     }
 }

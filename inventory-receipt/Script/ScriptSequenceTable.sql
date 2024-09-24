@@ -43,11 +43,6 @@ CREATE TABLE order_detail_sequences
     id BIGINT AUTO_INCREMENT PRIMARY KEY
 );
 
-CREATE TABLE price_adjustment_sequences
-(
-    id BIGINT AUTO_INCREMENT PRIMARY KEY
-);
-
 CREATE TABLE product_sequences
 (
     id BIGINT AUTO_INCREMENT PRIMARY KEY
@@ -89,6 +84,11 @@ CREATE TABLE transaction_sequences
 );
 
 CREATE TABLE transaction_category_sequences
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY
+);
+
+CREATE TABLE debt_supplier_sequences
 (
     id BIGINT AUTO_INCREMENT PRIMARY KEY
 );
