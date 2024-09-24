@@ -9,6 +9,9 @@ import java.util.List;
 
 @Data
 public class GetListProductRequest {
+    @JsonProperty("keyword")
+    private String keyword;
+
     @JsonProperty("category_ids")
     private List<String> categoryIds;
 

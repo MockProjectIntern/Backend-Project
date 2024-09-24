@@ -28,6 +28,7 @@ public class ProductSpecification implements Specification<Product> {
     public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
+        String keyword = request.getKeyword();
         List<String> categoryIds = request.getCategoryIds();
         List<String> brandIds = request.getBrandIds();
         List<ProductStatus> statuses = request.getStatuses();
@@ -35,6 +36,12 @@ public class ProductSpecification implements Specification<Product> {
         LocalDateTime createdDateFrom = DateUtils.getDateTimeFrom(request.getCreatedDateFrom());
         LocalDateTime createdDateTo = DateUtils.getDateTimeTo(request.getCreatedDateTo());
 
+        if (keyword != null && !keyword.isEmpty()) {
+            predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.like(root.get("name"), String.format("%%%s%%", keyword)),
+                    criteriaBuilder.like(root.get("subId"), String.format("%%%s%%", keyword))
+            ));
+        }
         if (categoryIds != null && !categoryIds.isEmpty()) {
             predicates.add(root.get("category").get("id").in(categoryIds));
         }
