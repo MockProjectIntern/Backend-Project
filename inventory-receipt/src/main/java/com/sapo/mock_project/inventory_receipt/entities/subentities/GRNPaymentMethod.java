@@ -1,5 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.entities.subentities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,7 @@ public class GRNPaymentMethod {
 
     private BigDecimal amount;
 
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime date;
 
     private String reference;

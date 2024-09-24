@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,11 +47,11 @@ public class GRN extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GRNReceiveStatus receivedStatus;
 
-    private LocalDate expectedDeliveryAt;
+    private LocalDateTime expectedDeliveryAt;
 
-    private LocalDate receivedAt;
+    private LocalDateTime receivedAt;
 
-    private LocalDate cancelledAt;
+    private LocalDateTime cancelledAt;
 
     private LocalDateTime paymentAt;
 
@@ -170,7 +169,7 @@ public class GRN extends BaseEntity {
             } else {
                 refundStatus = GRNRefundStatus.PARTIAL;
             }
-        }  else {
+        } else {
             refundStatus = GRNRefundStatus.NOT_REFUNDED;
         }
     }

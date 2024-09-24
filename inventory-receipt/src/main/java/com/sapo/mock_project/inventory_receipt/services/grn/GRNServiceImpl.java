@@ -30,6 +30,7 @@ import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepositoryCus
 import com.sapo.mock_project.inventory_receipt.repositories.order.OrderRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
+import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +57,8 @@ public class GRNServiceImpl implements GRNService {
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
     private final OrderRepository orderRepository;
+
+    private final SupplierService supplierService;
 
     private final GRNMapper grnMapper;
     private final GRNProductMapper grnProductMapper;
@@ -142,11 +145,11 @@ public class GRNServiceImpl implements GRNService {
             GRN grn = grnRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
+            Map<String, Object> supplierDetail = (Map<String, Object>) supplierService.getDetailMoney(grn.getSupplier().getId()).getBody().getData();
+
             // Ánh xạ thông tin GRN sang DTO phản hồi
             GRNDetail response = grnMapper.mapToResponse(grn);
-            response.setSupplierName(grn.getSupplier().getName());
-            response.setSupplierPhone(grn.getSupplier().getPhone());
-            response.setSupplierAddress(grn.getSupplier().getAddress());
+            response.setSupplierDetail(supplierDetail);
             response.setUserCreatedName(grn.getUserCreated().getFullName());
 
             // Ánh xạ thông tin các sản phẩm trong GRN sang DTO phản hồi
@@ -265,7 +268,7 @@ public class GRNServiceImpl implements GRNService {
             grn.setStatus(GRNStatus.CANCELLED);
             User user = authHelper.getUser();
             grn.setUserCancelled(user);
-            grn.setCancelledAt(LocalDate.now());
+            grn.setCancelledAt(LocalDateTime.now());
 
             grnRepository.save(grn);
 
@@ -351,7 +354,7 @@ public class GRNServiceImpl implements GRNService {
             }
             grn.setReceivedStatus(GRNReceiveStatus.ENTERED);
             grn.setUserCompleted(authHelper.getUser());
-            grn.setReceivedAt(LocalDate.now());
+            grn.setReceivedAt(LocalDateTime.now());
 
             // Thêm lịch sử nhập hàng cho GRN
             grn.getHistories().add(GRNHistory.builder().date(LocalDateTime.now())

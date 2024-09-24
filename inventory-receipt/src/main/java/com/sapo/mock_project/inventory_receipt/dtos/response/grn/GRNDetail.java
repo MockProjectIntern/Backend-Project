@@ -1,8 +1,11 @@
 package com.sapo.mock_project.inventory_receipt.dtos.response.grn;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
 import com.sapo.mock_project.inventory_receipt.constants.enums.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
+import com.sapo.mock_project.inventory_receipt.dtos.response.supplier.SupplierDetail;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNHistory;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNImportCost;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNPaymentMethod;
@@ -13,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DTO phản hồi chi tiết thông tin của một phiếu nhập kho (GRN).
@@ -41,14 +45,8 @@ public class GRNDetail extends BaseResponse {
     @JsonProperty("received_status")
     private GRNReceiveStatus receivedStatus;
 
-    @JsonProperty("supplier_name")
-    private String supplierName;
-
-    @JsonProperty("supplier_phone")
-    private String supplierPhone;
-
-    @JsonProperty("supplier_address")
-    private String supplierAddress;
+    @JsonProperty("supplier")
+    private Map<String, Object> supplierDetail;
 
     @JsonProperty("user_created_name")
     private String userCreatedName;
@@ -58,20 +56,23 @@ public class GRNDetail extends BaseResponse {
      */
     @Schema(description = "Ngày dự kiến giao hàng", example = "2023-09-15")
     @JsonProperty("expected_delivery_at")
-    private LocalDate expectedDeliveryAt;
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
+    private LocalDateTime expectedDeliveryAt;
 
     /**
      * Ngày nhận hàng.
      */
     @Schema(description = "Ngày nhận hàng", example = "2023-09-20")
     @JsonProperty("received_at")
-    private LocalDate receivedAt;
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
+    private LocalDateTime receivedAt;
 
     /**
      * Thời gian thanh toán.
      */
     @Schema(description = "Thời gian thanh toán", example = "2023-09-20T15:30:00")
     @JsonProperty("payment_at")
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime paymentAt;
 
     /**
@@ -142,14 +143,14 @@ public class GRNDetail extends BaseResponse {
      */
     @Schema(description = "Chi phí nhập khẩu của phiếu nhập kho")
     @JsonProperty("import_cost")
-    private List<GRNImportCost> importCost;
+    private List<GRNImportCost> importCosts;
 
     /**
      * Phương thức thanh toán của phiếu nhập kho.
      */
     @Schema(description = "Phương thức thanh toán của phiếu nhập kho")
     @JsonProperty("payment_method")
-    private List<GRNPaymentMethod> paymentMethod;
+    private List<GRNPaymentMethod> paymentMethods;
 
     @JsonProperty("histories")
     private List<GRNHistory> histories;

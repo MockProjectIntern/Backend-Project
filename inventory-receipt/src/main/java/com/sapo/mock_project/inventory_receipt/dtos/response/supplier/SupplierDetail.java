@@ -87,5 +87,5 @@ public class SupplierDetail extends BaseResponse {
      */
     @Schema(description = "Tên của nhóm nhà cung cấp mà nhà cung cấp này thuộc về", example = "Nhóm A")
     @JsonProperty("supplier_group_name")
-    private String SupplierGroupName;
+    private String supplierGroupName;
 }
