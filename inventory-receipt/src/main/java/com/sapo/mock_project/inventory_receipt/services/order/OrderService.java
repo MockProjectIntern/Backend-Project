@@ -13,4 +13,6 @@ public interface OrderService {
     ResponseEntity<ResponseObject<Object>> filterOrder(GetListOrderRequest request,
                                                        Map<String, Boolean> filterParams,
                                                        int page, int size);
+
+    ResponseEntity<ResponseObject<Object>> getOrderById(String id);
 }

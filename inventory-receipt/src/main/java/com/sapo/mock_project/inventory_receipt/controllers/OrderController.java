@@ -35,4 +35,9 @@ public class OrderController {
 
         return orderService.filterOrder(request, filterParams, page, size);
     }
+
+    @GetMapping("/detail.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> getOrderById(@PathVariable("id") String id) {
+        return orderService.getOrderById(id);
+    }
 }

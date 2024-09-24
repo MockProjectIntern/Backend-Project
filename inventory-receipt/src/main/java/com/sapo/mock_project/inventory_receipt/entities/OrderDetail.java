@@ -30,7 +30,7 @@ public class OrderDetail extends BaseEntity {
 
     private String subId;
 
-    private Long quantity;
+    private BigDecimal quantity;
 
     private BigDecimal price;
 
@@ -39,6 +39,8 @@ public class OrderDetail extends BaseEntity {
     private BigDecimal tax;
 
     private BigDecimal importedQuantity;
+
+    private String unit;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

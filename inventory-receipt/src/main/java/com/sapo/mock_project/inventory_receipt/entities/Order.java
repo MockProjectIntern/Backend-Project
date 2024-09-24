@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -46,13 +47,13 @@ public class Order extends BaseEntity {
 
     private BigDecimal totalPrice;
 
-    private LocalDate expectedAt;
+    private LocalDateTime expectedAt;
 
-    private LocalDate completedAt;
+    private LocalDateTime completedAt;
 
-    private LocalDate endedAt;
+    private LocalDateTime endedAt;
 
-    private LocalDate cancelledAt;
+    private LocalDateTime cancelledAt;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
