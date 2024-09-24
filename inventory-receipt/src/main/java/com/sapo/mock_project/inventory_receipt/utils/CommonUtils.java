@@ -79,8 +79,14 @@ public class CommonUtils {
             // Nếu là số thập phân
             return new BigDecimal(value.toString());
         } else if (fieldType == LocalDateTime.class) {
+            String stringValue = value.toString();
+
+            if (stringValue.length() == "yyyy-MM-ddTHH:mm".length()) {
+                stringValue = stringValue + ":00";
+            }
+
             // Nếu là LocalDateTime
-            return LocalDateTime.parse(value.toString(), DateTimeFormatter.ofPattern(DateTimePattern.YYYYMMDDHHMMSS));
+            return LocalDateTime.parse(stringValue, DateTimeFormatter.ofPattern(DateTimePattern.YYYYMMDDHHMMSS));
         }
 
         // Trường hợp mặc định, trả về giá trị ban đầu
