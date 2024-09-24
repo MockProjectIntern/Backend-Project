@@ -3,6 +3,7 @@ package com.sapo.mock_project.inventory_receipt.dtos.request.transaction;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionMethod;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -22,6 +23,12 @@ public class GetListTransactionRequest {
     @JsonProperty("keyword")
     @Schema(description = "Từ khóa để tìm kiếm trong các phiếu thu/chi", example = "TX123456")
     private String keyword;
+
+    /**
+     * Loại phiếu thu/chi để lọc.
+     */
+    @JsonProperty("type")
+    private TransactionType type;
 
     /**
      * Danh sách các nhóm người nhận để lọc phiếu thu/chi.

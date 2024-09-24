@@ -14,8 +14,8 @@ public interface SupplierRepository extends JpaRepository<Supplier, String>, Jpa
 
     boolean existsBySubId(String subId);
 
-    @Query("SELECT s.id, s.name, s.phone FROM Supplier s")
-    Page<Object[]> findAllNameAndPhone(Pageable pageable);
+    @Query("SELECT s.id, s.name, s.phone FROM Supplier s WHERE s.name LIKE %:name%")
+    Page<Object[]> findAllByName(String name, Pageable pageable);
 
     @Query(value = """
         SELECT s.id, s.name, s.phone, s.address, s.current_debt, s.total_refund,

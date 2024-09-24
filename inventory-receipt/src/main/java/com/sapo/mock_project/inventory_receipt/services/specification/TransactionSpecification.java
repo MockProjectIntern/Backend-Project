@@ -2,6 +2,7 @@ package com.sapo.mock_project.inventory_receipt.services.specification;
 
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionMethod;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.entities.Transaction;
 import com.sapo.mock_project.inventory_receipt.utils.DateUtils;
@@ -43,6 +44,7 @@ public class TransactionSpecification implements Specification<Transaction> {
 
         // Lấy các tham số lọc từ request
         String keyword = request.getKeyword();
+        TransactionType type = request.getType();
         List<String> recipientGroups = request.getRecipientGroups();
         LocalDateTime createdDateFrom = DateUtils.getDateTimeFrom(request.getCreatedDateFrom());
         LocalDateTime createdDateTo = DateUtils.getDateTimeTo(request.getCreatedDateTo());
@@ -63,6 +65,10 @@ public class TransactionSpecification implements Specification<Transaction> {
             Predicate descriptionPredicate = criteriaBuilder.like(criteriaBuilder.upper(root.get("referenceId")),
                     String.format("%%%s%%", keywordUpper));
             predicates.add(criteriaBuilder.or(codePredicate, descriptionPredicate));
+        }
+
+        if (type != null) {
+            predicates.add(criteriaBuilder.equal(root.get("type"), type));
         }
 
         // Lọc theo nhóm người nhận

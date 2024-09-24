@@ -233,10 +233,10 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public ResponseEntity<ResponseObject<Object>> getListNameSupplier(int page, int size) {
+    public ResponseEntity<ResponseObject<Object>> getListNameSupplier(String name, int page, int size) {
         try {
             Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "name");
-            Page<Object[]> inforPage = supplierRepository.findAllNameAndPhone(pageable);
+            Page<Object[]> inforPage = supplierRepository.findAllByName(name, pageable);
 
             List<Map<String, String>> dataResponses = inforPage.getContent().stream()
                     .map(infor -> {

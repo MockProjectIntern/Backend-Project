@@ -37,7 +37,7 @@ public class Category extends BaseEntity {
 
     @Override
     protected void customPrePersist() {
-        if (subId == null && id != null) {
+        if ((subId == null || subId.isEmpty()) && id != null) {
             subId = id;
         }
     }

@@ -33,10 +33,10 @@ public class TransactionGetListResponse extends BaseResponse {
     /**
      * Loại phiếu thu/chi (nhập kho, xuất kho, vv.).
      */
-    @JsonProperty("type")
+    @JsonProperty("transaction_category_name")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "Loại phiếu thu/chi", example = "DEPOSIT")
-    private TransactionType type;
+    private String transactionCategoryName;
 
     /**
      * Trạng thái phiếu thu/chi (đang xử lý, đã hoàn thành, đã hủy).

@@ -66,7 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<ResponseObject<Object>> createTransaction(CreateTransactionRequest request) {
         try {
-            if (request.getSubId() != null && transactionRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && !request.getSubId().toString().isEmpty() && transactionRepository.existsBySubId(request.getSubId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
             TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
@@ -174,7 +174,9 @@ public class TransactionServiceImpl implements TransactionService {
                     if (includeField) {
                         if (field.equals("user_created_name")) {
                             response.setUserCreatedName(transaction.getUserCreated().getFullName());
-                        } else {
+                        } else if (field.equals("transaction_category_name")) {
+                            response.setTransactionCategoryName(transaction.getCategory().getName());
+                        }else {
                             try {
                                 // Lấy giá trị của trường từ đối tượng supplier
                                 Object fieldValue = CommonUtils.getFieldValue(transaction, field);

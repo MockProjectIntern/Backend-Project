@@ -66,10 +66,10 @@ public class StringPrefixSequenceGenerator extends SequenceStyleGenerator {
 
             try {
                 // Kiểm tra xem đối tượng đã có ID hay chưa
-                Serializable id = (Serializable) object.getClass().getMethod("getId").invoke(object);
+                Serializable id = (Serializable) object.getClass().getMethod("getSubId").invoke(object);
 
                 // Nếu đối tượng đã có ID, không tạo mới mà trả về ID hiện tại
-                if (id != null) {
+                if (id != null && !id.toString().trim().isEmpty()) { // Thêm trim() để loại bỏ khoảng trắng
                     return id;
                 }
             } catch (Exception e) {
