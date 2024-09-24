@@ -9,6 +9,9 @@ import java.util.List;
 
 @Data
 public class GetListGINRequest {
+    @JsonProperty("keyword")
+    private String keyword;
+
     @JsonProperty("statues")
     private List<GINStatus> statuses;
 

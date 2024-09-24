@@ -27,6 +27,7 @@ public class GINSpecification implements Specification<GIN> {
     public Predicate toPredicate(Root<GIN> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
+        String keyword = request.getKeyword();
         List<GINStatus> statuses = request.getStatuses();
         LocalDateTime createdDateFrom = DateUtils.getDateTimeFrom(request.getCreatedDateFrom());
         LocalDateTime createdDateTo = DateUtils.getDateTimeTo(request.getCreatedDateTo());
@@ -36,10 +37,14 @@ public class GINSpecification implements Specification<GIN> {
         List<String> userBalancedIds = request.getUserBalancedIds();
         List<String> userInspectionIds = request.getUserInspectionIds();
 
+        if (keyword != null) {
+            predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.like(root.get("id"), "%" + keyword + "%")
+            ));
+        }
         if (statuses != null && !statuses.isEmpty()) {
             predicates.add(root.get("status").in(statuses));
         }
-
         if (createdDateFrom != null) {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), createdDateFrom));
         }
