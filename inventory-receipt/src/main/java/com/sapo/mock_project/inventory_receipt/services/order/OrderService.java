@@ -2,6 +2,8 @@ package com.sapo.mock_project.inventory_receipt.services.order;
 
 import com.sapo.mock_project.inventory_receipt.dtos.request.order.CreateOrderRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.order.GetListOrderRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.order.UpdateOrderLittleRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.order.UpdateOrderRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import org.springframework.http.ResponseEntity;
 
@@ -15,4 +17,8 @@ public interface OrderService {
                                                        int page, int size);
 
     ResponseEntity<ResponseObject<Object>> getOrderById(String id);
+
+    ResponseEntity<ResponseObject<Object>> updateOrder(String orderId, UpdateOrderRequest request);
+
+    ResponseEntity<ResponseObject<Object>> updateOrderLittle(String orderId, UpdateOrderLittleRequest request);
 }

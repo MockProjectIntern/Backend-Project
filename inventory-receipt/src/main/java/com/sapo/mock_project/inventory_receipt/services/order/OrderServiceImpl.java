@@ -7,9 +7,7 @@ import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.OrderStatus;
-import com.sapo.mock_project.inventory_receipt.dtos.request.order.CreateOrderDetailRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.order.CreateOrderRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.order.GetListOrderRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.order.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
@@ -27,6 +25,7 @@ import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepos
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
 import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -52,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
     private final AuthHelper authHelper;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> createOrder(CreateOrderRequest request) {
         try {
             if (request.getSubId() != null && orderRepository.existsBySubId(request.getSubId())) {
@@ -95,6 +95,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> filterOrder(GetListOrderRequest request,
                                                               Map<String, Boolean> filterParams,
                                                               int page, int size) {
@@ -185,4 +186,96 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseEntity<ResponseObject<Object>> updateOrder(String orderId, UpdateOrderRequest request) {
+        try {
+            Optional<Order> orderOptional = orderRepository.findById(orderId);
+            if (orderOptional.isEmpty()) {
+                return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
+            }
+
+            Order existingOrder = orderOptional.get();
+            orderMapper.updateFromDTO(request, existingOrder);
+
+            List<OrderDetail> newOrderDetails = new ArrayList<>();
+            for (CreateOrderDetailRequest detailRequest : request.getProducts()) {
+                Optional<Product> productOptional = productRepository.findById(detailRequest.getProductId());
+                if (productOptional.isEmpty()) {
+                    return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND));
+                }
+
+                OrderDetail orderDetail = orderMapper.mapToEntityDetail(detailRequest);
+
+                orderDetail.setOrder(existingOrder);
+                orderDetail.setProduct(productOptional.get());
+
+                for (OrderDetail existingOrderDetail : existingOrder.getOrderDetails()) {
+                    if (existingOrderDetail.getProduct().getId().equals(orderDetail.getProduct().getId())) {
+                        orderDetail.setId(existingOrderDetail.getId());
+                        break;
+                    }
+                }
+
+                newOrderDetails.add(orderDetail);
+            }
+
+            List<OrderDetail> deletedOrderDetails = existingOrder.getOrderDetails().stream()
+                    .filter(orderDetail -> newOrderDetails.stream()
+                            .noneMatch(newOrderDetail -> newOrderDetail.getProduct().getId().equals(orderDetail.getProduct().getId())))
+                    .toList();
+
+            existingOrder.setOrderDetails(newOrderDetails);
+
+            existingOrder.calculateTotalPrice();
+
+            orderRepository.save(existingOrder);
+            orderDetailRepository.saveAll(newOrderDetails);
+            orderDetailRepository.deleteAll(deletedOrderDetails);
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_UPDATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> updateOrderLittle(String orderId, UpdateOrderLittleRequest request) {
+        try {
+            Optional<Order> orderOptional = orderRepository.findById(orderId);
+            if (orderOptional.isEmpty()) {
+                return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
+            }
+
+            Order existingOrder = orderOptional.get();
+            if (request.getNote() != null) {
+                existingOrder.setNote(request.getNote());
+            }
+            if (request.getTags() != null) {
+                existingOrder.setTags(request.getTags());
+            }
+            if (!request.getNoteDetails().isEmpty()) {
+                for (Map<String, String> noteDetail : request.getNoteDetails()) {
+                    Optional<OrderDetail> orderDetailOptional = existingOrder.getOrderDetails().stream()
+                            .filter(detail -> detail.getId().equals(noteDetail.get("id")))
+                            .findFirst();
+
+                    if (orderDetailOptional.isEmpty()) {
+                        return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
+                    }
+
+                    OrderDetail existingOrderDetail = orderDetailOptional.get();
+                    existingOrderDetail.setNote(noteDetail.get("note"));
+
+                    orderDetailRepository.save(existingOrderDetail);
+                }
+            }
+
+            orderRepository.save(existingOrder);
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_UPDATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
 }

@@ -19,7 +19,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, String>, Jpa
 
     @Query(value = """
         SELECT s.id, s.name, s.phone, s.address, s.current_debt, s.total_refund,
-               COUNT(g.id) AS grn_count,  SUM(g.total_value) AS grn_total_value
+            COALESCE(COUNT(g.id), 0) AS grn_count,  COALESCE(SUM(g.total_value), 0) AS grn_total_value
         FROM suppliers s
         LEFT JOIN grns g ON g.supplier_id = s.id
         WHERE s.id = :supplierId

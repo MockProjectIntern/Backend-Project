@@ -4,6 +4,8 @@ import com.sapo.mock_project.inventory_receipt.constants.BaseEndpoint;
 import com.sapo.mock_project.inventory_receipt.constants.NameFilterFromCookie;
 import com.sapo.mock_project.inventory_receipt.dtos.request.order.CreateOrderRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.order.GetListOrderRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.order.UpdateOrderLittleRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.order.UpdateOrderRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.order.OrderService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
@@ -39,5 +41,15 @@ public class OrderController {
     @GetMapping("/detail.json/{id}")
     public ResponseEntity<ResponseObject<Object>> getOrderById(@PathVariable("id") String id) {
         return orderService.getOrderById(id);
+    }
+
+    @PutMapping("/update.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> updateOrder(@PathVariable String id, @Valid @RequestBody UpdateOrderRequest request) {
+        return orderService.updateOrder(id, request);
+    }
+
+    @PutMapping("/update-little.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> updateOrderLittle(@PathVariable String id, @Valid @RequestBody UpdateOrderLittleRequest request) {
+        return orderService.updateOrderLittle(id, request);
     }
 }

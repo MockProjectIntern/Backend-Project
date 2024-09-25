@@ -98,7 +98,7 @@ public class GRNController {
      * @param id ID của phiếu nhập kho cần nhập.
      * @return ResponseEntity chứa thông tin phản hồi về kết quả nhập phiếu nhập kho.
      */
-    @PutMapping("import.json/{id}")
+    @PutMapping("/import.json/{id}")
     public ResponseEntity<ResponseObject<Object>> importGRN(@PathVariable String id) {
         return grnService.importGRN(id);
     }

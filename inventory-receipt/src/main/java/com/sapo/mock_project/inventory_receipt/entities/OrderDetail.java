@@ -42,6 +42,8 @@ public class OrderDetail extends BaseEntity {
 
     private String unit;
 
+    private String note;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;

@@ -21,4 +21,7 @@ public class CreateOrderDetailRequest {
 
     @JsonProperty("tax")
     private BigDecimal tax;
+
+    @JsonProperty("unit")
+    private String unit;
 }

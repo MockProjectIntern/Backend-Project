@@ -126,6 +126,19 @@ public class GRNServiceImpl implements GRNService {
                     .function("Nhập hàng")
                     .operation("Tạo đơn nhập hàng")
                     .build();
+
+            if (request.getReceivedStatus() == GRNReceiveStatus.ENTERED) {
+                newGRN.setUserCompleted(user);
+                newGRN.setReceivedAt(LocalDateTime.now());
+                grnHistory.setFunction("Nhập hàng");
+
+                for (GRNProduct grnProduct : newGRN.getGrnProducts()) {
+                    Product product = grnProduct.getProduct();
+                    product.setQuantity(product.getQuantity().add(grnProduct.getQuantity()));
+                    productRepository.save(product);
+                }
+            }
+
             newGRN.setHistories(List.of(grnHistory));
 
             grnRepository.save(newGRN);
@@ -160,6 +173,7 @@ public class GRNServiceImpl implements GRNService {
             // Ánh xạ thông tin các sản phẩm trong GRN sang DTO phản hồi
             List<GRNProductDetail> grnProductDetails = grn.getGrnProducts().stream().map(grnProduct -> grnProductMapper.mapToResponse(grnProduct)).toList();
             response.setProducts(grnProductDetails);
+
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_DETAIL_SUCCESSFULLY), response);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
@@ -362,13 +376,19 @@ public class GRNServiceImpl implements GRNService {
             grn.setReceivedAt(LocalDateTime.now());
 
             // Thêm lịch sử nhập hàng cho GRN
-            grn.getHistories().add(GRNHistory.builder().date(LocalDateTime.now())
+            grn.getHistories().add(GRNHistory.builder()
+                    .date(LocalDateTime.now())
                     .userExecuted(authHelper.getUser().getFullName())
                     .function("Nhập hàng")
-                    .operation("Nhập hàng").build());
+                    .operation("Nhập hàng")
+                    .build());
 
-            // Nhập hàng cho các sản phẩm trong GRN, Triển khai sau
-            updateProductQuantity(grn);
+            // Nhập hàng cho các sản phẩm trong GRN
+            for (GRNProduct grnProduct : grn.getGrnProducts()) {
+                Product product = grnProduct.getProduct();
+                product.setQuantity(product.getQuantity().add(grnProduct.getQuantity()));
+                productRepository.save(product);
+            }
 
             grnRepository.save(grn);
 
@@ -403,7 +423,4 @@ public class GRNServiceImpl implements GRNService {
         }
     }
 
-    private void updateProductQuantity(GRN existingGRN) {
-
-    }
 }
