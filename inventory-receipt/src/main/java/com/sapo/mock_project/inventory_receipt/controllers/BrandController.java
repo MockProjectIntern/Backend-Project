@@ -6,8 +6,10 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.brand.GetListBrandRe
 import com.sapo.mock_project.inventory_receipt.dtos.request.brand.UpdateBrandRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.brand.BrandService;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +23,17 @@ public class BrandController {
 
     @PostMapping("/create.json")
     @Operation(summary = "Tạo mới thương hiệu")
-    public ResponseEntity<ResponseObject<Object>> createBrand(@RequestBody CreateBrandRequest createBrandRequest) {
+    public ResponseEntity<ResponseObject<Object>> createBrand(@Valid @RequestBody CreateBrandRequest createBrandRequest) {
+        StringUtils.trimAllStringFields(createBrandRequest);
+
         return brandService.createBrand(createBrandRequest);
     }
 
     @PutMapping("/update.json/{id}")
     @Operation(summary = "Cập nhật thông tin thương hiệu")
     public ResponseEntity<ResponseObject<Object>> updateBrand(@PathVariable String id, @RequestBody UpdateBrandRequest updateBrandRequest) {
+        StringUtils.trimAllStringFields(updateBrandRequest);
+
         return brandService.updateBrand(id, updateBrandRequest);
     }
 

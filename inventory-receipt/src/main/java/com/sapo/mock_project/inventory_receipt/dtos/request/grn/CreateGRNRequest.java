@@ -1,12 +1,15 @@
 package com.sapo.mock_project.inventory_receipt.dtos.request.grn;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNStatus;
-import com.sapo.mock_project.inventory_receipt.entities.GRNProduct;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNImportCost;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNPaymentMethod;
+import com.sapo.mock_project.inventory_receipt.validator.ValidNumber;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -38,6 +41,7 @@ public class CreateGRNRequest {
      * ID của nhà cung cấp liên quan đến phiếu nhập kho.
      * Đây là thông tin bắt buộc.
      */
+    @NotNull(message = MessageValidateKeys.SUPPLIER_NOT_NULL)
     @JsonProperty("supplier_id")
     @Schema(description = "ID của nhà cung cấp", example = "SUP12345", required = true)
     private String supplierId;
@@ -70,6 +74,7 @@ public class CreateGRNRequest {
      * Số tiền giảm giá cho phiếu nhập kho.
      * Đây là thông tin bắt buộc.
      */
+    @ValidNumber(message = MessageValidateKeys.GRN_DISCOUNT_NOT_NEGATIVE)
     @JsonProperty("discount")
     @Schema(description = "Số tiền giảm giá cho phiếu nhập kho", example = "500000.00", required = true)
     private BigDecimal discount;
@@ -94,6 +99,7 @@ public class CreateGRNRequest {
      * Danh sách các sản phẩm liên quan đến phiếu nhập kho.
      * Đây là thông tin bắt buộc.
      */
+    @NotEmpty(message = MessageValidateKeys.GRN_PRODUCTS_NOT_EMPTY)
     @JsonProperty("products")
     @Schema(description = "Danh sách các sản phẩm", required = true)
     private List<CreateGRNProductRequest> products;
@@ -110,6 +116,7 @@ public class CreateGRNRequest {
      * Trạng thái nhận hàng của phiếu nhập kho.
      * Đây là thông tin tùy chọn.
      */
+    @NotNull(message = MessageValidateKeys.GRN_RECEIVED_STATUS_NOT_NULL)
     @JsonProperty("received_status")
     private GRNReceiveStatus receivedStatus;
 }

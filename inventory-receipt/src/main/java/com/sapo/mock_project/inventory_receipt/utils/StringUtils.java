@@ -1,5 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.utils;
 
+import java.lang.reflect.Field;
+
 public class StringUtils {
     public static String snakeCaseToCamelCase(String str) {
         if (str == null || str.isEmpty()) {
@@ -48,5 +50,33 @@ public class StringUtils {
         }
 
         return camelCaseString.toString();
+    }
+
+    public static void trimAllStringFields(Object object) {
+        if (object == null) {
+            return;
+        }
+
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            try {
+                Object value = field.get(object);
+
+                // Kiểm tra nếu field là kiểu String thì trim
+                if (value != null && field.getType().equals(String.class)) {
+                    String trimmedValue = ((String) value).trim();
+                    field.set(object, trimmedValue);
+                }
+
+                // Nếu field là một đối tượng (class khác), gọi lại trimAllStringFields để xử lý đệ quy
+                else if (value != null && !field.getType().isPrimitive()) {
+                    trimAllStringFields(value);  // Gọi đệ quy cho đối tượng class khác
+                }
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace(); // Log lỗi nếu có vấn đề về truy cập field
+            }
+        }
     }
 }

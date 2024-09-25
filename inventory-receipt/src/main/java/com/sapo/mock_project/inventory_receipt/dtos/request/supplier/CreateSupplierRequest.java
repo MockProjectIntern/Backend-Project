@@ -1,7 +1,11 @@
 package com.sapo.mock_project.inventory_receipt.dtos.request.supplier;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
+import com.sapo.mock_project.inventory_receipt.validator.ValidEmail;
+import com.sapo.mock_project.inventory_receipt.validator.ValidPhone;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -30,6 +34,7 @@ public class CreateSupplierRequest {
      * Số điện thoại của nhà cung cấp.
      * Đây là thông tin tùy chọn.
      */
+    @ValidPhone
     @Schema(description = "Số điện thoại của nhà cung cấp", example = "0123456789", required = false)
     @JsonProperty("phone")
     private String phone;
@@ -38,6 +43,7 @@ public class CreateSupplierRequest {
      * Địa chỉ email của nhà cung cấp.
      * Đây là thông tin tùy chọn.
      */
+    @ValidEmail
     @Schema(description = "Địa chỉ email của nhà cung cấp", example = "info@abc.com", required = false)
     @JsonProperty("email")
     private String email;
@@ -46,6 +52,7 @@ public class CreateSupplierRequest {
      * Địa chỉ của nhà cung cấp.
      * Đây là thông tin tùy chọn.
      */
+    @NotBlank(message = MessageValidateKeys.SUPPLIER_ADDRESS_NOT_BLANK)
     @Schema(description = "Địa chỉ của nhà cung cấp", example = "123 Đường ABC, Quận 1, TP.HCM", required = false)
     @JsonProperty("address")
     private String address;

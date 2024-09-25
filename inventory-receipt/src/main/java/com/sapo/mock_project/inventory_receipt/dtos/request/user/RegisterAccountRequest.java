@@ -2,7 +2,10 @@ package com.sapo.mock_project.inventory_receipt.dtos.request.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.enums.RoleEnum;
+import com.sapo.mock_project.inventory_receipt.validator.ValidPassword;
+import com.sapo.mock_project.inventory_receipt.validator.ValidPhone;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.Data;
 
@@ -27,6 +30,7 @@ public class RegisterAccountRequest {
      * Số điện thoại của người dùng.
      * Trường này là bắt buộc và nên là một chuỗi số điện thoại hợp lệ.
      */
+    @ValidPhone
     @JsonProperty("phone")
     @Schema(description = "Số điện thoại của người dùng", example = "0912345678", required = true)
     private String phone;
@@ -35,6 +39,7 @@ public class RegisterAccountRequest {
      * Mật khẩu cho tài khoản người dùng.
      * Trường này là bắt buộc và nên là một chuỗi mật khẩu bảo mật.
      */
+    @ValidPassword
     @JsonProperty("password")
     @Schema(description = "Mật khẩu cho tài khoản người dùng", example = "password123", required = true)
     private String password;

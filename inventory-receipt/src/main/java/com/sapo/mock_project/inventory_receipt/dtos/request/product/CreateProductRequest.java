@@ -1,9 +1,12 @@
 package com.sapo.mock_project.inventory_receipt.dtos.request.product;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.ProductStatus;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductImage;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -14,6 +17,7 @@ public class CreateProductRequest {
     @JsonProperty("sub_id")
     private String subId;
 
+    @NotBlank(message = MessageValidateKeys.PRODUCT_NAME_NOT_BLANK)
     @JsonProperty("name")
     private String name;
 

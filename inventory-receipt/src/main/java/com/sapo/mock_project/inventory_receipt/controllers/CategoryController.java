@@ -5,6 +5,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.category.CreateCateg
 import com.sapo.mock_project.inventory_receipt.dtos.request.category.GetListCategoryRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.category.CategoryService;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,6 +35,8 @@ public class CategoryController {
     @Operation(summary = "Tạo mới danh mục", description = "API để tạo mới một danh mục trong hệ thống.")
     @PostMapping("/create.json")
     public ResponseEntity<ResponseObject<Object>> createCategory(@Valid @RequestBody CreateCategoryRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return categoryService.createCategory(request);
     }
 
