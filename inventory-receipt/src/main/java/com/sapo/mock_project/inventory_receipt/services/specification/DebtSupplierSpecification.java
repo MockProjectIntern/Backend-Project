@@ -26,13 +26,16 @@ public class DebtSupplierSpecification implements Specification<DebtSupplier> {
     public Predicate toPredicate(Root<DebtSupplier> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
+        String supplierId = request.getSupplierId();
         LocalDateTime createdDateFrom = DateUtils.getDateTimeFrom(request.getCreatedDateFrom());
         LocalDateTime createdDateTo = DateUtils.getDateTimeFrom(request.getCreatedDateTo());
 
+        if (supplierId != null) {
+            predicates.add(criteriaBuilder.equal(root.get("supplier").get("id"), supplierId));
+        }
         if (createdDateFrom != null) {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), createdDateFrom));
         }
-
         if (createdDateTo != null) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), createdDateTo));
         }

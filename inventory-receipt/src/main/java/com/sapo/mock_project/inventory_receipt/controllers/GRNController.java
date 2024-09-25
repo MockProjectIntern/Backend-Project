@@ -103,4 +103,10 @@ public class GRNController {
         return grnService.importGRN(id);
     }
 
+    @GetMapping("/supplier-all.json/{supplierId}")
+    public ResponseEntity<ResponseObject<Object>> getAllBySupplier(@PathVariable String supplierId,
+                                                                   @RequestParam(defaultValue = "1") int page,
+                                                                   @RequestParam(defaultValue = "10") int size) {
+        return grnService.getAllBySupplier(supplierId, page, size);
+    }
 }

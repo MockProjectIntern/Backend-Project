@@ -7,6 +7,9 @@ import java.time.LocalDate;
 
 @Data
 public class GetListDebtSupplierRequest {
+    @JsonProperty("supplier_id")
+    private String supplierId;
+
     @JsonProperty("created_date_from")
     private LocalDate createdDateFrom;
 

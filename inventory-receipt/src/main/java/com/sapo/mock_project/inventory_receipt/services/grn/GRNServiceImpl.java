@@ -19,6 +19,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNDetail;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNGetListResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNProductDetail;
+import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNSupplierResponse;
 import com.sapo.mock_project.inventory_receipt.entities.*;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNHistory;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
@@ -34,14 +35,18 @@ import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierService
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Triển khai các dịch vụ liên quan đến phiếu nhập hàng (GRN).
@@ -368,6 +373,31 @@ public class GRNServiceImpl implements GRNService {
             grnRepository.save(grn);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_IMPORT_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getAllBySupplier(String supplierId, int page, int size) {
+        try {
+            Optional<Supplier> supplierOptional = supplierRepository.findById(supplierId);
+            if (supplierOptional.isEmpty()) {
+                return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND));
+            }
+
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Page<GRN> grnPage = grnRepository.findBySupplier(supplierOptional.get(), pageable);
+
+            Page<GRNSupplierResponse> responses = grnPage.map(grnMapper::mapToResponseSupplier);
+
+            Pagination pagination = Pagination.<Object>builder()
+                    .data(responses.getContent())
+                    .totalPage(responses.getTotalPages())
+                    .totalItems(responses.getTotalElements())
+                    .build();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_ALL_SUCCESSFULLY), pagination);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }
