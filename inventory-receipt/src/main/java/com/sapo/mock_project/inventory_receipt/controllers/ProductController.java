@@ -6,6 +6,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.product.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.product.ProductService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +23,23 @@ public class ProductController {
 
     @PostMapping("/quick-create.json")
     public ResponseEntity<ResponseObject<Object>> quickCreateProduct(@Valid @RequestBody QuickCreateProductRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return productService.quickCreateProduct(request);
     }
 
     @PostMapping("/create.json")
     public ResponseEntity<ResponseObject<Object>> createProduct(@Valid @RequestBody CreateProductRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return productService.createProduct(request);
     }
 
     @PutMapping("/update.json/{id}")
     public ResponseEntity<ResponseObject<Object>> updateProduct(@PathVariable String id,
                                                                 @Valid @RequestBody UpdateProductRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return productService.updateProduct(id, request);
     }
 

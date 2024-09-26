@@ -8,6 +8,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.supplier.UpdateSuppl
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,8 @@ public class SupplierController {
      */
     @PostMapping("/create.json")
     public ResponseEntity<ResponseObject<Object>> createSupplier(@Valid @RequestBody CreateSupplierRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return supplierService.createSupplier(request);
     }
 
@@ -77,6 +80,8 @@ public class SupplierController {
     @PutMapping("/update.json/{id}")
     public ResponseEntity<ResponseObject<Object>> updateSupplier(@PathVariable String id,
                                                                  @Valid @RequestBody UpdateSupplierRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return supplierService.updateSupplier(id, request);
     }
 

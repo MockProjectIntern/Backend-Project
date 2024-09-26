@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.validator;
 
+import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -13,7 +14,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidPassword {
-    String message() default "Mật khẩu phải có hơn 6 ký tự, bao gồm chữ hoa và số.";
+    String message() default MessageValidateKeys.PASSWORD_INVALID_PATTERN;
 
     Class<?>[] groups() default {};
 

@@ -4,6 +4,7 @@ import com.sapo.mock_project.inventory_receipt.constants.BaseEndpoint;
 import com.sapo.mock_project.inventory_receipt.dtos.request.user.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.user.UserService;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,6 +45,8 @@ public class UserController {
     @PostMapping("/register.json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<ResponseObject<Object>> createAccount(@Valid @RequestBody RegisterAccountRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return userService.createAccount(request);
     }
 
@@ -65,6 +68,8 @@ public class UserController {
     )
     @PostMapping("/login.json")
     public ResponseEntity<ResponseObject<Object>> login(@Valid @RequestBody LoginAccountRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return userService.loginAccount(request);
     }
 
@@ -106,6 +111,8 @@ public class UserController {
     )
     @PostMapping("/refresh-token.json")
     public ResponseEntity<ResponseObject<Object>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return userService.refreshToken(request);
     }
 
@@ -127,11 +134,15 @@ public class UserController {
     )
     @PatchMapping("/change-password.json")
     public ResponseEntity<ResponseObject<Object>> changePasswordAccount(@Valid @RequestBody ChangePasswordRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return userService.changePasswordAccount(request);
     }
 
     @PostMapping("/admin-create.json")
     public ResponseEntity<ResponseObject<Object>> adminCreateAccount(@Valid @RequestBody AdminCreateStaffRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return userService.adminCreateAccount(request);
     }
 
@@ -145,6 +156,8 @@ public class UserController {
     @PatchMapping("/admin-update-account.json/{id}")
     public ResponseEntity<ResponseObject<Object>> adminUpdateAccount(@PathVariable String id,
                                                                   @Valid @RequestBody AdminUpdateAccountRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return userService.adminUpdateAccount(id, request);
     }
 

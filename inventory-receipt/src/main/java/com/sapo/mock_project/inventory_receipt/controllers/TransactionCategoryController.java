@@ -6,6 +6,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListT
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTransactionCategoryRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.transaction.TransactionCategoryService;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,6 +42,8 @@ public class TransactionCategoryController {
     @ApiResponse(responseCode = "201", description = "Danh mục phiếu thu/chi được tạo thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
     public ResponseEntity<ResponseObject<Object>> createTransactionCategory(@Valid @RequestBody CreateTransactionCategoryRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return transactionCategoryService.createTransactionCategory(request);
     }
 
@@ -82,6 +85,8 @@ public class TransactionCategoryController {
     @ApiResponse(responseCode = "404", description = "Danh mục phiếu thu/chi không tìm thấy")
     public ResponseEntity<ResponseObject<Object>> updateTransactionCategory(@PathVariable String id,
                                                                             @Valid @RequestBody UpdateTransactionCategoryRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return transactionCategoryService.updateTransactionCategory(id, request);
     }
 }

@@ -8,6 +8,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.gin.UpdateGINRequest
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.gin.GINService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class GINController {
 
     @PostMapping("/create.json")
     public ResponseEntity<ResponseObject<Object>> createGIN(@Valid @RequestBody CreateGINRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return ginService.createGIN(request);
     }
 
@@ -37,6 +40,8 @@ public class GINController {
     @PutMapping("/update.json/{id}")
     public ResponseEntity<ResponseObject<Object>> updateGIN(@PathVariable String id,
                                                             @Valid @RequestBody UpdateGINRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return ginService.updateGIN(id, request);
     }
 

@@ -8,6 +8,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.grn.UpdateGRNRequest
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.grn.GRNService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,8 @@ public class GRNController {
      */
     @PostMapping("/create.json")
     public ResponseEntity<ResponseObject<Object>> createGRN(@Valid @RequestBody CreateGRNRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return grnService.createGRN(request);
     }
 
@@ -60,6 +63,8 @@ public class GRNController {
     @PutMapping("/update.json/{id}")
     public ResponseEntity<ResponseObject<Object>> updateGRN(@PathVariable String id,
                                                             @Valid @RequestBody UpdateGRNRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return grnService.updateGRN(id, request);
     }
 

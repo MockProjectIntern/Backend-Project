@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.validator;
 
+import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -13,7 +14,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEmail {
-    String message() default "Địa chỉ email không hợp lệ.";
+    String message() default MessageValidateKeys.EMAIL_INVALID_PATTERN;
 
     Class<?>[] groups() default {};
 

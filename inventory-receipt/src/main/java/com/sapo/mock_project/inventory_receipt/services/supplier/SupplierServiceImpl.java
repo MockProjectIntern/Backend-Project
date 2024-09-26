@@ -241,14 +241,20 @@ public class SupplierServiceImpl implements SupplierService {
             List<Map<String, String>> dataResponses = inforPage.getContent().stream()
                     .map(infor -> {
                         Map<String, String> response = Map.of(
-                                "id", infor[0].toString(),
-                                "name", infor[1].toString(),
-                                "phone", infor[2].toString()
+                                "id", infor[0] != null ? infor[0].toString() : null,
+                                "name", infor[1] != null ? infor[1].toString() : null,
+                                "phone", infor[2] != null ? infor[2].toString() : null
                         );
                         return response;
                     }).toList();
 
-            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_GET_ALL_SUCCESSFULLY), dataResponses);
+            Pagination pagination = Pagination.<Object>builder()
+                    .data(dataResponses)
+                    .totalPage(inforPage.getTotalPages())
+                    .totalItems(inforPage.getTotalElements())
+                    .build();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_GET_ALL_SUCCESSFULLY), pagination);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

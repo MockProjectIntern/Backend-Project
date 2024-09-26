@@ -69,9 +69,12 @@ public class StringUtils {
                     field.set(object, trimmedValue);
                 }
 
-                // Nếu field là một đối tượng (class khác), gọi lại trimAllStringFields để xử lý đệ quy
+                // Nếu field là một đối tượng và là class do mình định nghĩa
                 else if (value != null && !field.getType().isPrimitive()) {
-                    trimAllStringFields(value);  // Gọi đệ quy cho đối tượng class khác
+                    // Kiểm tra xem class của field có thuộc package của mình không
+                    if (field.getType().getPackage() != null && field.getType().getPackage().getName().startsWith("com.sapo.mock_project.inventory_receipt.dtos.request")) {
+                        trimAllStringFields(value);  // Gọi đệ quy cho đối tượng class khác do mình định nghĩa
+                    }
                 }
 
             } catch (IllegalAccessException e) {

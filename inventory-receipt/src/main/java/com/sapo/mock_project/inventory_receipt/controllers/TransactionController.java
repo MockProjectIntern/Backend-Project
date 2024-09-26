@@ -8,6 +8,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTr
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.transaction.TransactionService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,6 +44,8 @@ public class TransactionController {
     @ApiResponse(responseCode = "200", description = "Phiếu thu/chi được tạo thành công")
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ")
     public ResponseEntity<ResponseObject<Object>> createReceipt(@Valid @RequestBody CreateTransactionRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return transactionService.createTransaction(request);
     }
 
@@ -86,6 +89,8 @@ public class TransactionController {
     @ApiResponse(responseCode = "404", description = "Phiếu thu/chi không tìm thấy")
     public ResponseEntity<ResponseObject<Object>> updateTransaction(@PathVariable String id,
                                                                     @Valid @RequestBody UpdateTransactionRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return transactionService.updateTransaction(id, request);
     }
 

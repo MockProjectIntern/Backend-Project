@@ -9,6 +9,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.order.UpdateOrderReq
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.order.OrderService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ public class OrderController {
 
     @PostMapping("/create.json")
     public ResponseEntity<ResponseObject<Object>> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return orderService.createOrder(request);
     }
 
@@ -45,11 +48,15 @@ public class OrderController {
 
     @PutMapping("/update.json/{id}")
     public ResponseEntity<ResponseObject<Object>> updateOrder(@PathVariable String id, @Valid @RequestBody UpdateOrderRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return orderService.updateOrder(id, request);
     }
 
     @PutMapping("/update-little.json/{id}")
     public ResponseEntity<ResponseObject<Object>> updateOrderLittle(@PathVariable String id, @Valid @RequestBody UpdateOrderLittleRequest request) {
+        StringUtils.trimAllStringFields(request);
+
         return orderService.updateOrderLittle(id, request);
     }
 }
