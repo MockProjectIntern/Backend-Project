@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.transaction;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
@@ -33,6 +34,7 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
     private final TransactionCategoryRepository transactionCategoryRepository;
     private final TransactionCategoryMapper transactionCategoryMapper;
     private final LocalizationUtils localizationUtils;
+    private final AuthHelper authHelper;
 
     /**
      * Tạo một danh mục phiếu thu/chi mới.
@@ -44,12 +46,12 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
     public ResponseEntity<ResponseObject<Object>> createTransactionCategory(CreateTransactionCategoryRequest request) {
         try {
             // Kiểm tra xem ID có tồn tại không
-            if (request.getSubId() != null && transactionCategoryRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && transactionCategoryRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_ID_EXISTED));
             }
 
             // Kiểm tra xem tên danh mục và loại phiếu thu/chi có tồn tại không
-            if (transactionCategoryRepository.existsByNameAndType(request.getName(), request.getType())) {
+            if (transactionCategoryRepository.existsByNameAndTypeAndTenantId(request.getName(), request.getType(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXISTED));
             }
 
@@ -75,7 +77,7 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
     public ResponseEntity<ResponseObject<Object>> getListTransactionCategory(GetListTransactionCategoryRequest request, int page, int size) {
         try {
             // Tạo Specification để lọc danh mục phiếu thu/chi dựa trên yêu cầu
-            TransactionCategorySpecification specification = new TransactionCategorySpecification(request);
+            TransactionCategorySpecification specification = new TransactionCategorySpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
 
             // Lấy danh sách phân trang các danh mục phiếu thu/chi từ cơ sở dữ liệu
@@ -108,11 +110,12 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
     public ResponseEntity<ResponseObject<Object>> updateTransactionCategory(String transactionCategoryId, UpdateTransactionCategoryRequest request) {
         try {
             // Tìm kiếm danh mục phiếu thu/chi theo ID
-            TransactionCategory existTransactionCategory = transactionCategoryRepository.findById(transactionCategoryId)
+            TransactionCategory existTransactionCategory = transactionCategoryRepository.findByIdAndTenantId(transactionCategoryId, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new Exception(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
 
             // Kiểm tra xem tên mới có trùng với bất kỳ danh mục phiếu thu/chi nào khác cùng loại không
-            if (!existTransactionCategory.getName().equals(request.getName()) && transactionCategoryRepository.existsByNameAndType(request.getName(), existTransactionCategory.getType())) {
+            if (!existTransactionCategory.getName().equals(request.getName())
+                && transactionCategoryRepository.existsByNameAndTypeAndTenantId(request.getName(), existTransactionCategory.getType(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_CATEGORY_NAME_EXISTED));
             }
 

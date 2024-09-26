@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SupplierGroupSpecification implements Specification<SupplierGroup> {
     private GetListSupplierGroupRequest request;
+    private String tenantId;
 
     @Override
     public Predicate toPredicate(Root<SupplierGroup> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -41,6 +42,12 @@ public class SupplierGroupSpecification implements Specification<SupplierGroup> 
 
         if (status != null) {
             predicates.add(criteriaBuilder.equal(root.get("status"), status));
+        }
+
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

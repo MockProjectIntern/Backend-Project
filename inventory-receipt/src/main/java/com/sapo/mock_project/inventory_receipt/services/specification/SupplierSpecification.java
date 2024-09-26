@@ -31,6 +31,8 @@ public class SupplierSpecification implements Specification<Supplier> {
      */
     private GetListSupplierRequest request;
 
+    private String tenantId;
+
     /**
      * Tạo ra các predicate (điều kiện) lọc dựa trên các tham số từ {@link GetListSupplierRequest}.
      *
@@ -97,6 +99,12 @@ public class SupplierSpecification implements Specification<Supplier> {
             Predicate customTags = criteriaBuilder.like(criteriaBuilder.upper(root.get("tags")),
                     String.format("%%%s%%", tags.toUpperCase()));
             predicates.add(customTags);
+        }
+
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         // Kết hợp tất cả các điều kiện bằng phép AND

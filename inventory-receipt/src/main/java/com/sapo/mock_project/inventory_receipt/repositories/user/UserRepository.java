@@ -11,10 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String>, JpaSpecificationExecutor<User> {
-    Optional<User> findByPhone(String username);
+    Optional<User> findByPhoneAndTenantId(String username, String tenantId);
 
-    boolean existsByPhone(String phone);
+    Optional<User> findByPhone(String phone);
 
-    @Query("SELECT u.id, u.fullName FROM User u")
-    Page<Object[]> findAllFullName(Pageable pageable);
+    Optional<User> findByIdAndTenantId(String id, String tenantId);
+
+    boolean existsByPhoneAndTenantId(String phone, String tenantId);
+
+    @Query("SELECT u.id, u.fullName FROM User u WHERE u.tenantId = :tenantId")
+    Page<Object[]> findAllFullNameAndTenantId(String tenantId, Pageable pageable);
 }

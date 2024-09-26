@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.supplier;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
@@ -38,6 +39,7 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
     private final SupplierGroupRepository supplierGroupRepository;
     private final SupplierGroupMapper supplierGroupMapper;
     private final LocalizationUtils localizationUtils;
+    private final AuthHelper authHelper;
 
     /**
      * Tạo mới một nhóm nhà cung cấp.
@@ -49,11 +51,11 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
     public ResponseEntity<ResponseObject<Object>> createSupplierGroup(CreateSupplierGroupRequest request) {
         try {
             // Kiểm tra xem tên nhóm nhà cung cấp đã tồn tại hay chưa
-            if (supplierGroupRepository.existsByName(request.getName())) {
+            if (supplierGroupRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_NAME_EXISTED));
             }
             // Kiểm tra xem ID nhóm nhà cung cấp đã tồn tại hay chưa
-            if (request.getSubId() != null && supplierGroupRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && supplierGroupRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_ID_EXISTED));
             }
 
@@ -82,7 +84,7 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
     public ResponseEntity<ResponseObject<Object>> getSupplierGroupById(String supplierGroupId) {
         try {
             // Tìm nhóm nhà cung cấp theo ID
-            Optional<SupplierGroup> supplierGroup = supplierGroupRepository.findById(supplierGroupId);
+            Optional<SupplierGroup> supplierGroup = supplierGroupRepository.findByIdAndTenantId(supplierGroupId, authHelper.getUser().getTenantId());
             if (supplierGroup.isEmpty()) {
                 // Ném ngoại lệ nếu không tìm thấy
                 throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND));
@@ -110,7 +112,7 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getAllSupplierGroup(GetListSupplierGroupRequest request, int page, int size) {
         try {
-            SupplierGroupSpecification supplierGroupSpecification = new SupplierGroupSpecification(request);
+            SupplierGroupSpecification supplierGroupSpecification = new SupplierGroupSpecification(request, authHelper.getUser().getTenantId());
             // Sắp xếp theo tên nhà cung cấp tăng dần
             Sort sort = Sort.by(Sort.Direction.ASC, "name");
             Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -150,15 +152,18 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
     public ResponseEntity<ResponseObject<Object>> updateSupplierGroup(String supplierGroupId, UpdateSupplierGroupRequest request) {
         try {
             // Tìm nhóm nhà cung cấp theo ID
-            SupplierGroup existingSupplierGroup = supplierGroupRepository.findById(supplierGroupId)
+            SupplierGroup existingSupplierGroup = supplierGroupRepository.findByIdAndTenantId(supplierGroupId, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND)));
 
             // Kiểm tra tên nhóm nhà cung cấp có bị trùng không
-            if (!existingSupplierGroup.getName().equals(request.getName()) && supplierGroupRepository.existsByName(request.getName())) {
+            if (!existingSupplierGroup.getName().equals(request.getName())
+                && supplierGroupRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_NAME_EXISTED));
             }
             // Kiểm tra ID nhóm nhà cung cấp có bị trùng không
-            if (request.getSubId() != null && !existingSupplierGroup.getId().equals(request.getSubId()) && supplierGroupRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null
+                    && !existingSupplierGroup.getId().equals(request.getSubId())
+                        && supplierGroupRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_ID_EXISTED));
             }
 
@@ -185,7 +190,7 @@ public class SupplierGroupServiceImpl implements SupplierGroupService {
     public ResponseEntity<ResponseObject<Object>> deleteSupplierGroup(String supplierGroupId) {
         try {
             // Tìm nhóm nhà cung cấp theo ID
-            SupplierGroup existingSupplierGroup = supplierGroupRepository.findById(supplierGroupId)
+            SupplierGroup existingSupplierGroup = supplierGroupRepository.findByIdAndTenantId(supplierGroupId, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND)));
 
             // Cập nhật trạng thái nhóm nhà cung cấp thành INACTIVE

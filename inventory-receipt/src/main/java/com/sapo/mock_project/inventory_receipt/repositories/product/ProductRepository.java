@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, String>, JpaSpecificationExecutor<Product> {
+    Optional<Product> findByIdAndTenantId(String id, String tenantId);
+
     @Query("""
             SELECT COALESCE(SUM(od.quantity - COALESCE(od.importedQuantity, 0)), 0)
             FROM Product p

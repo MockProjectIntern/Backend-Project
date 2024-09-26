@@ -31,10 +31,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service xử lý các chức năng liên quan đến người dùng như đăng ký, đăng nhập, làm mới token và thay đổi mật khẩu.
@@ -59,15 +56,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> createAccount(RegisterAccountRequest request) {
         try {
-            if (userRepository.existsByPhone(request.getPhone())) {
+            if (userRepository.existsByPhoneAndTenantId(request.getPhone(), authHelper.getUser().getTenantId())) {
                 // Nếu số điện thoại đã tồn tại, trả về lỗi xác thực
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.USER_PHONE_EXISTED));
             }
 
             User newAccount = userMapper.mapToEntity(request);
-            newAccount.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu trước khi lưu
+            newAccount.setPassword(passwordEncoder.encode(request.getPassword()));
             newAccount.setActive(true);
             newAccount.setLastChangePass(new Date(System.currentTimeMillis()));
+            newAccount.setTenantId(UUID.randomUUID().toString().substring(0, 8));
 
             userRepository.save(newAccount);
 
@@ -88,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> loginAccount(LoginAccountRequest request) {
         try {
-            Optional<User> existingUserOptional = userRepository.findByPhone(request.getPhone());
+            Optional<User> existingUserOptional = userRepository.findByPhoneAndTenantId(request.getPhone(), authHelper.getUser().getTenantId());
             if (existingUserOptional.isEmpty()) {
                 throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND_BY_PHONE));
             }
@@ -148,7 +146,7 @@ public class UserServiceImpl implements UserService {
 
             final String id = jwtTokenUtil.extractId(refreshToken);
             if (id != null) {
-                Optional<User> userDetails = userRepository.findById(id);
+                Optional<User> userDetails = userRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId());
                 if (userDetails.isEmpty() || !jwtTokenUtil.validateToken(refreshToken, userDetails.get())) {
                     throw new ExpiredTokenException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_TOKEN_EXPIRED));
                 }
@@ -214,7 +212,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> adminCreateAccount(AdminCreateStaffRequest request) {
         try {
-            if (userRepository.existsByPhone(request.getPhone())) {
+            if (userRepository.existsByPhoneAndTenantId(request.getPhone(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.USER_PHONE_EXISTED));
             }
 
@@ -238,7 +236,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getListAccount(GetListAccountRequest request, int page, int size) {
         try {
-            UserSpecification specification = new UserSpecification(request);
+            UserSpecification specification = new UserSpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "fullName");
 
             Page<User> userPage = userRepository.findAll(specification, pageable);
@@ -263,7 +261,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> adminUpdateAccount(String accountId, AdminUpdateAccountRequest request) {
         try {
-            Optional<User> userOptional = userRepository.findById(accountId);
+            Optional<User> userOptional = userRepository.findByIdAndTenantId(accountId, authHelper.getUser().getTenantId());
             if (userOptional.isEmpty()) {
                 return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND));
             }
@@ -284,7 +282,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> deleteAccount(String accountId) {
         try {
-            Optional<User> userOptional = userRepository.findById(accountId);
+            Optional<User> userOptional = userRepository.findByIdAndTenantId(accountId, authHelper.getUser().getTenantId());
             if (userOptional.isEmpty()) {
                 return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND));
             }
@@ -305,7 +303,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseObject<Object>> getListName(int page, int size) {
         try {
             Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "fullName");
-            Page<Object[]> userPage = userRepository.findAllFullName(pageable);
+            Page<Object[]> userPage = userRepository.findAllFullNameAndTenantId(authHelper.getUser().getTenantId(), pageable);
 
             List<Map<String, String>> nameList = userPage.getContent().stream()
                     .map(objects -> {

@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.product;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
@@ -43,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper productMapper;
     private final LocalizationUtils localizationUtils;
+    private final AuthHelper authHelper;
 
     @Override
     public ResponseEntity<ResponseObject<Object>> quickCreateProduct(QuickCreateProductRequest request) {
@@ -50,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
             Product newProduct = productMapper.mapToEntity(request);
 
             if (request.getCategoryId() != null) {
-                Category existingCategory = categoryRepository.findById(request.getCategoryId())
+                Category existingCategory = categoryRepository.findByIdAndTenantId(request.getCategoryId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.CATEGORY_NOT_FOUND)));
 
                 newProduct.setCategory(existingCategory);
@@ -72,14 +74,14 @@ public class ProductServiceImpl implements ProductService {
             Product newProduct = productMapper.mapToEntity(request);
 
             if (request.getCategoryId() != null) {
-                Category existingCategory = categoryRepository.findById(request.getCategoryId())
+                Category existingCategory = categoryRepository.findByIdAndTenantId(request.getCategoryId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.CATEGORY_NOT_FOUND)));
 
                 newProduct.setCategory(existingCategory);
             }
 
             if (request.getBrandId() != null) {
-                Brand existingBrand = brandRepository.findById(request.getBrandId())
+                Brand existingBrand = brandRepository.findByIdAndTenantId(request.getBrandId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.BRAND_NOT_FOUND)));
 
                 newProduct.setBrand(existingBrand);
@@ -98,20 +100,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<ResponseObject<Object>> updateProduct(String productId, UpdateProductRequest request) {
         try {
-            Product existingProduct = productRepository.findById(productId)
+            Product existingProduct = productRepository.findByIdAndTenantId(productId, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
 
             productMapper.updateFromDTO(request, existingProduct);
 
             if (request.getCategoryId() != null) {
-                Category existingCategory = categoryRepository.findById(request.getCategoryId())
+                Category existingCategory = categoryRepository.findByIdAndTenantId(request.getCategoryId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.CATEGORY_NOT_FOUND)));
 
                 existingProduct.setCategory(existingCategory);
             }
 
             if (request.getBrandId() != null) {
-                Brand existingBrand = brandRepository.findById(request.getBrandId())
+                Brand existingBrand = brandRepository.findByIdAndTenantId(request.getBrandId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.BRAND_NOT_FOUND)));
 
                 existingProduct.setBrand(existingBrand);
@@ -130,7 +132,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<ResponseObject<Object>> filterProduct(GetListProductRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
-            ProductSpecification specification = new ProductSpecification(request);
+            ProductSpecification specification = new ProductSpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
             Page<Product> productPage = productRepository.findAll(specification, pageable);
@@ -195,7 +197,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<ResponseObject<Object>> filterProductInWarehouse(GetListProductManageRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
-            ProductManageSpecification specification = new ProductManageSpecification(request);
+            ProductManageSpecification specification = new ProductManageSpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
 
             Page<Product> productPage = productRepository.findAll(specification, pageable);

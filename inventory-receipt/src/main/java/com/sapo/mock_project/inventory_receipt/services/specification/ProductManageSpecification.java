@@ -22,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductManageSpecification implements Specification<Product> {
     private GetListProductManageRequest request;
+    private String tenantId;
 
     @Override
     public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -63,6 +64,11 @@ public class ProductManageSpecification implements Specification<Product> {
 
         if (statuses != null && !statuses.isEmpty()) {
             predicates.add(root.get("status").in(statuses));
+        }
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

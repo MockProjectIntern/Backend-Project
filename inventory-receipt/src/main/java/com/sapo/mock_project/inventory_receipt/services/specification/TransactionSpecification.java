@@ -29,6 +29,8 @@ import java.util.List;
 public class TransactionSpecification implements Specification<Transaction> {
     private GetListTransactionRequest request; // Yêu cầu chứa các tiêu chí lọc cho phiếu thu/chi.
 
+    private String tenantId; // ID của khách hàng sử dụng dịch vụ.
+
     /**
      * Phương thức này xây dựng các điều kiện (Predicate) dựa trên các tiêu chí lọc của yêu cầu.
      *
@@ -121,6 +123,12 @@ public class TransactionSpecification implements Specification<Transaction> {
         // Lọc theo trạng thái phiếu thu/chi
         if (statuses != null && !statuses.isEmpty()) {
             predicates.add(root.get("status").in(statuses));
+        }
+
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         // Kết hợp các điều kiện lọc

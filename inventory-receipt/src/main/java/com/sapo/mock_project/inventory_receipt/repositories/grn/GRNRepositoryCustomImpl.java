@@ -25,11 +25,12 @@ public class GRNRepositoryCustomImpl implements GRNRepositoryCustom {
                                                  LocalDate startCreatedAt, LocalDate endCreatedAt,
                                                  LocalDate startExpectedAt, LocalDate endExpectedAt,
                                                  String userCreatedIds, String userCompletedIds,
-                                                 String userCancelledIds, int page, int size) {
+                                                 String userCancelledIds, String tenantId,
+                                                 int page, int size) {
         try {
             String sqlQuery = "{CALL filter_grns(:filterJson, :keyword, :statuses, :received_statuses, :supplierIds, " +
                               ":startCreatedAt, :endCreatedAt, :startExpectedAt, :endExpectedAt, " +
-                              ":productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, :page, :size)}";
+                              ":productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, :tenantId, :page, :size)}";
 
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("filterJson", filterJson)
@@ -45,6 +46,7 @@ public class GRNRepositoryCustomImpl implements GRNRepositoryCustom {
                     .addValue("userCreatedIds", userCreatedIds)
                     .addValue("userCompletedIds", userCompletedIds)
                     .addValue("userCancelledIds", userCancelledIds)
+                    .addValue("tenantId", tenantId)
                     .addValue("page", page)
                     .addValue("size", size);
 
@@ -59,8 +61,8 @@ public class GRNRepositoryCustomImpl implements GRNRepositoryCustom {
     public int countTotalGRN(String filterJson, String keyword, String statuses, String receivedStatus,
                              String supplierIds, String productIds, LocalDate startCreatedAt, LocalDate endCreatedAt,
                              LocalDate startExpectedAt, LocalDate endExpectedAt, String userCreatedIds,
-                             String userCompletedIds, String userCancelledIds) {
-        String sql = "SELECT COUNT(DISTINCT g.id) FROM grns g LEFT JOIN grn_products gp ON gp.grn_id = g.id WHERE 1 = 1";
+                             String userCompletedIds, String userCancelledIds, String tenantId) {
+        String sql = "SELECT COUNT(DISTINCT g.id) FROM grns g LEFT JOIN grn_products gp ON gp.grn_id = g.id WHERE 1 = 1 AND g.tenant_id = :tenantId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("filterJson", filterJson)
@@ -75,7 +77,9 @@ public class GRNRepositoryCustomImpl implements GRNRepositoryCustom {
                 .addValue("productIds", productIds)
                 .addValue("userCreatedIds", userCreatedIds)
                 .addValue("userCompletedIds", userCompletedIds)
-                .addValue("userCancelledIds", userCancelledIds);
+                .addValue("userCancelledIds", userCancelledIds)
+                .addValue("tenantId", tenantId);
+
 
         if (keyword != null && !keyword.isEmpty()) {
             sql += " AND (g.id LIKE :keyword OR g.sub_id LIKE :keyword OR g.tags LIKE :keyword)";

@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.category;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
@@ -38,6 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     // Utility để xử lý việc lấy message được bản địa hóa (localization)
     private final LocalizationUtils localizationUtils;
+    private final AuthHelper authHelper;
 
     /**
      * Phương thức tạo mới danh mục.
@@ -49,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<ResponseObject<Object>> createCategory(CreateCategoryRequest request) {
         try {
             // Kiểm tra nếu tên danh mục đã tồn tại
-            if (categoryRepository.existsByName(request.getName())) {
+            if (categoryRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId())) {
                 // Trả về thông báo lỗi nếu tên danh mục đã tồn tại
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.CATEGORY_NAME_EXISTED));
             }
@@ -80,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<ResponseObject<Object>> getListCategory(GetListCategoryRequest request, int page, int size) {
         try {
             // Sử dụng Specification để tạo tiêu chí tìm kiếm danh mục
-            CategorySpecification categorySpecification = new CategorySpecification(request);
+            CategorySpecification categorySpecification = new CategorySpecification(request, authHelper.getUser().getTenantId());
 
             // Tạo đối tượng Pageable để phân trang và sắp xếp theo tên danh mục tăng dần
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));

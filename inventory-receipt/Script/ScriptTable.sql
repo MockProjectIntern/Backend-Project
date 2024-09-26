@@ -19,6 +19,7 @@ CREATE TABLE users
     gender           SMALLINT,                                                            -- Giới tính của người dùng
     role             ENUM('COORDINATOR', 'WAREHOUSE_STAFF', 'WAREHOUSE_MANAGER') NOT NULL,-- Vai trò của người dùng
     last_change_pass TIMESTAMP,                                                           -- Thời gian thay đổi mật khẩu cuối cùng
+    tenant_id        VARCHAR(10),                                                         -- Mã định danh của nhà bán hàng
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -30,6 +31,7 @@ CREATE TABLE supplier_groups
     name       VARCHAR(50),                                          -- Tên nhóm nhà cung cấp
     note       TEXT,                                                 -- Ghi chú
     status     ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE', -- Trạng thái hoạt động
+    tenant_id  VARCHAR(10),                                          -- Mã định danh của nhà bán hàng
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -48,6 +50,7 @@ CREATE TABLE suppliers
     total_refund      DECIMAL(10, 2),                                                  -- Tổng số tiền đã hoàn trả
     tags              TEXT,                                                            -- Tags
     note              TEXT,                                                            -- Ghi chú
+    tenant_id         VARCHAR(10),                                                     -- Mã định danh của nhà bán hàng
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (supplier_group_id) REFERENCES supplier_groups (id)
@@ -71,6 +74,7 @@ CREATE TABLE orders
     supplier_id       VARCHAR(10),
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id         VARCHAR(10),                                                                    -- Mã định danh của nhà bán hàng
     FOREIGN KEY (user_created_id) REFERENCES users (id),
     FOREIGN KEY (user_completed_id) REFERENCES users (id),
     FOREIGN KEY (user_cancelled_id) REFERENCES users (id),
@@ -83,8 +87,20 @@ CREATE TABLE brands
     id         VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
     sub_id     VARCHAR(10),                      -- Mã định danh ban đầu
     name       VARCHAR(50),
+    tenant_id  VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE categories
+(
+    id         VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
+    sub_id     VARCHAR(10),                      -- Mã định danh ban đầu
+    name       VARCHAR(50),
+    tenant_id  VARCHAR(10),                      -- Mã định danh của nhà bán hàng
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
 );
 
 CREATE TABLE products
@@ -107,6 +123,7 @@ CREATE TABLE products
     brand_id        VARCHAR(10),
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id       VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (brand_id) REFERENCES brands (id),
     FOREIGN KEY (category_id) REFERENCES categories (id)
 );
@@ -124,17 +141,9 @@ CREATE TABLE order_details
     unit              TEXT,
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id         VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (order_id) REFERENCES orders (id),
     FOREIGN KEY (product_id) REFERENCES products (id)
-);
-
-CREATE TABLE categories
-(
-    id         VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
-    sub_id     VARCHAR(10),                      -- Mã định danh ban đầu
-    name       VARCHAR(50),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE gins
@@ -149,6 +158,7 @@ CREATE TABLE gins
     note               TEXT,
     created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id          VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (user_created_id) REFERENCES users (id),
     FOREIGN KEY (user_balanced_id) REFERENCES users (id),
     FOREIGN KEY (user_inspection_id) REFERENCES users (id)
@@ -167,6 +177,7 @@ CREATE TABLE gin_products
     product_id           VARCHAR(10),
     created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id            VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (gin_id) REFERENCES gins (id),
     FOREIGN KEY (product_id) REFERENCES products (id)
 );
@@ -186,6 +197,7 @@ CREATE TABLE grns
     cancelled_at      TIMESTAMP,
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id         VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (user_created_id) REFERENCES users (id),
     FOREIGN KEY (user_completed_id) REFERENCES users (id),
     FOREIGN KEY (user_cancelled_id) REFERENCES users (id),
@@ -208,6 +220,7 @@ CREATE TABLE grn_products
     product_id        VARCHAR(10),
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id         VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (grn_id) REFERENCES grns (id),
     FOREIGN KEY (product_id) REFERENCES products (id)
 );
@@ -219,8 +232,10 @@ CREATE TABLE transaction_categories -- Loại giao dịch
     name        VARCHAR(50),
     description TEXT,
     type        ENUM("INCOME", "EXPENSE") NOT NULL,
+    tenant_id   VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
 );
 
 INSERT INTO transaction_categories (id, sub_id, name, description, type)
@@ -250,6 +265,7 @@ CREATE TABLE transactions
     user_created_id         VARCHAR(10),
     created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id               VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (transaction_category_id) REFERENCES transaction_categories (id),
     FOREIGN KEY (user_created_id) REFERENCES users (id)
 );
@@ -267,6 +283,7 @@ CREATE TABLE debt_suppliers -- Nợ nhà cung cấp
     user_created_id VARCHAR(10),
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id       VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (supplier_id) REFERENCES suppliers (id),
     FOREIGN KEY (user_created_id) REFERENCES users (id)
 );
@@ -291,6 +308,7 @@ CREATE TABLE refund_informations
     grn_id                  VARCHAR(10),
     created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id               VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (user_created_id) REFERENCES users (id),
     FOREIGN KEY (grn_id) REFERENCES grns (id)
 );
@@ -302,12 +320,13 @@ CREATE TABLE refund_information_details
     refund_information_id VARCHAR(10),
     product_id            VARCHAR(10),
     quantity              DECIMAL(10, 2),
-    refunded_price         DECIMAL(10, 2),
+    refunded_price        DECIMAL(10, 2),
     amount                DECIMAL(10, 2),
     tax                   DECIMAL(10, 2),
     note                  TEXT,
     created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tenant_id             VARCHAR(10),                      -- Mã định danh của nhà bán hàng
     FOREIGN KEY (refund_information_id) REFERENCES refund_informations (id),
     FOREIGN KEY (product_id) REFERENCES products (id)
 );

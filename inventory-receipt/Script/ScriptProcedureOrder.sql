@@ -12,6 +12,7 @@ CREATE PROCEDURE filter_orders(
     IN p_user_created_ids VARCHAR(255),
     IN p_user_completed_ids VARCHAR(255),
     IN p_user_cancelled_ids VARCHAR(255),
+    IN p_tenant_id VARCHAR(255),
     IN p_page INT,
     IN p_size INT
 )
@@ -189,7 +190,7 @@ END IF;
 		SET @sql_query = CONCAT(@sql_query, ' LEFT JOIN users uend ON o.user_ended_id = uend.id');
 END IF;
 
-    SET @sql_query = CONCAT(@sql_query, ' WHERE 1=1');
+    SET @sql_query = CONCAT(@sql_query, ' WHERE 1=1 AND o.tenant_id = "', p_tenant_id, '"');
 
         IF p_status IS NOT NULL THEN
         SET @sql_query = CONCAT(@sql_query, ' AND FIND_IN_SET(o.status, "', p_status, '")');

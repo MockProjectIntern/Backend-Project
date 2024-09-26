@@ -30,6 +30,8 @@ public class TransactionCategorySpecification implements Specification<Transacti
      */
     private GetListTransactionCategoryRequest request;
 
+    private String tenantId;
+
     /**
      * Phương thức xây dựng Predicate (tập các điều kiện truy vấn) dựa trên request.
      *
@@ -68,6 +70,12 @@ public class TransactionCategorySpecification implements Specification<Transacti
             // Tạo điều kiện lọc bằng phép so sánh chính xác theo loại phiếu thu/chi
             Predicate customStatus = criteriaBuilder.equal(root.get("type"), type);
             predicates.add(customStatus);
+        }
+
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         // Kết hợp tất cả các điều kiện bằng phép AND

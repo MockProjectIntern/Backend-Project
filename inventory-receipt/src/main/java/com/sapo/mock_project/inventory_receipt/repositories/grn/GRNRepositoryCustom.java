@@ -12,12 +12,14 @@ public interface GRNRepositoryCustom {
                                           LocalDate startCreatedAt, LocalDate endCreatedAt,
                                           LocalDate startExpectedAt, LocalDate endExpectedAt,
                                           String userCreatedIds, String userCompletedIds,
-                                          String userCancelledIds, int page, int size);
+                                          String userCancelledIds, String tenantId,
+                                          int page, int size);
 
     int countTotalGRN(String filterJson, String keyword,
                       String statuses, String receivedStatus,
                       String supplierIds, String productIds,
                       LocalDate startCreatedAt, LocalDate endCreatedAt,
                       LocalDate startExpectedAt, LocalDate endExpectedAt,
-                      String userCreatedIds, String userCompletedIds, String userCancelledIds);
+                      String userCreatedIds, String userCompletedIds,
+                      String userCancelledIds, String tenantId);
 }

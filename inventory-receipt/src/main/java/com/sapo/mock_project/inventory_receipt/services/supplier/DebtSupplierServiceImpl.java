@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.supplier;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.dtos.request.supplier.GetListDebtSupplierRequest;
@@ -27,11 +28,12 @@ public class DebtSupplierServiceImpl implements DebtSupplierService {
     private final DebtSupplierRepository debtSupplierRepository;
     private final SupplierMapper supplierMapper;
     private final LocalizationUtils localizationUtils;
+    private final AuthHelper authHelper;
 
     @Override
     public ResponseEntity<ResponseObject<Object>> filterDebtSupplier(GetListDebtSupplierRequest request, int page, int size) {
         try {
-            DebtSupplierSpecification specification = new DebtSupplierSpecification(request);
+            DebtSupplierSpecification specification = new DebtSupplierSpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.DESC, "createdAt");
 
             Page<DebtSupplier> debtSupplierPage = debtSupplierRepository.findAll(specification, pageable);

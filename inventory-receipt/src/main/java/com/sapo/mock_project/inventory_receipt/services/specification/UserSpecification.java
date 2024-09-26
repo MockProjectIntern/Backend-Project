@@ -23,6 +23,8 @@ import java.util.List;
 public class UserSpecification implements Specification<User> {
     private GetListAccountRequest request;
 
+    private String tenantId;
+
     @Override
     public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
@@ -59,6 +61,12 @@ public class UserSpecification implements Specification<User> {
         }
 
         predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
+
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
+        }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }

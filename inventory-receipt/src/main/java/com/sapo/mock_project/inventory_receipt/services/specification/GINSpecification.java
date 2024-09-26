@@ -22,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GINSpecification implements Specification<GIN> {
     private GetListGINRequest request;
+    private String tenantId;
 
     @Override
     public Predicate toPredicate(Root<GIN> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -65,6 +66,11 @@ public class GINSpecification implements Specification<GIN> {
         }
         if (userInspectionIds != null && !userInspectionIds.isEmpty()) {
             predicates.add(root.get("userInspection").get("id").in(userInspectionIds));
+        }
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

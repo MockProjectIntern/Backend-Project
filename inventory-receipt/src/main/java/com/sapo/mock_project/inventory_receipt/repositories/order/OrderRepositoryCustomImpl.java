@@ -28,9 +28,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                                                         LocalDate startExpectedAt, LocalDate endExpectedAt,
                                                         String productIds, String userCreatedIds,
                                                         String userCompletedIds, String userCancelledIds,
+                                                        String tenantId,
                                                         int page, int size) {
         try {
-            String sqlQuery = "{CALL filter_orders(:filterJson, :keyword, :status, :supplierIds, :startCreatedAt, :endCreatedAt, :startExpectedAt, :endExpectedAt, :productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, :page, :size)}";
+            String sqlQuery = "{CALL filter_orders(:filterJson, :keyword, :status, :supplierIds, " +
+                              ":startCreatedAt, :endCreatedAt, :startExpectedAt, :endExpectedAt, " +
+                              ":productIds, :userCreatedIds, :userCompletedIds, :userCancelledIds, " +
+                              ":tenantId, :page, :size)}";
 
             MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue("filterJson", filterJson)
@@ -45,6 +49,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                     .addValue("userCreatedIds", userCreatedIds)
                     .addValue("userCompletedIds", userCompletedIds)
                     .addValue("userCancelledIds", userCancelledIds)
+                    .addValue("tenantId", tenantId)
                     .addValue("page", page)
                     .addValue("size", size);
 
@@ -150,9 +155,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                                 LocalDate startCreatedAt, LocalDate endCreatedAt,
                                 LocalDate startExpectedAt, LocalDate endExpectedAt,
                                 String productIds, String userCreatedIds,
-                                String userCompletedIds, String userCancelledIds
+                                String userCompletedIds, String userCancelledIds, String tenantId
     ) {
-        String sql = "SELECT COUNT(DISTINCT o.id) FROM orders o LEFT JOIN order_details od ON o.id = od.order_id WHERE 1=1";
+        String sql = "SELECT COUNT(DISTINCT o.id) FROM orders o LEFT JOIN order_details od ON o.id = od.order_id WHERE 1=1 AND o.tenant_id = :tenantId";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("filterJson", filterJson)
@@ -166,7 +171,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 .addValue("productIds", productIds)
                 .addValue("userCreatedIds", userCreatedIds)
                 .addValue("userCompletedIds", userCompletedIds)
-                .addValue("userCancelledIds", userCancelledIds);
+                .addValue("userCancelledIds", userCancelledIds)
+                .addValue("tenantId", tenantId);
 
         // Thêm điều kiện tìm kiếm vào truy vấn
         if (keyword != null) {

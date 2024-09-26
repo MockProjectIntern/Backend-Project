@@ -12,6 +12,7 @@ public interface OrderRepositoryCustom {
                                                  LocalDate startExpectedAt, LocalDate endExpectedAt,
                                                  String productIds, String userCreatedIds,
                                                  String userCompletedIds, String userCancelledIds,
+                                                 String tenantId,
                                                  int page, int size);
 
 
@@ -20,6 +21,5 @@ public interface OrderRepositoryCustom {
                          LocalDate startCreatedAt, LocalDate endCreatedAt,
                          LocalDate startExpectedAt, LocalDate endExpectedAt,
                          String productIds, String userCreatedIds,
-                         String userCompletedIds, String userCancelledIds
-    );
+                         String userCompletedIds, String userCancelledIds, String tenantId);
 }

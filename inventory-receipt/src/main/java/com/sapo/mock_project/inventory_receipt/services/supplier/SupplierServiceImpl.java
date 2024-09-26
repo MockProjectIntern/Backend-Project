@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.supplier;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +50,7 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierGroupRepository supplierGroupRepository;
     private final SupplierMapper supplierMapper;
     private final LocalizationUtils localizationUtils;
+    private final AuthHelper authHelper;
 
     /**
      * Tạo mới một nhà cung cấp.
@@ -58,24 +61,25 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public ResponseEntity<ResponseObject<Object>> createSupplier(CreateSupplierRequest request) {
         try {
+            Supplier newSupplier = supplierMapper.mapToEntity(request);
+
             // Kiểm tra xem ID có tồn tại không
-            if (request.getSubId() != null && supplierRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && supplierRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_ID_EXISTED));
             }
             // Kiểm tra xem tên có tồn tại không
-            if (supplierRepository.existsByName(request.getName())) {
+            if (supplierRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_NAME_EXISTED));
             }
-            // Lấy nhóm nhà cung cấp
-            SupplierGroup existingSupplierGroup = supplierGroupRepository.findById(request.getSupplierGroupId())
-                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND)));
-            if (existingSupplierGroup.getStatus() == SupplierGroupStatus.INACTIVE) {
-                return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_INACTIVE));
+            if (request.getSupplierGroupId() != null) {
+                SupplierGroup existingSupplierGroup = supplierGroupRepository.findByIdAndTenantId(request.getSupplierGroupId(), authHelper.getUser().getTenantId())
+                        .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND)));
+                if (existingSupplierGroup.getStatus() == SupplierGroupStatus.INACTIVE) {
+                    return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_GROUP_INACTIVE));
+                }
+                newSupplier.setGroup(existingSupplierGroup);
             }
 
-            // Tạo đối tượng Supplier mới và lưu vào cơ sở dữ liệu
-            Supplier newSupplier = supplierMapper.mapToEntity(request);
-            newSupplier.setGroup(existingSupplierGroup);
             newSupplier.setStatus(SupplierStatus.ACTIVE);
             newSupplier.setCurrentDebt(BigDecimal.ZERO);
             newSupplier.setTotalRefund(BigDecimal.ZERO);
@@ -97,7 +101,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getSupplierById(String supplierId) {
         try {
-            Supplier supplier = supplierRepository.findById(supplierId)
+            Supplier supplier = supplierRepository.findByIdAndTenantId(supplierId, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND)));
 
             SupplierDetail response = supplierMapper.mapToResponse(supplier);
@@ -121,7 +125,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public ResponseEntity<ResponseObject<Object>> filterSupplier(GetListSupplierRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
-            SupplierSpecification supplierSpecification = new SupplierSpecification(request);
+            SupplierSpecification supplierSpecification = new SupplierSpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
 
             Page<Supplier> supplierPage = supplierRepository.findAll(supplierSpecification, pageable);
@@ -184,18 +188,18 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public ResponseEntity<ResponseObject<Object>> updateSupplier(String supplierId, UpdateSupplierRequest request) {
         try {
-            Supplier existingSupplier = supplierRepository.findById(supplierId)
+            Supplier existingSupplier = supplierRepository.findByIdAndTenantId(supplierId, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND)));
 
             // Kiểm tra và xử lý các điều kiện cập nhật
-            if (request.getName() != null && !request.getName().equals(existingSupplier.getName()) && supplierRepository.existsByName(request.getName())) {
+            if (request.getName() != null && !request.getName().equals(existingSupplier.getName()) && supplierRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_NAME_EXISTED));
             }
-            if (request.getSubId() != null && !request.getSubId().equals(existingSupplier.getId()) && supplierRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && !request.getSubId().equals(existingSupplier.getId()) && supplierRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_ID_EXISTED));
             }
             if (request.getSupplierGroupId() != null && !request.getSupplierGroupId().equals(existingSupplier.getGroup().getId())) {
-                SupplierGroup existingSupplierGroup = supplierGroupRepository.findById(request.getSupplierGroupId())
+                SupplierGroup existingSupplierGroup = supplierGroupRepository.findByIdAndTenantId(request.getSupplierGroupId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND)));
                 existingSupplier.setGroup(existingSupplierGroup);
             }
@@ -219,7 +223,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public ResponseEntity<ResponseObject<Object>> deleteSupplier(String supplierId) {
         try {
-            Supplier supplier = supplierRepository.findById(supplierId)
+            Supplier supplier = supplierRepository.findByIdAndTenantId(supplierId, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND)));
 
             // Đánh dấu nhà cung cấp là đã xóa
@@ -236,15 +240,24 @@ public class SupplierServiceImpl implements SupplierService {
     public ResponseEntity<ResponseObject<Object>> getListNameSupplier(String name, int page, int size) {
         try {
             Pageable pageable = PageRequest.of(page - 1, size, Sort.Direction.ASC, "name");
-            Page<Object[]> inforPage = supplierRepository.findAllByName(name, pageable);
+            Page<Object[]> inforPage = supplierRepository.findAllByNameAndTenantId(name, authHelper.getUser().getTenantId(), pageable);
 
             List<Map<String, String>> dataResponses = inforPage.getContent().stream()
                     .map(infor -> {
-                        Map<String, String> response = Map.of(
-                                "id", infor[0] != null ? infor[0].toString() : null,
-                                "name", infor[1] != null ? infor[1].toString() : null,
-                                "phone", infor[2] != null ? infor[2].toString() : null
-                        );
+                        Map<String, String> response = new HashMap<>();
+
+                        // Kiểm tra giá trị trong mảng infor và thêm vào Map nếu khác null
+                        if (infor.length > 0 && infor[0] != null) {
+                            response.put("id", infor[0].toString());
+                        }
+                        if (infor.length > 1 && infor[1] != null) {
+                            response.put("name", infor[1].toString());
+                        }
+                        // Kiểm tra nếu mảng infor có đủ phần tử và phần tử phone tồn tại
+                        if (infor.length > 2 && infor[2] != null) {
+                            response.put("phone", infor[2].toString());
+                        }
+
                         return response;
                     }).toList();
 
@@ -263,7 +276,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getDetailMoney(String supplierId) {
         try {
-            List<Object[]> supplierInfor = supplierRepository.getDetailMoney(supplierId);
+            List<Object[]> supplierInfor = supplierRepository.getDetailMoney(supplierId, authHelper.getUser().getTenantId());
 
             Map<String, Object> response = Map.of(
                     "id", supplierInfor.get(0)[0].toString(),

@@ -8,9 +8,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.Optional;
 
 public interface TransactionCategoryRepository extends JpaRepository<TransactionCategory, String>, JpaSpecificationExecutor<TransactionCategory> {
-    boolean existsByNameAndType(String name, TransactionType type);
+    boolean existsByNameAndTypeAndTenantId(String name, TransactionType type, String tenantId);
 
-    boolean existsBySubId(String subId);
+    boolean existsBySubIdAndTenantId(String subId, String tenantId);
 
-    Optional<TransactionCategory> findBySubId(String subId);
+    Optional<TransactionCategory> findByIdAndTenantId(String id, String tenantId);
+
+    Optional<TransactionCategory> findBySubIdAndTenantId(String subId, String tenantId);
 }

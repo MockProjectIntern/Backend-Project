@@ -66,10 +66,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<ResponseObject<Object>> createTransaction(CreateTransactionRequest request) {
         try {
-            if (request.getSubId() != null && !request.getSubId().toString().isEmpty() && transactionRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && !request.getSubId().toString().isEmpty()
+                && transactionRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
-            TransactionCategory transactionCategory = transactionCategoryRepository.findById(request.getTransactionCategoryId())
+            TransactionCategory transactionCategory = transactionCategoryRepository.findByIdAndTenantId(request.getTransactionCategoryId(), authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
             if (transactionCategory.getId().equals("TSC00001") || transactionCategory.getId().equals("TSC00002")) {
                 throw new NoActionForOperationException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CANNOT_CREATE_AUTO));
@@ -87,7 +88,7 @@ public class TransactionServiceImpl implements TransactionService {
 
             if (request.isAutoDebt()) {
                 if (request.getRecipientGroup().equals(PrefixId.SUPPLIER)) {
-                    Optional<Supplier> supplierOptional = supplierRepository.findById(request.getRecipientId());
+                    Optional<Supplier> supplierOptional = supplierRepository.findByIdAndTenantId(request.getRecipientId(), authHelper.getUser().getTenantId());
                     if (supplierOptional.isEmpty()) {
                         return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND));
                     }
@@ -122,7 +123,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             User userCreated = authHelper.getUser();
             Optional<TransactionCategory> transactionCategory = transactionCategoryRepository
-                    .findBySubId(request.getType() == TransactionType.INCOME ? "TSC00001" : "TSC00002");
+                    .findBySubIdAndTenantId(request.getType() == TransactionType.INCOME ? "TSC00001" : "TSC00002", authHelper.getUser().getTenantId());
             if (transactionCategory.isEmpty()) {
                 return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND));
             }
@@ -158,7 +159,7 @@ public class TransactionServiceImpl implements TransactionService {
                                                                     String sort, String sortField,
                                                                     int page, int size) {
         try {
-            TransactionSpecification specification = new TransactionSpecification(request);
+            TransactionSpecification specification = new TransactionSpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.fromString(sort), sortField));
 
             Page<Transaction> transactionPage = transactionRepository.findAll(specification, pageable);
@@ -227,10 +228,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<ResponseObject<Object>> updateTransaction(String id, UpdateTransactionRequest request) {
         try {
-            Transaction transaction = transactionRepository.findById(id)
+            Transaction transaction = transactionRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_NOT_FOUND)));
 
-            if (request.getSubId() != null && !request.getSubId().equals(transaction.getId()) && transactionRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && !request.getSubId().equals(transaction.getId())
+                && transactionRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.TRANSACTION_ID_EXISTED));
             }
 
@@ -253,7 +255,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<ResponseObject<Object>> cancelTransaction(String id) {
         try {
-            Transaction transaction = transactionRepository.findById(id)
+            Transaction transaction = transactionRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_NOT_FOUND)));
             if (transaction.getCategory().getId().equals("TSC00001") || transaction.getCategory().getId().equals("TSC00002")) {
                 throw new NoActionForOperationException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_NOT_CANCELABLE));

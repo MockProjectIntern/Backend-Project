@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductSpecification implements Specification<Product> {
     private GetListProductRequest request;
-
+    private String tenantId;
 
     @Override
     public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -59,11 +59,17 @@ public class ProductSpecification implements Specification<Product> {
         }
 
         if (createdDateFrom != null) {
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), createdDateFrom));
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), createdDateFrom));
         }
 
         if (createdDateTo != null) {
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), createdDateTo));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), createdDateTo));
+        }
+
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

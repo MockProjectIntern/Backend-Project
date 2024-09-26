@@ -80,7 +80,7 @@ public class GRNServiceImpl implements GRNService {
     public ResponseEntity<ResponseObject<Object>> createGRN(CreateGRNRequest request) {
         try {
             // Kiểm tra xem GRN đã tồn tại chưa
-            if (request.getSubId() != null && grnRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && grnRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GRN_SUB_ID_EXISTED));
             }
 
@@ -96,7 +96,7 @@ public class GRNServiceImpl implements GRNService {
             // Thêm các sản phẩm vào GRN
             List<GRNProduct> grnProducts = new ArrayList<>();
             for (CreateGRNProductRequest productRequest : request.getProducts()) {
-                Product product = productRepository.findById(productRequest.getProductId())
+                Product product = productRepository.findByIdAndTenantId(productRequest.getProductId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
 
                 GRNProduct grnProduct = grnProductMapper.mapToEntityProduct(productRequest);
@@ -160,7 +160,7 @@ public class GRNServiceImpl implements GRNService {
     public ResponseEntity<ResponseObject<Object>> getGRNById(String id) {
         try {
             // Lấy thông tin GRN từ cơ sở dữ liệu
-            GRN grn = grnRepository.findById(id)
+            GRN grn = grnRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
             Map<String, Object> supplierDetail = (Map<String, Object>) supplierService.getDetailMoney(grn.getSupplier().getId()).getBody().getData();
@@ -191,7 +191,7 @@ public class GRNServiceImpl implements GRNService {
     public ResponseEntity<ResponseObject<Object>> updateGRN(String id, UpdateGRNRequest request) {
         try {
             // Lấy thông tin GRN từ cơ sở dữ liệu
-            GRN existingGRN = grnRepository.findById(id)
+            GRN existingGRN = grnRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
             // Cập nhật thông tin GRN từ request
@@ -282,7 +282,8 @@ public class GRNServiceImpl implements GRNService {
     @Override
     public ResponseEntity<ResponseObject<Object>> deleteGRN(String id) {
         try {
-            GRN grn = grnRepository.findById(id).orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
+            GRN grn = grnRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
             grn.setStatus(GRNStatus.CANCELLED);
             User user = authHelper.getUser();
@@ -290,7 +291,6 @@ public class GRNServiceImpl implements GRNService {
             grn.setCancelledAt(LocalDateTime.now());
 
             grnRepository.save(grn);
-
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_DELETE_SUCCESSFULLY));
         } catch (Exception e) {
@@ -326,6 +326,7 @@ public class GRNServiceImpl implements GRNService {
                     CommonUtils.joinParams(request.getUserCreatedIds()),
                     CommonUtils.joinParams(request.getUserCompletedIds()),
                     CommonUtils.joinParams(request.getUserCancelledIds()),
+                    authHelper.getUser().getTenantId(),
                     page, size);
 
             int totalGRN = grnRepositoryCustom.countTotalGRN(
@@ -340,7 +341,8 @@ public class GRNServiceImpl implements GRNService {
                     request.getEndExpectedAt(),
                     CommonUtils.joinParams(request.getUserCreatedIds()),
                     CommonUtils.joinParams(request.getUserCompletedIds()),
-                    CommonUtils.joinParams(request.getUserCancelledIds()));
+                    CommonUtils.joinParams(request.getUserCancelledIds()),
+                    authHelper.getUser().getTenantId());
 
             int totalPages = (int) Math.ceil((double) totalGRN / size);
 
@@ -366,7 +368,8 @@ public class GRNServiceImpl implements GRNService {
     public ResponseEntity<ResponseObject<Object>> importGRN(String id) {
         try {
             // Lấy thông tin GRN từ cơ sở dữ liệu
-            GRN grn = grnRepository.findById(id).orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
+            GRN grn = grnRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
             if (grn.getReceivedStatus() == GRNReceiveStatus.ENTERED) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GRN_IMPORTED));
@@ -401,13 +404,13 @@ public class GRNServiceImpl implements GRNService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getAllBySupplier(String supplierId, int page, int size) {
         try {
-            Optional<Supplier> supplierOptional = supplierRepository.findById(supplierId);
+            Optional<Supplier> supplierOptional = supplierRepository.findByIdAndTenantId(supplierId, authHelper.getUser().getTenantId());
             if (supplierOptional.isEmpty()) {
                 return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND));
             }
 
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<GRN> grnPage = grnRepository.findBySupplier(supplierOptional.get(), pageable);
+            Page<GRN> grnPage = grnRepository.findBySupplierAndTenantId(supplierOptional.get(), authHelper.getUser().getTenantId(), pageable);
 
             Page<GRNSupplierResponse> responses = grnPage.map(grnMapper::mapToResponseSupplier);
 

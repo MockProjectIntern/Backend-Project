@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.configuration;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,12 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final UserRepository userRepository;
+    private final AuthHelper authHelper;
 
     @Bean
     UserDetailsService userDetailsService() {
-        return username -> {
-            return userRepository.findByPhone(username)
-                    .orElseThrow(() -> new RuntimeException("Cannot find user with username = " + username));
+        return phone -> {
+            return userRepository.findByPhone(phone)
+                    .orElseThrow(() -> new RuntimeException("Cannot find user with username = " + phone));
         };
     }
 

@@ -7,8 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface GRNRepository extends JpaRepository<GRN, String>, JpaSpecificationExecutor<GRN> {
-    boolean existsBySubId(String subId);
+import java.util.Optional;
 
-    Page<GRN> findBySupplier(Supplier supplier, Pageable pageable);
+public interface GRNRepository extends JpaRepository<GRN, String>, JpaSpecificationExecutor<GRN> {
+    boolean existsBySubIdAndTenantId(String subId, String tenantId);
+
+    Optional<GRN> findByIdAndTenantId(String id, String tenantId);
+
+    Page<GRN> findBySupplierAndTenantId(Supplier supplier, String tenantId, Pageable pageable);
 }

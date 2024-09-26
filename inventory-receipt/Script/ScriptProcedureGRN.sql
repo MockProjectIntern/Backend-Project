@@ -14,6 +14,7 @@ CREATE PROCEDURE filter_grns(
     IN p_user_created_ids VARCHAR(255),
     IN p_user_completed_ids VARCHAR(255),
     IN p_user_cancelled_ids VARCHAR(255),
+    IN p_tenant_id VARCHAR(255),
     IN p_page INT,
     IN p_size INT
 )
@@ -260,7 +261,7 @@ END IF;
 		SET @sql_query = CONCAT(@sql_query, ' LEFT JOIN orders o ON g.order_id = o.id');
 END IF;
 
-    SET @sql_query = CONCAT(@sql_query, ' WHERE 1=1');
+    SET @sql_query = CONCAT(@sql_query, ' WHERE 1=1 AND g.tenant_id = "', p_tenant_id, '"');
 
     -- Thêm điều kiện tìm kiếm và lọc theo keyword
     IF p_keyword IS NOT NULL THEN

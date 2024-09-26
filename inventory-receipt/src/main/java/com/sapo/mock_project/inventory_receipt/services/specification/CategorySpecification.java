@@ -19,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CategorySpecification implements Specification<Category> {
     private GetListCategoryRequest request;
+    private String tenantId;
 
     @Override
     public Predicate toPredicate(Root<Category> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -35,6 +36,12 @@ public class CategorySpecification implements Specification<Category> {
                     String.format("%%%s%%", keywordUpper));
 
             predicates.add(criteriaBuilder.or(namePredicate, subIdPredicate));
+        }
+
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

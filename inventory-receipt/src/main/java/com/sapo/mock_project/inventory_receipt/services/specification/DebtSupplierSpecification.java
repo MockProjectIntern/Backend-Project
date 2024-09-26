@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DebtSupplierSpecification implements Specification<DebtSupplier> {
     private GetListDebtSupplierRequest request;
+    private String tenantId;
 
     @Override
     public Predicate toPredicate(Root<DebtSupplier> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -38,6 +39,11 @@ public class DebtSupplierSpecification implements Specification<DebtSupplier> {
         }
         if (createdDateTo != null) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), createdDateTo));
+        }
+        if (tenantId != null) {
+            Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
+
+            predicates.add(tenantIdPredicate);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

@@ -54,7 +54,7 @@ public class RefundInformationServiceImpl implements RefundInformationService {
         try {
             User userCreated = authHelper.getUser();
 
-            Optional<GRN> grnOptional = grnRepository.findById(request.getGrnId());
+            Optional<GRN> grnOptional = grnRepository.findByIdAndTenantId(request.getGrnId(), authHelper.getUser().getTenantId());
             if (grnOptional.isEmpty()) {
                 return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND));
             }

@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.services.brand;
 
+import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
@@ -12,6 +13,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.brand.BrandDetailResponse;
 import com.sapo.mock_project.inventory_receipt.entities.Brand;
+import com.sapo.mock_project.inventory_receipt.entities.User;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.mappers.BrandMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.brand.BrandRepository;
@@ -35,11 +37,12 @@ public class BrandServiceImpl implements BrandService {
 
     private final BrandMapper brandMapper;
     private final LocalizationUtils localizationUtils;
+    private final AuthHelper authHelper;
 
     @Override
     public ResponseEntity<ResponseObject<Object>> createBrand(CreateBrandRequest request) {
         try {
-            if (brandRepository.existsByName(request.getName())) {
+            if (brandRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.BRAND_NAME_EXISTED));
             }
 
@@ -56,7 +59,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getBrandById(String brandId) {
         try {
-            Optional<Brand> brandOptional = brandRepository.findById(brandId);
+            Optional<Brand> brandOptional = brandRepository.findByIdAndTenantId(brandId, authHelper.getUser().getTenantId());
             if (brandOptional.isEmpty()) {
                 throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.BRAND_NOT_FOUND));
             }
@@ -74,7 +77,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getAllBrands(GetListBrandRequest request, int page, int size) {
         try {
-            BrandSpecification brandSpecification = new BrandSpecification(request);
+            BrandSpecification brandSpecification = new BrandSpecification(request, authHelper.getUser().getTenantId());
             // Sắp xếp theo tên nhà cung cấp tăng dần
             Sort sort = Sort.by(Sort.Direction.ASC, "name");
             Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -98,14 +101,14 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public ResponseEntity<ResponseObject<Object>> updateBrand(String brandId, UpdateBrandRequest request) {
         try {
-            Optional<Brand> brandOptional = brandRepository.findById(brandId);
+            Optional<Brand> brandOptional = brandRepository.findByIdAndTenantId(brandId, authHelper.getUser().getTenantId());
             if (brandOptional.isEmpty()) {
                 throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.BRAND_NOT_FOUND));
             }
 
             Brand existingBrand = brandOptional.get();
 
-            if (brandRepository.existsByName(request.getName()) && !existingBrand.getName().equals(request.getName())) {
+            if (brandRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId()) && !existingBrand.getName().equals(request.getName())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.BRAND_NAME_EXISTED));
             }
 

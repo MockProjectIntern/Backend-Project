@@ -65,10 +65,10 @@ public class GINServiceImpl implements GINService {
     public ResponseEntity<ResponseObject<Object>> createGIN(CreateGINRequest request) {
         try {
             // Kiểm tra xem ID có tồn tại không
-            if (request.getSubId() != null && ginRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && ginRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.GIN_SUB_ID_EXISTED));
             }
-            User userInspection = userRepository.findById(request.getUserInspectionId())
+            User userInspection = userRepository.findByIdAndTenantId(request.getUserInspectionId(), authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND)));
             User userCreated = authHelper.getUser();
 
@@ -77,7 +77,7 @@ public class GINServiceImpl implements GINService {
 
             List<GINProduct> ginProducts = new ArrayList<>();
             for (CreateGINProductRequest productRequest : request.getProducts()) {
-                Product product = productRepository.findById(productRequest.getProductId())
+                Product product = productRepository.findByIdAndTenantId(productRequest.getProductId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
 
                 GINProduct ginProduct = ginMapper.mapToEntity(productRequest);
@@ -122,7 +122,7 @@ public class GINServiceImpl implements GINService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getGINById(String id) {
         try {
-            GIN gin = ginRepository.findById(id)
+            GIN gin = ginRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
             GINDetailResponse response = ginMapper.mapToResponse(gin);
@@ -164,7 +164,7 @@ public class GINServiceImpl implements GINService {
     @Override
     public ResponseEntity<ResponseObject<Object>> filterGIN(GetListGINRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
-            GINSpecification ginSpecification = new GINSpecification(request);
+            GINSpecification ginSpecification = new GINSpecification(request, authHelper.getUser().getTenantId());
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
             Page<GIN> ginPage = ginRepository.findAll(ginSpecification, pageable);
@@ -236,7 +236,7 @@ public class GINServiceImpl implements GINService {
     @Override
     public ResponseEntity<ResponseObject<Object>> updateGIN(String id, UpdateGINRequest request) {
         try {
-            GIN existingGIN = ginRepository.findById(id)
+            GIN existingGIN = ginRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
             if (existingGIN.getStatus() == GINStatus.BALANCED) {
@@ -252,7 +252,7 @@ public class GINServiceImpl implements GINService {
 
             List<GINProduct> updatedProducts = new ArrayList<>();
             for (UpdateGINProductRequest updateGINRequest : request.getProducts()) {
-                Product product = productRepository.findById(updateGINRequest.getProductId())
+                Product product = productRepository.findByIdAndTenantId(updateGINRequest.getProductId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
 
                 if (request.isBalance()) {
@@ -292,7 +292,7 @@ public class GINServiceImpl implements GINService {
     @Override
     public ResponseEntity<ResponseObject<Object>> deleteGIN(String id) {
         try {
-            GIN existingGIN = ginRepository.findById(id)
+            GIN existingGIN = ginRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
             if (existingGIN.getStatus() == GINStatus.BALANCED) {
@@ -318,7 +318,7 @@ public class GINServiceImpl implements GINService {
     @Override
     public ResponseEntity<ResponseObject<Object>> balanceGIN(String id) {
         try {
-            GIN existingGIN = ginRepository.findById(id)
+            GIN existingGIN = ginRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GIN_NOT_FOUND)));
 
             User userBalanced = authHelper.getUser();

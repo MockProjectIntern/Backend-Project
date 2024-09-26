@@ -54,10 +54,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> createOrder(CreateOrderRequest request) {
         try {
-            if (request.getSubId() != null && orderRepository.existsBySubId(request.getSubId())) {
+            if (request.getSubId() != null && orderRepository.existsBySubIdAndTenantId(request.getSubId(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.ORDER_SUB_ID_EXISTED));
             }
-            Supplier exstingSupplier = supplierRepository.findById(request.getSupplierId())
+            Supplier exstingSupplier = supplierRepository.findByIdAndTenantId(request.getSupplierId(), authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_NOT_FOUND)));
 
             User userCreated = authHelper.getUser();
@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
 
             List<OrderDetail> newOrderDetail = new ArrayList<>();
             for (CreateOrderDetailRequest detailRequest : request.getProducts()) {
-                Product exstingProduct = productRepository.findById(detailRequest.getProductId())
+                Product exstingProduct = productRepository.findByIdAndTenantId(detailRequest.getProductId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
 
                 OrderDetail orderDetail = orderMapper.mapToEntityDetail(detailRequest);
@@ -116,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
                     CommonUtils.joinParams(request.getUserCreatedIds()),
                     CommonUtils.joinParams(request.getUserCompletedIds()),
                     CommonUtils.joinParams(request.getUserCancelledIds()),
+                    authHelper.getUser().getTenantId(),
                     page,
                     size
             );
@@ -132,8 +133,9 @@ public class OrderServiceImpl implements OrderService {
                     CommonUtils.joinParams(request.getProductIds()),
                     CommonUtils.joinParams(request.getUserCreatedIds()),
                     CommonUtils.joinParams(request.getUserCompletedIds()),
-                    CommonUtils.joinParams(request.getUserCancelledIds())
-            );
+                    CommonUtils.joinParams(request.getUserCancelledIds()),
+                    authHelper.getUser().getTenantId()
+                    );
 
             int totalPages = (int) Math.ceil((double) totalOrders / size);
 
@@ -152,7 +154,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResponseEntity<ResponseObject<Object>> getOrderById(String id) {
         try {
-            Optional<Order> order = orderRepository.findById(id);
+            Optional<Order> order = orderRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId());
             if (order.isEmpty()) {
                 return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
             }
@@ -190,7 +192,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> updateOrder(String orderId, UpdateOrderRequest request) {
         try {
-            Optional<Order> orderOptional = orderRepository.findById(orderId);
+            Optional<Order> orderOptional = orderRepository.findByIdAndTenantId(orderId, authHelper.getUser().getTenantId());
             if (orderOptional.isEmpty()) {
                 return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
             }
@@ -200,7 +202,7 @@ public class OrderServiceImpl implements OrderService {
 
             List<OrderDetail> newOrderDetails = new ArrayList<>();
             for (CreateOrderDetailRequest detailRequest : request.getProducts()) {
-                Optional<Product> productOptional = productRepository.findById(detailRequest.getProductId());
+                Optional<Product> productOptional = productRepository.findByIdAndTenantId(detailRequest.getProductId(), authHelper.getUser().getTenantId());
                 if (productOptional.isEmpty()) {
                     return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND));
                 }
@@ -242,7 +244,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResponseEntity<ResponseObject<Object>> updateOrderLittle(String orderId, UpdateOrderLittleRequest request) {
         try {
-            Optional<Order> orderOptional = orderRepository.findById(orderId);
+            Optional<Order> orderOptional = orderRepository.findByIdAndTenantId(orderId, authHelper.getUser().getTenantId());
             if (orderOptional.isEmpty()) {
                 return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
             }
