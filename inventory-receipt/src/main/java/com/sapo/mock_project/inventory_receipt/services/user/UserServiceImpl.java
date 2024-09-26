@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> createAccount(RegisterAccountRequest request) {
         try {
-            if (userRepository.existsByPhoneAndTenantId(request.getPhone(), authHelper.getUser().getTenantId())) {
+            if (userRepository.existsByPhone(request.getPhone())) {
                 // Nếu số điện thoại đã tồn tại, trả về lỗi xác thực
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.USER_PHONE_EXISTED));
             }

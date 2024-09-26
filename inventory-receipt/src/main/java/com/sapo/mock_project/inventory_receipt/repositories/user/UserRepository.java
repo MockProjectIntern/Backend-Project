@@ -19,6 +19,8 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
 
     boolean existsByPhoneAndTenantId(String phone, String tenantId);
 
+    boolean existsByPhone(String phone);
+
     @Query("SELECT u.id, u.fullName FROM User u WHERE u.tenantId = :tenantId")
     Page<Object[]> findAllFullNameAndTenantId(String tenantId, Pageable pageable);
 }
