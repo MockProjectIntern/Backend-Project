@@ -5,6 +5,7 @@ import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.dtos.request.category.CreateCategoryRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.category.GetListCategoryRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.category.CategoryGetListResponse;
@@ -92,8 +93,14 @@ public class CategoryServiceImpl implements CategoryService {
                     .map(categoryMapper::mapToResponse)
                     .toList();
 
+            Pagination pagination = Pagination.<Object>builder()
+                    .data(categoryGetListResponses)
+                    .totalPage(categoryPage.getTotalPages())
+                    .totalItems(categoryPage.getTotalElements())
+                    .build();
+
             // Trả về thông báo thành công kèm danh sách danh mục
-            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.CATEGORY_GET_ALL_SUCCESSFULLY), categoryGetListResponses);
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.CATEGORY_GET_ALL_SUCCESSFULLY), pagination);
         } catch (Exception e) {
             // Trả về thông báo lỗi nếu có ngoại lệ xảy ra
             return ResponseUtil.error500Response(e.getMessage());

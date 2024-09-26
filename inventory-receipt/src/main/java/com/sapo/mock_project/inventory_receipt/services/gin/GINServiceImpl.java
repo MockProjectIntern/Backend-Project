@@ -165,7 +165,7 @@ public class GINServiceImpl implements GINService {
     public ResponseEntity<ResponseObject<Object>> filterGIN(GetListGINRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
             GINSpecification ginSpecification = new GINSpecification(request);
-            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
             Page<GIN> ginPage = ginRepository.findAll(ginSpecification, pageable);
 

@@ -131,7 +131,7 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<ResponseObject<Object>> filterProduct(GetListProductRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
             ProductSpecification specification = new ProductSpecification(request);
-            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
             Page<Product> productPage = productRepository.findAll(specification, pageable);
 
