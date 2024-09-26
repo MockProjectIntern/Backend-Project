@@ -10,10 +10,10 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8088"
   datasource:
-    url: jdbc:mysql://localhost:3306/${database.name}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=${time.zone}
+    url: jdbc:mysql://103.162.20.252:24808/${database.name}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=${time.zone}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 123456
+    username: ${database.username}
+    password: ${database.password}
   jpa:
     show-sql: true
     hibernate:

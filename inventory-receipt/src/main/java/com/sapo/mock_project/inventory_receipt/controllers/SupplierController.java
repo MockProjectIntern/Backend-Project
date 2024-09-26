@@ -104,10 +104,10 @@ public class SupplierController {
      * @return ResponseEntity chứa danh sách tên nhà cung cấp.
      */
     @GetMapping("/list-name.json")
-    public ResponseEntity<ResponseObject<Object>> getListNameSupplier(@RequestParam(defaultValue = "") String name,
+    public ResponseEntity<ResponseObject<Object>> getListNameSupplier(@RequestParam(defaultValue = "") String keyword,
                                                                       @RequestParam(value = "page", defaultValue = "1") int page,
                                                                       @RequestParam(value = "size", defaultValue = "10") int size) {
-        return supplierService.getListNameSupplier(name, page, size);
+        return supplierService.getListNameSupplier(keyword, page, size);
     }
 
     @GetMapping("/detail-money.json/{id}")

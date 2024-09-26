@@ -17,7 +17,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, String>, Jpa
 
     Optional<Supplier> findByIdAndTenantId(String id, String tenantId);
 
-    @Query("SELECT s.id, s.name, s.phone FROM Supplier s WHERE s.tenantId = :tenantId AND s.name LIKE %:name%")
+    @Query("SELECT s.id, s.name, s.phone FROM Supplier s WHERE s.tenantId = :tenantId AND (s.name LIKE %:name% OR s.phone LIKE %:name% OR s.subId LIKE %:name%)")
     Page<Object[]> findAllByNameAndTenantId(String name, String tenantId, Pageable pageable);
 
     @Query(value = """
