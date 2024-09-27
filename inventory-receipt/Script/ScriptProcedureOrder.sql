@@ -1,7 +1,6 @@
-DELIMITER $$
-
-CREATE PROCEDURE filter_orders(
+CREATE DEFINER=`root`@`%` PROCEDURE `filter_orders`(
     IN p_filter_json JSON,
+    IN p_keyword VARCHAR(255),
     IN p_status VARCHAR(255),
     IN p_supplier_ids VARCHAR(255),
     IN p_start_created_at DATE,
@@ -102,7 +101,7 @@ END IF;
         SET include_order_updated_at = TRUE;
 END IF;
 
-    SET @sql_query = 'SELECT o.id AS order_id';
+    SET @sql_query = 'SELECT o.id AS order_id, o.sub_id AS order_sub_id';
 
     IF include_order_created_at THEN
         SET @sql_query = CONCAT(@sql_query, ', o.created_at AS order_created_at');
@@ -192,7 +191,11 @@ END IF;
 
     SET @sql_query = CONCAT(@sql_query, ' WHERE 1=1 AND o.tenant_id = "', p_tenant_id, '"');
 
-        IF p_status IS NOT NULL THEN
+    IF p_keyword IS NOT NULL THEN
+        SET @sql_query = CONCAT(@sql_query, ' AND (o.sub_id LIKE ''%', p_keyword , '%'')');
+END IF;
+
+    IF p_status IS NOT NULL THEN
         SET @sql_query = CONCAT(@sql_query, ' AND FIND_IN_SET(o.status, "', p_status, '")');
 END IF;
 
@@ -247,6 +250,4 @@ END IF;
 PREPARE stmt FROM @sql_query;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-END$$
-
-DELIMITER ;
+END

@@ -18,17 +18,17 @@ public class CreateRefundInforRequest {
     @JsonProperty("grn_id")
     private String grnId;
 
-    @ValidNumber(message = MessageValidateKeys.REFUND_TOTAL_COST_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.REFUND_TOTAL_COST_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.REFUND_TOTAL_COST_NOT_NEGATIVE)
     @JsonProperty("total_cost")
     private BigDecimal totalCost;
 
-    @ValidNumber(message = MessageValidateKeys.REFUND_TOTAL_TAX_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.REFUND_TOTAL_TAX_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.REFUND_TOTAL_TAX_NOT_NEGATIVE)
     @JsonProperty("total_tax")
     private BigDecimal totalTax;
 
-    @ValidNumber(message = MessageValidateKeys.REFUND_TOTAL_DISCOUNT_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.REFUND_TOTAL_DISCOUNT_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.REFUND_TOTAL_DISCOUNT_NOT_NEGATIVE)
     @JsonProperty("total_discount")
     private BigDecimal totalDiscount;

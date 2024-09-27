@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 @Data
 public class CreateRefundTransactionRequest {
-    @ValidNumber(message = MessageValidateKeys.TRANSACTION_AMOUNT_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.TRANSACTION_AMOUNT_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.TRANSACTION_AMOUNT_NOT_NEGATIVE)
     @JsonProperty("amount")
     private BigDecimal amount;

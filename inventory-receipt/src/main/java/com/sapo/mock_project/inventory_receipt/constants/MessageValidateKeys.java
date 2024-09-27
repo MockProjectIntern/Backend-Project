@@ -5,6 +5,7 @@ public class MessageValidateKeys {
     public static final String PHONE_INVALID_PATTERN = "phone.invalid_pattern";
     public static final String EMAIL_INVALID_PATTERN = "email.invalid_pattern";
     public static final String PASSWORD_INVALID_PATTERN = "password.invalid_pattern";
+    public static final String ATTRIBUTE_INVALID_PATTERN = "attribute.invalid_pattern";
 
     public static final String USER_PHONE_EXISTED = "user.phone.existed";
     public static final String USER_PASSWORD_NOT_MATCH = "user.password.not_match";

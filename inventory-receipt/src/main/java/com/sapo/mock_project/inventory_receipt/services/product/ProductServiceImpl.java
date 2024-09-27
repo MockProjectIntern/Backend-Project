@@ -10,6 +10,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.product.ProductGetListResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.product.ProductManageGetListResponse;
+import com.sapo.mock_project.inventory_receipt.dtos.response.product.QuickGetListProductResponse;
 import com.sapo.mock_project.inventory_receipt.entities.Brand;
 import com.sapo.mock_project.inventory_receipt.entities.Category;
 import com.sapo.mock_project.inventory_receipt.entities.Product;
@@ -251,6 +252,27 @@ public class ProductServiceImpl implements ProductService {
 
                 return response;
             }).toList();
+
+            Pagination pagination = Pagination.<Object>builder()
+                    .data(listResponses)
+                    .totalPage(productPage.getTotalPages())
+                    .totalItems(productPage.getTotalElements())
+                    .build();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_ALL_SUCCESSFULLY), pagination);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> quickGetListProduct(String keyword, int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
+
+            Page<Product> productPage = productRepository.quickGetListProduct(keyword, authHelper.getUser().getTenantId(), pageable);
+
+            List<QuickGetListProductResponse> listResponses = productPage.getContent().stream().map(productMapper::mapToQuickGetListProductResponse).toList();
 
             Pagination pagination = Pagination.<Object>builder()
                     .data(listResponses)

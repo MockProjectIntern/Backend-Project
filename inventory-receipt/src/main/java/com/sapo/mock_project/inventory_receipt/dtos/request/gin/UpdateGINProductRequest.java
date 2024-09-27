@@ -11,12 +11,12 @@ import java.math.BigDecimal;
 
 @Data
 public class UpdateGINProductRequest {
-    @ValidNumber(message = MessageValidateKeys.GIN_PRODUCT_ACTUAL_STOCK_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.GIN_PRODUCT_ACTUAL_STOCK_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.GIN_PRODUCT_ACTUAL_STOCK_NOT_NEGATIVE)
     @JsonProperty("actual_stock")
     private BigDecimal actualStock;
 
-    @ValidNumber(message = MessageValidateKeys.GIN_PRODUCT_DISCREPANCY_QUANTITY_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.GIN_PRODUCT_DISCREPANCY_QUANTITY_NOT_NUMBER)
     @JsonProperty("discrepancy_quantity")
     private BigDecimal discrepancyQuantity;
 

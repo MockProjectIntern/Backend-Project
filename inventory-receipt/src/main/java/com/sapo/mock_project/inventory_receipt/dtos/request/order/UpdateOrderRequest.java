@@ -31,7 +31,7 @@ public class UpdateOrderRequest {
     @JsonProperty("note")
     private String note;
 
-    @ValidNumber(message = MessageValidateKeys.ORDER_DISCOUNT_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.ORDER_DISCOUNT_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.ORDER_DISCOUNT_NOT_NEGATIVE)
     @JsonProperty("discount")
     private BigDecimal discount;

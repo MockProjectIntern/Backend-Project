@@ -24,6 +24,6 @@ public class GetListProductManageRequest {
     @JsonProperty("brand_ids")
     private List<String> brandIds;
 
-    @JsonProperty("supplier_ids")
+    @JsonProperty("statues")
     private List<ProductStatus> statuses;
 }

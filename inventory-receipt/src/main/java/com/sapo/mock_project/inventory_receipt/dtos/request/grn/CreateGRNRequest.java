@@ -74,7 +74,7 @@ public class CreateGRNRequest {
      * Số tiền giảm giá cho phiếu nhập kho.
      * Đây là thông tin bắt buộc.
      */
-    @ValidNumber(message = MessageValidateKeys.GRN_DISCOUNT_NOT_NEGATIVE)
+   // @ValidNumber(message = MessageValidateKeys.GRN_DISCOUNT_NOT_NEGATIVE)
     @JsonProperty("discount")
     @Schema(description = "Số tiền giảm giá cho phiếu nhập kho", example = "500000.00", required = true)
     private BigDecimal discount;

@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ResponseObject<Object>> loginAccount(LoginAccountRequest request) {
         try {
-            Optional<User> existingUserOptional = userRepository.findByPhoneAndTenantId(request.getPhone(), authHelper.getUser().getTenantId());
+            Optional<User> existingUserOptional = userRepository.findByPhone(request.getPhone());
             if (existingUserOptional.isEmpty()) {
                 throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND_BY_PHONE));
             }

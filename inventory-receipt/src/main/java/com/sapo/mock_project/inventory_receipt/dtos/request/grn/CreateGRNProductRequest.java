@@ -16,22 +16,22 @@ public class CreateGRNProductRequest {
     @JsonProperty("product_id")
     private String productId;
 
-    @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_QUANTITY_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_QUANTITY_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.GRN_PRODUCT_QUANTITY_NOT_NEGATIVE)
     @JsonProperty("quantity")
     private BigDecimal quantity;
 
-    @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_DISCOUNT_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_DISCOUNT_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.GRN_PRODUCT_DISCOUNT_NOT_NEGATIVE)
     @JsonProperty("discount")
     private BigDecimal discount;
 
-    @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_TAX_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_TAX_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.GRN_PRODUCT_TAX_NOT_NEGATIVE)
     @JsonProperty("tax")
     private BigDecimal tax;
 
-    @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_PRICE_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.GRN_PRODUCT_PRICE_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.GRN_PRODUCT_PRICE_NOT_NEGATIVE)
     @JsonProperty("price")
     private BigDecimal price;

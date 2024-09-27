@@ -62,4 +62,11 @@ public class ProductController {
 
         return productService.filterProductInWarehouse(request, filterParams, page, size);
     }
+
+    @GetMapping("/quick-get-list.json")
+    public ResponseEntity<ResponseObject<Object>> quickGetListProduct(@RequestParam String keyword,
+                                                                      @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+        return productService.quickGetListProduct(keyword, page, size);
+    }
 }

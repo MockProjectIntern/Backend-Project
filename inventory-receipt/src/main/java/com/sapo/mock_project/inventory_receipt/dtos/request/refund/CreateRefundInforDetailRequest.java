@@ -16,17 +16,17 @@ public class CreateRefundInforDetailRequest {
     @JsonProperty("product_id")
     private String productId;
 
-    @ValidNumber(message = MessageValidateKeys.REFUND_QUANTITY_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.REFUND_QUANTITY_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.REFUND_QUANTITY_NOT_NEGATIVE)
     @JsonProperty("quantity")
     private BigDecimal quantity;
 
-    @ValidNumber(message = MessageValidateKeys.REFUND_PRICE_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.REFUND_PRICE_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.REFUND_PRICE_NOT_NEGATIVE)
     @JsonProperty("refunded_price")
     private BigDecimal refundedPrice;
 
-    @ValidNumber(message = MessageValidateKeys.REFUND_AMOUNT_NOT_NUMBER)
+   // @ValidNumber(message = MessageValidateKeys.REFUND_AMOUNT_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.REFUND_AMOUNT_NOT_NEGATIVE)
     @JsonProperty("amount")
     private BigDecimal amount;

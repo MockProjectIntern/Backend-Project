@@ -15,22 +15,22 @@ public class CreateOrderDetailRequest {
     @JsonProperty("product_id")
     private String productId;
 
-    @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_QUANTITY_NOT_NUMBER)
+//   // @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_QUANTITY_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.ORDER_DETAIL_QUANTITY_NOT_NEGATIVE)
     @JsonProperty("quantity")
     private BigDecimal quantity;
 
-    @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_PRICE_NOT_NUMBER)
+//   // @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_PRICE_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.ORDER_DETAIL_PRICE_NOT_NEGATIVE)
-    @JsonProperty("price")
+    @JsonProperty("cost_price")
     private BigDecimal price;
 
-    @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_DISCOUNT_NOT_NUMBER)
+//   // @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_DISCOUNT_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.ORDER_DETAIL_DISCOUNT_NOT_NEGATIVE)
     @JsonProperty("discount")
     private BigDecimal discount;
 
-    @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_TAX_NOT_NUMBER)
+//   // @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_TAX_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.ORDER_DETAIL_TAX_NOT_NEGATIVE)
     @JsonProperty("tax")
     private BigDecimal tax;

@@ -150,7 +150,7 @@ CREATE TABLE gins
 (
     id                 VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
     sub_id             VARCHAR(10),                      -- Mã định danh ban đầu
-    status             ENUM('PENDING', 'BALANCED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+    status             ENUM('CHECKING', 'BALANCED', 'DELETED') NOT NULL DEFAULT 'CHECKING',
     balanced_at        TIMESTAMP,
     user_created_id    VARCHAR(10),
     user_balanced_id   VARCHAR(10),
@@ -186,7 +186,8 @@ CREATE TABLE grns
 (
     id                VARCHAR(10) NOT NULL PRIMARY KEY, -- Khóa chính của bảng (tự động tăng)
     sub_id            VARCHAR(10),                      -- Mã định danh ban đầu
-    status            ENUM('PENDING', 'COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PENDING',
+    status            ENUM('ORDERING', 'TRADING'', CANCELLED', 'COMPLETED') NOT NULL DEFAULT 'ORDERING',
+    received_status   ENUM('ENTERED','NOT_ENTERED') NOT NULL DEFAULT 'NOT_ENTERED',
     histories         TEXT,
     user_created_id   VARCHAR(10),
     user_completed_id VARCHAR(10),
@@ -330,3 +331,10 @@ CREATE TABLE refund_information_details
     FOREIGN KEY (refund_information_id) REFERENCES refund_informations (id),
     FOREIGN KEY (product_id) REFERENCES products (id)
 );
+
+ALTER TABLE `inventory_receipts`.`grns`
+    ADD COLUMN `total_received_quantity` DECIMAL(10, 2) NULL AFTER `tenant_id`,
+ADD COLUMN `discount` DECIMAL(10,2) NULL AFTER `total_received_quantity`,
+ADD COLUMN `tax_amount` DECIMAL(10,2) NULL AFTER `discount`,
+ADD COLUMN `total_value` DECIMAL(10,2) NULL AFTER `tax_amount`,
+ADD COLUMN `total_paid` DECIMAL(10,2) NULL AFTER `tootal_value`;
