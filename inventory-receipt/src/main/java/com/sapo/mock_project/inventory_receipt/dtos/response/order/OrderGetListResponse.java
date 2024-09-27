@@ -33,11 +33,11 @@ public class OrderGetListResponse extends BaseResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String userCreatedName;
 
-    @JsonProperty("total_quantity")
+    @JsonProperty("quantity")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private BigDecimal totalQuantity;
 
-    @JsonProperty("total_price")
+    @JsonProperty("price")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private BigDecimal totalPrice;
 
@@ -69,7 +69,7 @@ public class OrderGetListResponse extends BaseResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String tags;
 
-    @JsonProperty("created_at")
+    @JsonProperty("expected_at")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime expectedAt;

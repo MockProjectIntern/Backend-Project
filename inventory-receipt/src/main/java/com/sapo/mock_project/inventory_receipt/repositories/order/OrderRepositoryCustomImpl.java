@@ -73,6 +73,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             // Kiểm tra và ánh xạ các trường nếu có dữ liệu
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = metaData.getColumnLabel(i);
+                if (rs.getObject(columnName) == null) {
+                    continue;
+                }
 
                 switch (columnName) {
                     case "order_id":

@@ -1,13 +1,14 @@
 package com.sapo.mock_project.inventory_receipt.dtos.response.order;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductImage;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class OrderDetailResponse {
+public class OrderDetailResponse extends BaseResponse {
     @JsonProperty("product_id")
     private String productId;
 

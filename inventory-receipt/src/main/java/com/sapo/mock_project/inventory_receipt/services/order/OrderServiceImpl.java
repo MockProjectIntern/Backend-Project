@@ -25,6 +25,7 @@ import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepos
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
 import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.DateUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +82,7 @@ public class OrderServiceImpl implements OrderService {
             newOrder.setUserCreated(userCreated);
             newOrder.setOrderDetails(newOrderDetail);
             newOrder.setStatus(OrderStatus.PENDING);
+            newOrder.setExpectedAt(DateUtils.getDateTimeTo(request.getExpectedAt()));
 
             newOrder.initializeOrder();
             newOrder.calculateTotalPrice();
