@@ -104,7 +104,7 @@ public class Order extends BaseEntity {
 
     public void calculateTotalPrice() {
         BigDecimal totalDetailsPrice = orderDetails.stream()
-                .map(detail -> detail.getPrice().subtract(detail.getDiscount()).add(detail.getTax()))
+                .map(detail -> (detail.getPrice().subtract(detail.getDiscount()).add(detail.getTax())).multiply(detail.getQuantity()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         this.totalPrice = totalDetailsPrice.add(this.tax).subtract(this.discount);

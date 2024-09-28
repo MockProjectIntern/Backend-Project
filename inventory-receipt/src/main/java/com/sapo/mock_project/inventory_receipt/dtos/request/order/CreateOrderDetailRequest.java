@@ -22,7 +22,7 @@ public class CreateOrderDetailRequest {
 
 //   // @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_PRICE_NOT_NUMBER)
     @PositiveOrZero(message = MessageValidateKeys.ORDER_DETAIL_PRICE_NOT_NEGATIVE)
-    @JsonProperty("cost_price")
+    @JsonProperty("price")
     private BigDecimal price;
 
 //   // @ValidNumber(message = MessageValidateKeys.ORDER_DETAIL_DISCOUNT_NOT_NUMBER)
