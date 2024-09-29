@@ -160,11 +160,9 @@ public class GRNServiceImpl implements GRNService {
             GRN grn = grnRepository.findByIdAndTenantId(id, authHelper.getUser().getTenantId())
                     .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND)));
 
-            Map<String, Object> supplierDetail = (Map<String, Object>) supplierService.getDetailMoney(grn.getSupplier().getId()).getBody().getData();
-
             // Ánh xạ thông tin GRN sang DTO phản hồi
             GRNDetail response = grnMapper.mapToResponse(grn);
-            response.setSupplierDetail(supplierDetail);
+            response.setSupplierId(grn.getSupplier().getId());
             response.setUserCreatedName(grn.getUserCreated().getFullName());
 
             // Ánh xạ thông tin các sản phẩm trong GRN sang DTO phản hồi

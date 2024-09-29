@@ -45,8 +45,8 @@ public class GRNDetail extends BaseResponse {
     @JsonProperty("received_status")
     private GRNReceiveStatus receivedStatus;
 
-    @JsonProperty("supplier")
-    private Map<String, Object> supplierDetail;
+    @JsonProperty("supplier_id")
+    private String supplierId;
 
     @JsonProperty("user_created_name")
     private String userCreatedName;
