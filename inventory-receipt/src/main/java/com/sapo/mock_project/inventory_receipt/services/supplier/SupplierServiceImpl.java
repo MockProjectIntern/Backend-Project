@@ -13,6 +13,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.supplier.UpdateSuppl
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.supplier.ExportDataResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.supplier.SupplierDetail;
 import com.sapo.mock_project.inventory_receipt.dtos.response.supplier.SupplierGetListResponse;
 import com.sapo.mock_project.inventory_receipt.entities.Supplier;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +128,7 @@ public class SupplierServiceImpl implements SupplierService {
     public ResponseEntity<ResponseObject<Object>> filterSupplier(GetListSupplierRequest request, Map<String, Boolean> filterParams, int page, int size) {
         try {
             SupplierSpecification supplierSpecification = new SupplierSpecification(request, authHelper.getUser().getTenantId());
-            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "name"));
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
 
             Page<Supplier> supplierPage = supplierRepository.findAll(supplierSpecification, pageable);
 
@@ -290,6 +292,39 @@ public class SupplierServiceImpl implements SupplierService {
             );
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_GET_DETAIL_SUCCESSFULLY), response);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> exportData(GetListSupplierRequest request, String mode) {
+        try {
+            List<Supplier> suppliers = new ArrayList<>();
+            Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+            if (mode.equals("FILTER")) {
+                SupplierSpecification supplierSpecification = new SupplierSpecification(request, authHelper.getUser().getTenantId());
+
+                List<Supplier> supplierPage = supplierRepository.findAll(supplierSpecification, sort);
+
+                suppliers = supplierPage;
+            } else if (mode.equals("DEFAULT")) {
+                List<Supplier> supplierPage = supplierRepository.findAllByTenantId(authHelper.getUser().getTenantId(), sort);
+
+                suppliers = supplierPage;
+            }
+
+            List<ExportDataResponse> responses = suppliers.stream().map(supplier -> {
+                ExportDataResponse response = supplierMapper.mapToResponseExportData(supplier);
+                if (supplier.getGroup() != null) {
+                    response.setNameGroup(supplier.getGroup().getName());
+                    response.setSubIdGroup(supplier.getGroup().getSubId());
+                }
+
+                return response;
+            }).toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_GET_ALL_SUCCESSFULLY), responses);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

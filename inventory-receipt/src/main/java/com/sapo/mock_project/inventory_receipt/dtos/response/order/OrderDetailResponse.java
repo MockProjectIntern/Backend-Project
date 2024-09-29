@@ -9,13 +9,13 @@ import java.math.BigDecimal;
 
 @Data
 public class OrderDetailResponse extends BaseResponse {
-    @JsonProperty("product_id")
+    @JsonProperty("id")
     private String productId;
 
-    @JsonProperty("product_name")
+    @JsonProperty("name")
     private String productName;
 
-    @JsonProperty("product_image")
+    @JsonProperty("image")
     private ProductImage productImage;
 
     @JsonProperty("sub_id")

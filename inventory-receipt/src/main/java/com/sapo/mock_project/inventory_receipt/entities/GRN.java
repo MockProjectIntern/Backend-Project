@@ -103,6 +103,10 @@ public class GRN extends BaseEntity {
     private User userCancelled;
 
     @ManyToOne
+    @JoinColumn(name = "user_imported_id")
+    private User userImported;
+
+    @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 

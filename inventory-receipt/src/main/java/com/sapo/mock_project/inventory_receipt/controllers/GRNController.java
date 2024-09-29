@@ -114,4 +114,11 @@ public class GRNController {
                                                                    @RequestParam(defaultValue = "10") int size) {
         return grnService.getAllBySupplier(supplierId, page, size);
     }
+
+    @GetMapping("/order-all.json/{orderId}")
+    public ResponseEntity<ResponseObject<Object>> getAllByOrder(@PathVariable String orderId,
+                                                        @RequestParam(defaultValue = "1") int page,
+                                                        @RequestParam(defaultValue = "10") int size) {
+        return grnService.getAllByOrder(orderId, page, size);
+    }
 }

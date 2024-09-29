@@ -114,4 +114,10 @@ public class SupplierController {
     public ResponseEntity<ResponseObject<Object>> getDetailMoney(@PathVariable String id) {
         return supplierService.getDetailMoney(id);
     }
+
+    @PostMapping("/export-data.json")
+    public ResponseEntity<ResponseObject<Object>> exportData(@RequestBody GetListSupplierRequest request,
+                                                             @RequestParam(defaultValue = "DEFAULT") String mode) {
+        return supplierService.exportData(request, mode);
+    }
 }

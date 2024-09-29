@@ -22,4 +22,6 @@ public interface SupplierService {
     ResponseEntity<ResponseObject<Object>> getListNameSupplier(String name, int page, int size);
 
     ResponseEntity<ResponseObject<Object>> getDetailMoney(String supplierId);
+
+    ResponseEntity<ResponseObject<Object>> exportData(GetListSupplierRequest code, String mode);
 }

@@ -16,10 +16,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.grn.UpdateGRNRequest
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
-import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNDetail;
-import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNGetListResponse;
-import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNProductDetail;
-import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNSupplierResponse;
+import com.sapo.mock_project.inventory_receipt.dtos.response.grn.*;
 import com.sapo.mock_project.inventory_receipt.entities.*;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNHistory;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
@@ -413,6 +410,37 @@ public class GRNServiceImpl implements GRNService {
             Page<GRN> grnPage = grnRepository.findBySupplierAndTenantId(supplierOptional.get(), authHelper.getUser().getTenantId(), pageable);
 
             Page<GRNSupplierResponse> responses = grnPage.map(grnMapper::mapToResponseSupplier);
+
+            Pagination pagination = Pagination.<Object>builder()
+                    .data(responses.getContent())
+                    .totalPage(responses.getTotalPages())
+                    .totalItems(responses.getTotalElements())
+                    .build();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_ALL_SUCCESSFULLY), pagination);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getAllByOrder(String orderId, int page, int size) {
+        try {
+            Optional<Order> orderOptional = orderRepository.findByIdAndTenantId(orderId, authHelper.getUser().getTenantId());
+            if (orderOptional.isEmpty()) {
+                return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
+            }
+
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Page<GRN> grnPage = grnRepository.findByOrderAndTenantId(orderOptional.get(), authHelper.getUser().getTenantId(), pageable);
+
+            Page<GRNGetListOrderResponse> responses = grnPage.map(grn -> {
+                GRNGetListOrderResponse response = grnMapper.mapToResponseOrder(grn);
+                if (grn.getUserImported() != null) {
+                    response.setUserImportedName(grn.getUserImported().getFullName());
+                }
+                return response;
+            });
 
             Pagination pagination = Pagination.<Object>builder()
                     .data(responses.getContent())

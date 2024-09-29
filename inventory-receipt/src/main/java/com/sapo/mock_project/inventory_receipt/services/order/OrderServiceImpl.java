@@ -12,8 +12,8 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderDetailResponse;
-import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderGetListResponse;
+import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderResponse;
 import com.sapo.mock_project.inventory_receipt.entities.*;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductImage;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
                     CommonUtils.joinParams(request.getUserCompletedIds()),
                     CommonUtils.joinParams(request.getUserCancelledIds()),
                     authHelper.getUser().getTenantId()
-                    );
+            );
 
             int totalPages = (int) Math.ceil((double) totalOrders / size);
 
@@ -162,10 +162,8 @@ public class OrderServiceImpl implements OrderService {
             }
             Order existingOrder = order.get();
 
-            Map<String, Object> supplierDetail = ((Map<String, Object>) supplierService.getDetailMoney(existingOrder.getSupplier().getId()).getBody().getData());
-
             OrderResponse orderResponse = orderMapper.mapToResponse(existingOrder);
-            orderResponse.setSupplierDetail(supplierDetail);
+            orderResponse.setSupplierId(existingOrder.getSupplier().getId());
             orderResponse.setUserCreatedName(existingOrder.getUserCreated().getFullName());
             for (OrderDetailResponse orderDetail : orderResponse.getOrderDetails()) {
                 Optional<Map<String, Object>> optionalDataMap = existingOrder.getOrderDetails().stream()
@@ -173,19 +171,25 @@ public class OrderServiceImpl implements OrderService {
                         .map(detail -> Map.of(
                                 "productName", detail.getProduct().getName(),
                                 "productId", detail.getProduct().getId(),
-                                "productImage", detail.getProduct().getImages() == null ? null : detail.getProduct().getImages().get(0)
+                                "productImage", detail.getProduct().getImages() == null
+                                                || detail.getProduct().getImages().isEmpty()
+                                                    ? new ProductImage()
+                                                    : detail.getProduct().getImages().get(0)
                         ))
                         .findFirst();
 
                 Map<String, Object> dataMap = optionalDataMap.get();
 
                 orderDetail.setProductName((String) dataMap.get("productName"));
-                orderDetail.setProductId((String)dataMap.get("productId"));
-                orderDetail.setProductImage((ProductImage) dataMap.get("productImage"));
+                orderDetail.setProductId((String) dataMap.get("productId"));
+                orderDetail.setProductImage(dataMap.get("productImage") != null
+                        ? (ProductImage) dataMap.get("productImage")
+                        : null);
             }
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_GET_DETAIL_SUCCESSFULLY), orderResponse);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseUtil.error500Response(e.getMessage());
         }
     }

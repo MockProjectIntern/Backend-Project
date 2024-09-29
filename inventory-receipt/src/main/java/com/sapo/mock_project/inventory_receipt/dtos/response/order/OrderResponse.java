@@ -3,19 +3,18 @@ package com.sapo.mock_project.inventory_receipt.dtos.response.order;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
+import com.sapo.mock_project.inventory_receipt.constants.enums.OrderStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
-import com.sapo.mock_project.inventory_receipt.entities.OrderDetail;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Data
 public class OrderResponse extends BaseResponse {
-    @JsonProperty("supplier")
-    private Map<String, Object> supplierDetail;
+    @JsonProperty("supplier_id")
+    private String supplierId;
 
     @JsonProperty("user_created_name")
     private String userCreatedName;
@@ -23,6 +22,9 @@ public class OrderResponse extends BaseResponse {
     @JsonProperty("expected_at")
     @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime expectedAt;
+
+    @JsonProperty("status")
+    private OrderStatus status;
 
     @JsonProperty("note")
     private String note;

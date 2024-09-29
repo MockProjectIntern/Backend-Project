@@ -91,6 +91,9 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "userCancelled")
     private List<GRN> cancelledGRNs;
 
+    @OneToMany(mappedBy = "userImported")
+    private List<GRN> importedGRNs;
+
     @OneToMany(mappedBy = "userCreated")
     private List<Transaction> createdTransactions;
 

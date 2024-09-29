@@ -24,4 +24,6 @@ public interface GRNService {
     ResponseEntity<ResponseObject<Object>> importGRN(String id);
 
     ResponseEntity<ResponseObject<Object>> getAllBySupplier(String supplierId, int page, int size);
+
+    ResponseEntity<ResponseObject<Object>> getAllByOrder(String orderId, int page, int size);
 }
