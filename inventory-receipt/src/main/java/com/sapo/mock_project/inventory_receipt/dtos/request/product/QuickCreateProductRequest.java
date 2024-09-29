@@ -20,9 +20,6 @@ public class QuickCreateProductRequest {
     @JsonProperty("retail_price")
     private BigDecimal retailPrice;
 
-    @JsonProperty("quantity")
-    private BigDecimal quantity;
-
     @JsonProperty("category_id")
     private String categoryId;
 

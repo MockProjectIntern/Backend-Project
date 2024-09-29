@@ -63,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
             productRepository.save(newProduct);
 
-            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_CREATED_SUCCESSFULLY));
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_CREATED_SUCCESSFULLY), newProduct.getId());
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }
