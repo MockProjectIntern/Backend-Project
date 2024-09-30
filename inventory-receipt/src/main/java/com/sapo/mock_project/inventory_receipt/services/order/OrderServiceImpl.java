@@ -221,6 +221,7 @@ public class OrderServiceImpl implements OrderService {
                 for (OrderDetail existingOrderDetail : existingOrder.getOrderDetails()) {
                     if (existingOrderDetail.getProduct().getId().equals(orderDetail.getProduct().getId())) {
                         orderDetail.setId(existingOrderDetail.getId());
+                        orderDetail.setSubId(existingOrderDetail.getSubId());
                         break;
                     }
                 }
@@ -237,8 +238,8 @@ public class OrderServiceImpl implements OrderService {
 
             existingOrder.calculateTotalPrice();
 
-            orderRepository.save(existingOrder);
             orderDetailRepository.saveAll(newOrderDetails);
+            orderRepository.save(existingOrder);
             orderDetailRepository.deleteAll(deletedOrderDetails);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_UPDATE_SUCCESSFULLY));
