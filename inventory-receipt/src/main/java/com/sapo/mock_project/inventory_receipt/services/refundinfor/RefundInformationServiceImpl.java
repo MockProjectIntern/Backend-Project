@@ -13,8 +13,10 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.refund.CreateRefundI
 import com.sapo.mock_project.inventory_receipt.dtos.request.refund.CreateRefundTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.refundinformation.GetListByGRNResponse;
+import com.sapo.mock_project.inventory_receipt.dtos.response.refundinformation.RefundDetailResponse;
 import com.sapo.mock_project.inventory_receipt.entities.*;
-import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
+import com.sapo.mock_project.inventory_receipt.mappers.RefundMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.refundinfor.RefundDetailRepository;
@@ -27,10 +29,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -45,6 +47,7 @@ public class RefundInformationServiceImpl implements RefundInformationService {
 
     private final TransactionService transactionService;
 
+    private final RefundMapper refundMapper;
     private final LocalizationUtils localizationUtils;
     private final AuthHelper authHelper;
 
@@ -128,7 +131,7 @@ public class RefundInformationServiceImpl implements RefundInformationService {
                 AutoCreateTransactionRequest autoCreateTransactionRequest = AutoCreateTransactionRequest.builder()
                         .amount(transactionRequest.getAmount())
                         .note("Phiếu thu tự động tạo khi nhà cung cấp hoàn tiền")
-                        .referenceCode(PrefixId.GRN)
+                        .referenceCode(PrefixId.REFUND_INFORMATION)
                         .referenceId(existingGRN.getId())
                         .recipientGroup(PrefixId.SUPPLIER)
                         .recipientId(existingSupplier.getId())
@@ -165,6 +168,51 @@ public class RefundInformationServiceImpl implements RefundInformationService {
             debtSupplierRepository.saveAll(debtSuppliers);
 
             return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.REFUND_CREATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getAllByGRN(String grnId) {
+        try {
+            Optional<GRN> grnOptional = grnRepository.findByIdAndTenantId(grnId, authHelper.getUser().getTenantId());
+            if (grnOptional.isEmpty()) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND));
+            }
+
+            GRN existingGRN = grnOptional.get();
+            List<RefundInformation> refundInformations = refundInformationRepository.findAllByGrnAndTenantId(existingGRN, authHelper.getUser().getTenantId());
+
+            List<Map<String, Object>> transactionList = (List<Map<String, Object>>) transactionService
+                    .getTransactionByRefundId(existingGRN.getId()).getBody().getData();
+
+            List<GetListByGRNResponse> responses = refundInformations.stream().map(refundInformation -> {
+                GetListByGRNResponse response = refundMapper.mapToResponse(refundInformation);
+                response.setUserCreatedName(refundInformation.getUserCreated().getFullName());
+
+                Map<String, Object> transaction = transactionList.get(0);
+                response.setTransation(transaction);
+
+                List<RefundDetailResponse> refundDetailResponses = refundInformation.getRefundInformationDetails().stream()
+                        .map(refundDetail -> {
+                            RefundDetailResponse refundDetailResponse = refundMapper.mapToResponse(refundDetail);
+
+                            if (refundDetail.getProduct().getImages() != null && !refundDetail.getProduct().getImages().isEmpty()) {
+                                refundDetailResponse.setImage(refundDetail.getProduct().getImages().get(0));
+                            }
+                            refundDetailResponse.setProductName(refundDetail.getProduct().getName());
+                            refundDetailResponse.setProductId(refundDetail.getProduct().getId());
+                            refundDetailResponse.setProductSubId(refundDetail.getProduct().getSubId());
+                            return refundDetailResponse;
+                        }).toList();
+
+                response.setRefundDetails(refundDetailResponses);
+
+                return response;
+            }).toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.REFUND_GET_ALL_SUCCESSFULLY), responses);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

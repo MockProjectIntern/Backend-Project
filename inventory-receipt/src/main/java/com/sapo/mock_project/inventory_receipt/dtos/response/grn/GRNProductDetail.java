@@ -1,10 +1,12 @@
 package com.sapo.mock_project.inventory_receipt.dtos.response.grn;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.entities.subentities.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * DTO chứa thông tin chi tiết về sản phẩm trong phiếu nhập kho (GRN).
@@ -21,6 +23,25 @@ public class GRNProductDetail {
 
     @JsonProperty("sub_id")
     private String subId;
+
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("types")
+    private List<ProductType> types;
+
+    /**
+     * Đơn vị của sản phẩm trong phiếu nhập kho.
+     */
+    @Schema(description = "Đơn vị của sản phẩm trong phiếu nhập kho", example = "Cái")
+    @JsonProperty("unit")
+    private String unit;
+
+    @JsonProperty("product_id")
+    private String productId;
+
+    @JsonProperty("product_sub_id")
+    private String productSubId;
 
     /**
      * Số lượng của sản phẩm trong phiếu nhập kho.

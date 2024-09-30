@@ -28,7 +28,6 @@ import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepositoryCus
 import com.sapo.mock_project.inventory_receipt.repositories.order.OrderRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
-import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,8 +58,6 @@ public class GRNServiceImpl implements GRNService {
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
     private final OrderRepository orderRepository;
-
-    private final SupplierService supplierService;
 
     private final GRNMapper grnMapper;
     private final GRNProductMapper grnProductMapper;
@@ -166,7 +163,17 @@ public class GRNServiceImpl implements GRNService {
             response.setUserCreatedName(grn.getUserCreated().getFullName());
 
             // Ánh xạ thông tin các sản phẩm trong GRN sang DTO phản hồi
-            List<GRNProductDetail> grnProductDetails = grn.getGrnProducts().stream().map(grnProduct -> grnProductMapper.mapToResponse(grnProduct)).toList();
+            List<GRNProductDetail> grnProductDetails = grn.getGrnProducts().stream().map(grnProduct -> {
+                GRNProductDetail grnProductDetail = grnProductMapper.mapToResponse(grnProduct);
+
+                grnProductDetail.setProductId(grnProduct.getProduct().getId());
+                grnProductDetail.setProductSubId(grnProduct.getProduct().getSubId());
+                grnProductDetail.setName(grnProduct.getProduct().getName());
+                grnProductDetail.setTypes(grnProduct.getProduct().getTypes());
+                grnProductDetail.setUnit(grnProduct.getProduct().getUnit());
+
+                return grnProductDetail;
+            }).toList();
             response.setProducts(grnProductDetails);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_DETAIL_SUCCESSFULLY), response);

@@ -22,4 +22,6 @@ public interface TransactionService {
     ResponseEntity<ResponseObject<Object>> updateTransaction(String id, UpdateTransactionRequest request);
 
     ResponseEntity<ResponseObject<Object>> cancelTransaction(String id);
+
+    ResponseEntity<ResponseObject<Object>> getTransactionByRefundId(String refundId);
 }

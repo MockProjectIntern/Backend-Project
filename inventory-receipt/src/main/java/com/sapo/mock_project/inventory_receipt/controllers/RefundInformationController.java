@@ -8,10 +8,7 @@ import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "${api.prefix}" + BaseEndpoint.REFUND_INFORMATION)
@@ -24,5 +21,10 @@ public class RefundInformationController {
         StringUtils.trimAllStringFields(request);
 
         return refundInformationService.createRefundInformation(request);
+    }
+
+    @GetMapping(value = "/all.json/{grnId}")
+    public ResponseEntity<ResponseObject<Object>> getAllByGRN(@PathVariable String grnId) {
+        return refundInformationService.getAllByGRN(grnId);
     }
 }

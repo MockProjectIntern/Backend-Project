@@ -2,10 +2,7 @@ package com.sapo.mock_project.inventory_receipt.services.transaction;
 
 import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
-import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
-import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
-import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
-import com.sapo.mock_project.inventory_receipt.constants.PrefixId;
+import com.sapo.mock_project.inventory_receipt.constants.*;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.dtos.internal.transaction.AutoCreateTransactionRequest;
@@ -38,6 +35,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -123,7 +122,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             User userCreated = authHelper.getUser();
             Optional<TransactionCategory> transactionCategory = transactionCategoryRepository
-                    .findBySubIdAndTenantId(request.getType() == TransactionType.INCOME ? "TSC00001" : "TSC00002", authHelper.getUser().getTenantId());
+                    .findById(request.getType() == TransactionType.INCOME ? "TSC00001" : "TSC00002");
             if (transactionCategory.isEmpty()) {
                 return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND));
             }
@@ -177,7 +176,7 @@ public class TransactionServiceImpl implements TransactionService {
                             response.setUserCreatedName(transaction.getUserCreated().getFullName());
                         } else if (field.equals("transaction_category_name")) {
                             response.setTransactionCategoryName(transaction.getCategory().getName());
-                        }else {
+                        } else {
                             try {
                                 // Lấy giá trị của trường từ đối tượng supplier
                                 Object fieldValue = CommonUtils.getFieldValue(transaction, field);
@@ -266,6 +265,35 @@ public class TransactionServiceImpl implements TransactionService {
             transactionRepository.save(transaction);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CANCEL_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getTransactionByRefundId(String grnId) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateTimePattern.YYYYMMDDHHMMSS);
+
+            List<Transaction> transactions = transactionRepository.findByRefundIdAndTenantId(grnId, authHelper.getUser().getTenantId());
+
+            List<Map<String, Object>> responses = transactions.stream().map(refund -> {
+                Map<String, Object> response = new HashMap<>();
+                response.put("id", refund.getId());
+                response.put("amount", refund.getAmount());
+                String createdAtFormatted = refund.getCreatedAt().format(formatter);
+                String updatedAtFormatted = refund.getUpdatedAt().format(formatter);
+
+                response.put("created_at", createdAtFormatted);
+                response.put("updated_at", updatedAtFormatted);
+
+                response.put("user_created_name", refund.getUserCreated().getFullName());
+                response.put("payment_method", refund.getPaymentMethod());
+
+                return response;
+            }).toList();
+
+            return  ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_GET_ALL_SUCCESSFULLY), responses);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

@@ -6,4 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface RefundInformationService {
     ResponseEntity<ResponseObject<Object>> createRefundInformation(CreateRefundInforRequest request);
+
+    ResponseEntity<ResponseObject<Object>> getAllByGRN(String grnId);
 }

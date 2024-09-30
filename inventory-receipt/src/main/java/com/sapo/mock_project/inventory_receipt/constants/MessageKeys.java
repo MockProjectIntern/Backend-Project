@@ -80,6 +80,7 @@ public class MessageKeys {
     public static final String REFUND_GET_ALL_SUCCESSFULLY = "refund.get_all.successfully";
     public static final String REFUND_CANCEL_SUCCESSFULLY = "refund.cancel.successfully";
     public static final String REFUND_UPDATE_SUCCESSFULLY = "refund.update.successfully";
+
     public static final String DEBT_SUPPLIER_GET_ALL_SUCCESSFULLY = "debt_supplier.get_all.successfully";
 
 }
