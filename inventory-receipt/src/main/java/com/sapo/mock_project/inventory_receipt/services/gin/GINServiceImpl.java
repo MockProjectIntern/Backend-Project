@@ -137,6 +137,7 @@ public class GINServiceImpl implements GINService {
                 productDetailResponse.setImage(!ginProduct.getProduct().getImages().isEmpty()
                         ? ginProduct.getProduct().getImages().get(0)
                         : null);
+                productDetailResponse.setRealQuantity(ginProduct.getProduct().getQuantity());
 
                 productDetailResponses.add(productDetailResponse);
             }

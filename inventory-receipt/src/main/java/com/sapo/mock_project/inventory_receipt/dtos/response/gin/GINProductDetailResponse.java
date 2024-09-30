@@ -26,6 +26,9 @@ public class GINProductDetailResponse {
     @JsonProperty("unit")
     private String unit;
 
+    @JsonProperty("real_quantity")
+    private BigDecimal realQuantity;
+
     @JsonProperty("actual_stock")
     private BigDecimal actualStock;
 
