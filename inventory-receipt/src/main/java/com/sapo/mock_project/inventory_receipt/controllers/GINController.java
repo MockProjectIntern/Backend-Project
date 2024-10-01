@@ -64,4 +64,10 @@ public class GINController {
     public ResponseEntity<ResponseObject<Object>> balanceGIN(@PathVariable String id) {
         return ginService.balanceGIN(id);
     }
+
+    @PostMapping("/export-data.json")
+    public ResponseEntity<ResponseObject<Object>> exportData(@RequestBody GetListGINRequest request,
+                                                             @RequestParam(defaultValue = "DEFAULT") String mode) {
+        return ginService.exportData(request, mode);
+    }
 }

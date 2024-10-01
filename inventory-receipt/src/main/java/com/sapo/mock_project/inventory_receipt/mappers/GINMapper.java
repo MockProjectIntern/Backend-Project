@@ -4,6 +4,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.gin.CreateGINProduct
 import com.sapo.mock_project.inventory_receipt.dtos.request.gin.CreateGINRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.gin.UpdateGINProductRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.gin.UpdateGINRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.response.gin.ExportDataResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINDetailResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINProductDetailResponse;
 import com.sapo.mock_project.inventory_receipt.entities.GIN;
@@ -25,4 +26,6 @@ public interface GINMapper {
     GINProductDetailResponse mapToResponse(GINProduct ginProduct);
 
     void updateFromDTO(UpdateGINRequest request, @MappingTarget GIN existingGIN);
+
+    ExportDataResponse mapToExportResponse(GIN gin);
 }

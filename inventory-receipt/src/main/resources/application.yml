@@ -16,7 +16,7 @@ spring:
     password: ${database.password}
     hikari:
       maximum-pool-size: 20
-      idle-timeout: 10000
+      idle-timeout: 10
   jpa:
     show-sql: true
     hibernate:

@@ -10,6 +10,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.gin.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.gin.ExportDataResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINDetailResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINGetListResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.gin.GINProductDetailResponse;
@@ -337,6 +338,49 @@ public class GINServiceImpl implements GINService {
             ginRepository.save(existingGIN);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_BALANCE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> exportData(GetListGINRequest request, String mode) {
+        try {
+            GINSpecification ginSpecification = new GINSpecification(request, authHelper.getUser().getTenantId());
+            List<GIN> gins = new ArrayList<>();
+            if (mode.equals("DEFAULT")) {
+                gins = ginRepository.findALlByTenantId(authHelper.getUser().getTenantId());
+            } else if (mode.equals("FILTER")) {
+                gins = ginRepository.findAll(ginSpecification);
+            }
+
+            List<ExportDataResponse> responses = gins.stream().map(gin -> {
+                ExportDataResponse response = ginMapper.mapToExportResponse(gin);
+
+                if (gin.getUserCreated() != null) {
+                    response.setUserCreatedName(gin.getUserCreated().getFullName());
+                }
+                if (gin.getUserBalanced() != null) {
+                    response.setUserBalancedName(gin.getUserBalanced().getFullName());
+                }
+                if (gin.getUserInspection() != null) {
+                    response.setUserInspectionName(gin.getUserInspection().getFullName());
+                }
+
+                gin.getProducts().forEach(ginProduct -> {
+                    response.getProducts().forEach(detail -> {
+                        detail.setRealQuantity(detail.getActualStock().subtract(detail.getDiscrepancyQuantity()));
+                        if (detail.getId().equals(ginProduct.getId())) {
+                            detail.setProductSubId(ginProduct.getProduct().getSubId());
+                            detail.setProductName(ginProduct.getProduct().getName());
+                        }
+                    });
+                });
+
+                return response;
+            }).toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_GET_ALL_SUCCESSFULLY), responses);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

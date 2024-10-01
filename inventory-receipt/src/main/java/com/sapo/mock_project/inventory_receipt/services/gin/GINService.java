@@ -20,4 +20,6 @@ public interface GINService {
     ResponseEntity<ResponseObject<Object>> filterGIN(GetListGINRequest request, Map<String, Boolean> filterParams, int page, int size);
 
     ResponseEntity<ResponseObject<Object>> balanceGIN(String id);
+
+    ResponseEntity<ResponseObject<Object>> exportData(GetListGINRequest request, String mode);
 }
