@@ -117,8 +117,14 @@ public class GRNController {
 
     @GetMapping("/order-all.json/{orderId}")
     public ResponseEntity<ResponseObject<Object>> getAllByOrder(@PathVariable String orderId,
-                                                        @RequestParam(defaultValue = "1") int page,
-                                                        @RequestParam(defaultValue = "10") int size) {
+                                                                @RequestParam(defaultValue = "1") int page,
+                                                                @RequestParam(defaultValue = "10") int size) {
         return grnService.getAllByOrder(orderId, page, size);
+    }
+
+    @PostMapping("/export-data.json")
+    public ResponseEntity<ResponseObject<Object>> exportData(@RequestBody GetListGRNRequest request,
+                                                             @RequestParam(defaultValue = "DEFAULT") String mode) {
+        return grnService.exportData(request, mode);
     }
 }

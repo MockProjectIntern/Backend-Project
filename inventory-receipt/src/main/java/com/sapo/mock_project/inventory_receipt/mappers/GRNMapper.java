@@ -3,6 +3,7 @@ package com.sapo.mock_project.inventory_receipt.mappers;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.CreateGRNProductRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.CreateGRNRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.UpdateGRNRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.response.grn.ExportDataGRNResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNDetail;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNGetListOrderResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.grn.GRNSupplierResponse;
@@ -23,4 +24,6 @@ public interface GRNMapper {
     GRNGetListOrderResponse mapToResponseOrder(GRN grn);
 
     void updateFromDTO(UpdateGRNRequest request,@MappingTarget GRN existingGRN);
+
+    ExportDataGRNResponse mapToExportDataResponse(GRN grn);
 }

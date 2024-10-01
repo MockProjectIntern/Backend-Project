@@ -28,6 +28,7 @@ import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepositoryCus
 import com.sapo.mock_project.inventory_receipt.repositories.order.OrderRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
+import com.sapo.mock_project.inventory_receipt.services.specification.GRNSpecification;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -455,6 +456,36 @@ public class GRNServiceImpl implements GRNService {
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_ALL_SUCCESSFULLY), pagination);
         } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> exportData(GetListGRNRequest request, String mode) {
+        try {
+            GRNSpecification specification = new GRNSpecification(request, authHelper.getUser().getTenantId());
+
+            List<GRN> grns = new ArrayList<>();
+            if (mode.equals("DEFAULT")) {
+                grns = grnRepository.findAll(specification);
+            } else if (mode.equals("FILTER")) {
+                grns = grnRepository.findAll(specification, Sort.by(Sort.Direction.DESC, "createdAt"));
+            }
+
+            List<ExportDataGRNResponse> responses = grns.stream().map(grn -> {
+                ExportDataGRNResponse response = grnMapper.mapToExportDataResponse(grn);
+                response.setSupplierName(grn.getSupplier().getName());
+                if (grn.getUserImported() != null) {
+                    response.setUserImportedName(grn.getUserImported().getFullName());
+                }
+                response.setSupplierName(grn.getSupplier().getName());
+
+                return response;
+            }).toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_GET_ALL_SUCCESSFULLY), responses);
+        } catch (
+                Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }
     }
