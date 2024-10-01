@@ -1,6 +1,8 @@
 package com.sapo.mock_project.inventory_receipt.dtos.response.gin;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GINStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
 import lombok.Data;
@@ -19,6 +21,7 @@ public class GINGetListResponse extends BaseResponse {
     private GINStatus status;
 
     @JsonProperty("balanced_at")
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime balancedAt;
 
     @JsonProperty("user_created_name")

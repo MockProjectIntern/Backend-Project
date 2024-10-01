@@ -39,6 +39,8 @@ public class GIN extends BaseEntity {
 
     private String note;
 
+    private String tags;
+
     @ManyToOne
     @JoinColumn(name = "user_created_id")
     private User userCreated;

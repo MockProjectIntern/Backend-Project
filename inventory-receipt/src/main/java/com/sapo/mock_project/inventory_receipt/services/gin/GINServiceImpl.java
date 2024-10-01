@@ -266,6 +266,15 @@ public class GINServiceImpl implements GINService {
                 ginProduct.setProduct(product);
                 ginProduct.setGin(existingGIN);
 
+
+                for (GINProduct existingProduct : existingProducts) {
+                    if (existingProduct.getProduct().getId().equals(updateGINRequest.getProductId())) {
+                        ginProduct.setId(existingProduct.getId());
+                        ginProduct.setSubId(existingProduct.getSubId());
+                        break;
+                    }
+                }
+
                 updatedProducts.add(ginProduct);
             }
 
@@ -382,6 +391,7 @@ public class GINServiceImpl implements GINService {
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GIN_GET_ALL_SUCCESSFULLY), responses);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseUtil.error500Response(e.getMessage());
         }
     }

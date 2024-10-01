@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNPaymentStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
-import com.sapo.mock_project.inventory_receipt.entities.User;
 import lombok.Data;
 
 import java.math.BigDecimal;

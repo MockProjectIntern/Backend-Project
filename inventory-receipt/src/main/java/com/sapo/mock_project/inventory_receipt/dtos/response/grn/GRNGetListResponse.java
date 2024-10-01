@@ -43,6 +43,7 @@ public class GRNGetListResponse extends BaseResponse {
 
     @JsonProperty("received_at")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime receivedAt;
 
     @JsonProperty("expected_at")
@@ -52,10 +53,12 @@ public class GRNGetListResponse extends BaseResponse {
 
     @JsonProperty("cancelled_at")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime cancelledAt;
 
     @JsonProperty("payment_at")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime paymentAt;
 
     @JsonProperty("total_received_quantity")

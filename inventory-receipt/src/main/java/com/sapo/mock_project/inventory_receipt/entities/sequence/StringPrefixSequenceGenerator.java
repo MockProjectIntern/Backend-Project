@@ -64,17 +64,17 @@ public class StringPrefixSequenceGenerator extends SequenceStyleGenerator {
             // Thực thi truy vấn chèn vào bảng sequence để sinh giá trị tự động
             statement.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 
-            try {
-                // Kiểm tra xem đối tượng đã có ID hay chưa
-                Serializable id = (Serializable) object.getClass().getMethod("getSubId").invoke(object);
-
-                // Nếu đối tượng đã có ID, không tạo mới mà trả về ID hiện tại
-                if (id != null && !id.toString().trim().isEmpty()) { // Thêm trim() để loại bỏ khoảng trắng
-                    return id;
-                }
-            } catch (Exception e) {
-                throw new HibernateException("Không thể lấy ID từ đối tượng", e);
-            }
+//            try {
+//                // Kiểm tra xem đối tượng đã có ID hay chưa
+//                Serializable id = (Serializable) object.getClass().getMethod("getSubId").invoke(object);
+//
+//                // Nếu đối tượng đã có ID, không tạo mới mà trả về ID hiện tại
+//                if (id != null && !id.toString().trim().isEmpty()) { // Thêm trim() để loại bỏ khoảng trắng
+//                    return id;
+//                }
+//            } catch (Exception e) {
+//                throw new HibernateException("Không thể lấy ID từ đối tượng", e);
+//            }
 
             // Lấy giá trị của khóa tự sinh
             ResultSet rs = statement.getGeneratedKeys();
