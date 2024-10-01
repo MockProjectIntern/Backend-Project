@@ -21,4 +21,6 @@ public interface OrderService {
     ResponseEntity<ResponseObject<Object>> updateOrder(String orderId, UpdateOrderRequest request);
 
     ResponseEntity<ResponseObject<Object>> updateOrderLittle(String orderId, UpdateOrderLittleRequest request);
+
+    ResponseEntity<ResponseObject<Object>> exportData(GetListOrderRequest request, String mode);
 }

@@ -11,6 +11,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.order.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.order.ExportDataOrderResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderDetailResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderGetListResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderResponse;
@@ -23,6 +24,7 @@ import com.sapo.mock_project.inventory_receipt.repositories.order.OrderRepositor
 import com.sapo.mock_project.inventory_receipt.repositories.order.OrderRepositoryCustom;
 import com.sapo.mock_project.inventory_receipt.repositories.product.ProductRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
+import com.sapo.mock_project.inventory_receipt.services.specification.OrderSpecification;
 import com.sapo.mock_project.inventory_receipt.services.supplier.SupplierService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import com.sapo.mock_project.inventory_receipt.utils.DateUtils;
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +47,6 @@ public class OrderServiceImpl implements OrderService {
     private final SupplierRepository supplierRepository;
     private final OrderRepositoryCustom orderRepositoryCustom;
     private final ProductRepository productRepository;
-
-    private final SupplierService supplierService;
 
     private final OrderMapper orderMapper;
     private final LocalizationUtils localizationUtils;
@@ -283,6 +284,34 @@ public class OrderServiceImpl implements OrderService {
             orderRepository.save(existingOrder);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_UPDATE_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> exportData(GetListOrderRequest request, String mode) {
+        try {
+            OrderSpecification orderSpecification = new OrderSpecification(request, authHelper.getUser().getTenantId());
+            List<Order> orders = new ArrayList<>();
+
+            if (mode.equals("DEFAULT")) {
+                orders = orderRepository.findAllByTenantId(authHelper.getUser().getTenantId());
+            } else if (mode.equals("FILTER")) {
+                orders = orderRepository.findAll(orderSpecification);
+            }
+
+            List<ExportDataOrderResponse> responses = orders.stream().map(order -> {
+                ExportDataOrderResponse response = orderMapper.mapToExportDataResponse(order);
+                response.setSupplierName(order.getSupplier().getName());
+                response.setUserCreatedName(order.getUserCreated().getFullName());
+
+                response.setTotalQuantity(order.getOrderDetails().stream().map(OrderDetail::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add));
+
+                return response;
+            }).toList();
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_GET_ALL_SUCCESSFULLY), responses);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

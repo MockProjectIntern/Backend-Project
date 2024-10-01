@@ -59,4 +59,11 @@ public class OrderController {
 
         return orderService.updateOrderLittle(id, request);
     }
+
+
+    @PostMapping("/export-data.json")
+    public ResponseEntity<ResponseObject<Object>> exportData(@Valid @RequestBody GetListOrderRequest request,
+                                                             @RequestParam(defaultValue = "DEFAULT") String mode) {
+        return orderService.exportData(request, mode);
+    }
 }

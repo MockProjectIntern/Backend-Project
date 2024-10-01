@@ -3,6 +3,7 @@ package com.sapo.mock_project.inventory_receipt.mappers;
 import com.sapo.mock_project.inventory_receipt.dtos.request.order.CreateOrderDetailRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.order.CreateOrderRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.order.UpdateOrderRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.response.order.ExportDataOrderResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderDetailResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.order.OrderResponse;
 import com.sapo.mock_project.inventory_receipt.entities.Order;
@@ -22,4 +23,6 @@ public interface OrderMapper {
     OrderDetailResponse mapToResponseDetail(OrderDetail orderDetail);
 
     void updateFromDTO(UpdateOrderRequest request, @MappingTarget Order order);
+
+    ExportDataOrderResponse mapToExportDataResponse(Order order);
 }
