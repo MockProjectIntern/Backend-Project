@@ -88,7 +88,7 @@ public class SupplierServiceImpl implements SupplierService {
 
             supplierRepository.save(newSupplier);
 
-            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_CREATE_SUCCESSFULLY));
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.SUPPLIER_CREATE_SUCCESSFULLY), newSupplier.getId());
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }
