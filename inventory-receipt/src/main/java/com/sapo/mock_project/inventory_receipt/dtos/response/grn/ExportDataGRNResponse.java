@@ -1,6 +1,8 @@
 package com.sapo.mock_project.inventory_receipt.dtos.response.grn;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
@@ -15,6 +17,7 @@ public class ExportDataGRNResponse extends BaseResponse {
     private String subId;
 
     @JsonProperty("received_at")
+    @JsonFormat(pattern = DateTimePattern.YYYYMMDDHHMMSS, shape = JsonFormat.Shape.STRING)
     private LocalDateTime receivedAt;
 
     @JsonProperty("status")

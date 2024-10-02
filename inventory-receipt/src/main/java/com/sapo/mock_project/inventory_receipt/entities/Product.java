@@ -52,8 +52,6 @@ public class Product extends BaseEntity {
 
     private String unit;
 
-    private BigDecimal costRevenue;
-
     private BigDecimal costPrice;
 
     private BigDecimal wholesalePrice;
@@ -116,9 +114,6 @@ public class Product extends BaseEntity {
         }
         if (status == null) {
             status = ProductStatus.ACTIVE;
-        }
-        if (costRevenue == null) {
-            costRevenue = BigDecimal.ZERO;
         }
     }
 }

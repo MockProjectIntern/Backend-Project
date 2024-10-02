@@ -23,4 +23,6 @@ public interface OrderService {
     ResponseEntity<ResponseObject<Object>> updateOrderLittle(String orderId, UpdateOrderLittleRequest request);
 
     ResponseEntity<ResponseObject<Object>> exportData(GetListOrderRequest request, String mode);
+
+    ResponseEntity<ResponseObject<Object>> cancelOrder(String orderId);
 }

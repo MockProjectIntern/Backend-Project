@@ -18,4 +18,6 @@ public interface ProductService {
     ResponseEntity<ResponseObject<Object>> filterProductInWarehouse(GetListProductManageRequest request, Map<String, Boolean> filterParams, int page, int size);
 
     ResponseEntity<ResponseObject<Object>> quickGetListProduct(String keyword, int page, int size);
+
+    ResponseEntity<ResponseObject<Object>> deleteProduct(String productId);
 }

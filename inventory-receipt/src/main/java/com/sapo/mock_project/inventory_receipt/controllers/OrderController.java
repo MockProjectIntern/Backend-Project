@@ -66,4 +66,9 @@ public class OrderController {
                                                              @RequestParam(defaultValue = "DEFAULT") String mode) {
         return orderService.exportData(request, mode);
     }
+
+    @PutMapping("/cancel.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> cancelOrder(@PathVariable String id) {
+        return orderService.cancelOrder(id);
+    }
 }

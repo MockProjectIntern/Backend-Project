@@ -69,4 +69,9 @@ public class ProductController {
                                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
         return productService.quickGetListProduct(keyword, page, size);
     }
+
+    @DeleteMapping("/delete.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> deleteProduct(@PathVariable String id) {
+        return productService.deleteProduct(id);
+    }
 }

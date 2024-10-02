@@ -4,6 +4,7 @@ import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.MessageExceptionKeys;
 import com.sapo.mock_project.inventory_receipt.constants.MessageKeys;
+import com.sapo.mock_project.inventory_receipt.constants.enums.ProductStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.request.product.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
@@ -281,6 +282,21 @@ public class ProductServiceImpl implements ProductService {
                     .build();
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_ALL_SUCCESSFULLY), pagination);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> deleteProduct(String productId) {
+        try {
+            Product existingProduct = productRepository.findByIdAndTenantId(productId, authHelper.getUser().getTenantId())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
+            existingProduct.setStatus(ProductStatus.INACTIVE);
+
+            productRepository.save(existingProduct);
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_DELETED_SUCCESSFULLY));
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

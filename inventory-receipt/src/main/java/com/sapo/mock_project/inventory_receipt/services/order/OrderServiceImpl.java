@@ -316,4 +316,23 @@ public class OrderServiceImpl implements OrderService {
             return ResponseUtil.error500Response(e.getMessage());
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> cancelOrder(String orderId) {
+        try {
+            Optional<Order> orderOptional = orderRepository.findByIdAndTenantId(orderId, authHelper.getUser().getTenantId());
+            if (orderOptional.isEmpty()) {
+                return ResponseUtil.error404Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.ORDER_NOT_FOUND));
+            }
+
+            Order existingOrder = orderOptional.get();
+            existingOrder.setStatus(OrderStatus.CANCELLED);
+
+            orderRepository.save(existingOrder);
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CANCEL_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
 }
