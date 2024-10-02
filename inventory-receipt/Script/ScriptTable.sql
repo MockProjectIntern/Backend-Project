@@ -114,6 +114,7 @@ CREATE TABLE products
     sold            DECIMAL(10, 2),
     description     TEXT,
     unit            VARCHAR(50),
+    cost_revenue    DECIMAL(10, 2),
     cost_price      DECIMAL(10, 2),
     wholesale_price DECIMAL(10, 2),
     retail_price    DECIMAL(10, 2),

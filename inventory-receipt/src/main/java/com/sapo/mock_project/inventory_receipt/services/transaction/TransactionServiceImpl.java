@@ -8,10 +8,12 @@ import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.Trans
 import com.sapo.mock_project.inventory_receipt.dtos.internal.transaction.AutoCreateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.CreateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetTotalRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.GetTotalTransactionResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.TransactionGetListResponse;
 import com.sapo.mock_project.inventory_receipt.entities.Supplier;
 import com.sapo.mock_project.inventory_receipt.entities.Transaction;
@@ -23,8 +25,10 @@ import com.sapo.mock_project.inventory_receipt.mappers.TransactionMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.transaction.TransactionCategoryRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.transaction.TransactionRepository;
+import com.sapo.mock_project.inventory_receipt.services.specification.GetTotalTransactionSpecification;
 import com.sapo.mock_project.inventory_receipt.services.specification.TransactionSpecification;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
+import com.sapo.mock_project.inventory_receipt.utils.DateUtils;
 import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -293,7 +297,44 @@ public class TransactionServiceImpl implements TransactionService {
                 return response;
             }).toList();
 
-            return  ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_GET_ALL_SUCCESSFULLY), responses);
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_GET_ALL_SUCCESSFULLY), responses);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getTotalTransaction(GetTotalRequest request, int page, int size) {
+        try {
+            GetTotalTransactionSpecification specification = new GetTotalTransactionSpecification(request, authHelper.getUser().getTenantId());
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+            Page<Transaction> transactionPage = transactionRepository.findAll(specification, pageable);
+            List<GetTotalTransactionResponse> responseList = transactionPage.getContent().stream().map(transaction -> {
+                GetTotalTransactionResponse response = transactionMapper.mapToTotalResponse(transaction);
+                response.setCategoryName(transaction.getCategory().getName());
+
+                return response;
+            }).toList();
+
+            Pagination pagination = Pagination.<Object>builder()
+                    .data(responseList)
+                    .totalPage(transactionPage.getTotalPages())
+                    .totalItems(transactionPage.getTotalElements())
+                    .build();
+
+            List<Object[]> totalValues = transactionRepository.getTotalValue(request.getMode(), request.getDateType(),
+                    DateUtils.getDateTimeFrom(request.getDateFrom()),
+                    DateUtils.getDateTimeFrom(request.getDateTo()),
+                    authHelper.getUser().getTenantId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("total_income", totalValues.get(0)[0]);
+            response.put("total_expense", totalValues.get(0)[1]);
+            response.put("total_before", totalValues.get(0)[2]);
+            response.put("pagination", pagination);
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_GET_ALL_SUCCESSFULLY), response);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

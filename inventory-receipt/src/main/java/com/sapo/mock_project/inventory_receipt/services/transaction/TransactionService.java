@@ -3,6 +3,7 @@ package com.sapo.mock_project.inventory_receipt.services.transaction;
 import com.sapo.mock_project.inventory_receipt.dtos.internal.transaction.AutoCreateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.CreateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetTotalRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import org.springframework.http.ResponseEntity;
@@ -24,4 +25,6 @@ public interface TransactionService {
     ResponseEntity<ResponseObject<Object>> cancelTransaction(String id);
 
     ResponseEntity<ResponseObject<Object>> getTransactionByRefundId(String refundId);
+
+    ResponseEntity<ResponseObject<Object>> getTotalTransaction(GetTotalRequest request, int page, int size);
 }

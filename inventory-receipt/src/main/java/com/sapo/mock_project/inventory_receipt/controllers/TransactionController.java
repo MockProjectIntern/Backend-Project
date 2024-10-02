@@ -4,6 +4,7 @@ import com.sapo.mock_project.inventory_receipt.constants.BaseEndpoint;
 import com.sapo.mock_project.inventory_receipt.constants.NameFilterFromCookie;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.CreateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetTotalRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTransactionRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.transaction.TransactionService;
@@ -106,5 +107,12 @@ public class TransactionController {
     @ApiResponse(responseCode = "404", description = "Phiếu thu/chi không tìm thấy")
     public ResponseEntity<ResponseObject<Object>> cancelTransaction(@PathVariable String id) {
         return transactionService.cancelTransaction(id);
+    }
+
+    @PostMapping("/total.json")
+    public ResponseEntity<ResponseObject<Object>> getTotalTransaction(@RequestBody GetTotalRequest request,
+                                                                      @RequestParam(defaultValue = "1") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
+        return transactionService.getTotalTransaction(request, page, size);
     }
 }
