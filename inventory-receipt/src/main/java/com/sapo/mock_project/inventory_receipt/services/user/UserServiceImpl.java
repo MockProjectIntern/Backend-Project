@@ -368,4 +368,27 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getDashboard() {
+        try {
+            List<Object[]> dashboardData = userRepository.getDashboardData(authHelper.getUser().getTenantId());
+
+            Map<String, Object> dashboardMap = Map.of(
+                    "total_income", dashboardData.get(0)[0],
+                    "total_expense", dashboardData.get(0)[1],
+                    "count_order", dashboardData.get(0)[2],
+                    "count_grn", dashboardData.get(0)[3],
+                    "count_gin", dashboardData.get(0)[4],
+                    "count_product", dashboardData.get(0)[5],
+                    "sum_quantity", dashboardData.get(0)[6]
+            );
+
+            // Xử lý logic lấy dữ liệu dashboard
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GET_DASHBOARD_SUCCESSFULLY), dashboardMap);
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
 }

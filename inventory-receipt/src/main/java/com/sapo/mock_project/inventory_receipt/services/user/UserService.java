@@ -27,4 +27,6 @@ public interface UserService {
     ResponseEntity<ResponseObject<Object>> getListName(int page, int size);
 
     ModelAndView confirmEmail(String userId, String verifyCode);
+
+    ResponseEntity<ResponseObject<Object>> getDashboard();
 }

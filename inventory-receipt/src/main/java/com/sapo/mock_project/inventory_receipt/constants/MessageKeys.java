@@ -1,6 +1,8 @@
 package com.sapo.mock_project.inventory_receipt.constants;
 
 public class MessageKeys {
+    public static final String GET_DASHBOARD_SUCCESSFULLY = "get.dashboard.successfully";
+
     public static final String USER_CREATE_SUCCESSFULLY = "user.create.successfully";
     public static final String USER_LOGIN_SUCCESSFULLY = "user.login.successfully";
     public static final String USER_REFRESH_TOKEN_SUCCESSFULLY = "user.refresh_token.successfully";

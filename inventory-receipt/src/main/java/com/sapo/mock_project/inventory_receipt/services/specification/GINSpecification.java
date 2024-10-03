@@ -40,7 +40,7 @@ public class GINSpecification implements Specification<GIN> {
 
         if (keyword != null) {
             predicates.add(criteriaBuilder.or(
-                    criteriaBuilder.like(root.get("id"), "%" + keyword + "%")
+                    criteriaBuilder.like(root.get("sub_id"), "%" + keyword + "%")
             ));
         }
         if (statuses != null && !statuses.isEmpty()) {

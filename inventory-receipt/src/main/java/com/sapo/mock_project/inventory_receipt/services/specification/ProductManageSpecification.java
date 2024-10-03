@@ -65,7 +65,6 @@ public class ProductManageSpecification implements Specification<Product> {
         if (statuses != null && !statuses.isEmpty()) {
             predicates.add(root.get("status").in(statuses));
         }
-
         if (tenantId != null) {
             Predicate tenantIdPredicate = criteriaBuilder.equal(root.get("tenantId"), tenantId);
 

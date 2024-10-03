@@ -177,4 +177,9 @@ public class UserController {
     public ModelAndView confirmEmail(@PathVariable String userId, @RequestParam String verifyCode) {
         return userService.confirmEmail(userId, verifyCode);
     }
+
+    @GetMapping("/dashboard.json")
+    public ResponseEntity<ResponseObject<Object>> getDashboard() {
+        return userService.getDashboard();
+    }
 }

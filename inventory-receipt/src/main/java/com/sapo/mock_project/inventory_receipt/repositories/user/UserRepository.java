@@ -23,4 +23,16 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
 
     @Query("SELECT u.id, u.fullName FROM User u WHERE u.tenantId = :tenantId")
     Page<Object[]> findAllFullNameAndTenantId(String tenantId, Pageable pageable);
+
+    @Query("""
+                    SELECT
+                        (SELECT SUM(t.amount) FROM Transaction t WHERE t.type = 'INCOME' AND t.tenantId = :tenantId) AS total_income,
+                        (SELECT SUM(t.amount) FROM Transaction t WHERE t.type = 'EXPENSE' AND t.tenantId = :tenantId) AS total_expense,
+                        (SELECT COUNT(*) FROM Order o WHERE o.status = 'PENDING' OR o.status = 'PARTIAL' AND o.tenantId = :tenantId) AS count_order,
+                        (SELECT COUNT(*) FROM GRN g WHERE g.status = 'ORDERING' OR g.status = 'TRADING' AND g.tenantId = :tenantId) AS count_grn,
+                        (SELECT COUNT(*) FROM GIN g WHERE g.status = 'CHECKING' AND g.tenantId = :tenantId) AS count_gin,
+                        (SELECT COUNT(*) FROM Product p WHERE p.status = 'ACTIVE' AND p.tenantId = :tenantId) AS count_product,
+                        (SELECT SUM(p.quantity) FROM Product p WHERE p.status = 'ACTIVE' AND p.tenantId = :tenantId) AS sum_quantity
+            """)
+    List<Object[]> getDashboardData(String tenantId);
 }
