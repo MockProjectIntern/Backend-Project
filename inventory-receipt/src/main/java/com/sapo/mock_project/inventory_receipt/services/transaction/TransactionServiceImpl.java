@@ -3,25 +3,22 @@ package com.sapo.mock_project.inventory_receipt.services.transaction;
 import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.*;
+import com.sapo.mock_project.inventory_receipt.constants.enums.GRNPaymentStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.dtos.internal.transaction.AutoCreateTransactionRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.CreateTransactionRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetTotalRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTransactionRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.GetTotalTransactionResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.TransactionGetListResponse;
-import com.sapo.mock_project.inventory_receipt.entities.Supplier;
-import com.sapo.mock_project.inventory_receipt.entities.Transaction;
-import com.sapo.mock_project.inventory_receipt.entities.TransactionCategory;
-import com.sapo.mock_project.inventory_receipt.entities.User;
+import com.sapo.mock_project.inventory_receipt.entities.*;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.exceptions.NoActionForOperationException;
 import com.sapo.mock_project.inventory_receipt.mappers.TransactionMapper;
+import com.sapo.mock_project.inventory_receipt.repositories.grn.GRNRepository;
+import com.sapo.mock_project.inventory_receipt.repositories.supplier.DebtSupplierRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.supplier.SupplierRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.transaction.TransactionCategoryRepository;
 import com.sapo.mock_project.inventory_receipt.repositories.transaction.TransactionRepository;
@@ -54,10 +51,12 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionCategoryRepository transactionCategoryRepository;
     private final SupplierRepository supplierRepository;
+    private final GRNRepository grnRepository;
 
     private final TransactionMapper transactionMapper;
     private final LocalizationUtils localizationUtils;
     private final AuthHelper authHelper;
+    private final DebtSupplierRepository debtSupplierRepository;
 
     /**
      * Tạo mới một phiếu thu/chi dựa trên yêu cầu đầu vào.
@@ -335,6 +334,67 @@ public class TransactionServiceImpl implements TransactionService {
             response.put("pagination", pagination);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_GET_ALL_SUCCESSFULLY), response);
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> paymentGRN(CreateTransactionGRNRequest request) {
+        try {
+            Optional<GRN> grn = grnRepository.findByIdAndTenantId(request.getGrnId(), authHelper.getUser().getTenantId());
+            if (grn.isEmpty()) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND));
+            }
+            if (grn.get().getTotalPaid().compareTo(request.getAmount()) >= 0) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_GRN_AMOUNT_INVALID));
+            }
+            TransactionCategory transactionCategory = transactionCategoryRepository.findById("TSC00002")
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_CATEGORY_NOT_FOUND)));
+
+            GRN exsitingGrn = grn.get();
+            exsitingGrn.setTotalPaid(exsitingGrn.getTotalPaid().add(request.getAmount()));
+            if (exsitingGrn.getTotalPaid().compareTo(exsitingGrn.getTotalValue()) < 0) {
+                exsitingGrn.setPaymentStatus(GRNPaymentStatus.PARTIAL_PAID);
+            } else if (exsitingGrn.getTotalPaid().compareTo(exsitingGrn.getTotalValue()) == 0) {
+                exsitingGrn.setPaymentStatus(GRNPaymentStatus.PAID);
+            } else {
+                exsitingGrn.setPaymentStatus(GRNPaymentStatus.UNPAID);
+            }
+
+            Supplier supplier = exsitingGrn.getSupplier();
+            supplier.setCurrentDebt(supplier.getCurrentDebt().subtract(request.getAmount()));
+
+            DebtSupplier debtSupplier = DebtSupplier.builder()
+                    .amount(request.getAmount())
+                    .debtAfter(supplier.getCurrentDebt())
+                    .referenceCode(PrefixId.GRN)
+                    .referenceId(exsitingGrn.getId())
+                    .note("Thanh toán phiếu nhập " + exsitingGrn.getId())
+                    .userCreated(authHelper.getUser())
+                    .supplier(supplier)
+                    .build();
+
+            Transaction newTransaction = Transaction.builder()
+                    .amount(request.getAmount())
+                    .paymentMethod(request.getPaymentMethod())
+                    .referenceCode(PrefixId.GRN)
+                    .referenceId(exsitingGrn.getId())
+                    .recipientGroup(PrefixId.SUPPLIER)
+                    .recipientId(exsitingGrn.getSupplier().getId())
+                    .recipientName(exsitingGrn.getSupplier().getName())
+                    .type(TransactionType.EXPENSE)
+                    .status(TransactionStatus.COMPLETED)
+                    .category(transactionCategory)
+                    .note("Thanh toán phiếu nhập " + grn.get().getId())
+                    .userCreated(authHelper.getUser())
+                    .build();
+
+            transactionRepository.save(newTransaction);
+            debtSupplierRepository.save(debtSupplier);
+            supplierRepository.save(supplier);
+
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CREATE_SUCCESSFULLY));
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

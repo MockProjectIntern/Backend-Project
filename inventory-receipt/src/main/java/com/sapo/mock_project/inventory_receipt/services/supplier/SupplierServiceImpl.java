@@ -73,7 +73,7 @@ public class SupplierServiceImpl implements SupplierService {
             if (supplierRepository.existsByNameAndTenantId(request.getName(), authHelper.getUser().getTenantId())) {
                 return ResponseUtil.errorValidationResponse(localizationUtils.getLocalizedMessage(MessageValidateKeys.SUPPLIER_NAME_EXISTED));
             }
-            if (request.getSupplierGroupId() != null) {
+            if (request.getSupplierGroupId() != null || !request.getSupplierGroupId().isEmpty()) {
                 SupplierGroup existingSupplierGroup = supplierGroupRepository.findByIdAndTenantId(request.getSupplierGroupId(), authHelper.getUser().getTenantId())
                         .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.SUPPLIER_GROUP_NOT_FOUND)));
                 if (existingSupplierGroup.getStatus() == SupplierGroupStatus.INACTIVE) {

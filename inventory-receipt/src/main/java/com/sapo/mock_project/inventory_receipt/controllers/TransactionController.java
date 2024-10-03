@@ -2,10 +2,7 @@ package com.sapo.mock_project.inventory_receipt.controllers;
 
 import com.sapo.mock_project.inventory_receipt.constants.BaseEndpoint;
 import com.sapo.mock_project.inventory_receipt.constants.NameFilterFromCookie;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.CreateTransactionRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetListTransactionRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetTotalRequest;
-import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.UpdateTransactionRequest;
+import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.services.transaction.TransactionService;
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
@@ -114,5 +111,10 @@ public class TransactionController {
                                                                       @RequestParam(defaultValue = "1") int page,
                                                                       @RequestParam(defaultValue = "10") int size) {
         return transactionService.getTotalTransaction(request, page, size);
+    }
+
+    @PostMapping("/payment-grn.json")
+    public ResponseEntity<ResponseObject<Object>> paymentGRN(@RequestBody CreateTransactionGRNRequest request) {
+        return transactionService.paymentGRN(request);
     }
 }
