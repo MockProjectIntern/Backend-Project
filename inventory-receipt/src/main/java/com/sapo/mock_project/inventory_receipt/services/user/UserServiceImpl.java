@@ -18,7 +18,9 @@ import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.exceptions.ExpiredTokenException;
 import com.sapo.mock_project.inventory_receipt.mappers.UserMapper;
 import com.sapo.mock_project.inventory_receipt.repositories.user.UserRepository;
+import com.sapo.mock_project.inventory_receipt.services.MailService;
 import com.sapo.mock_project.inventory_receipt.services.specification.UserSpecification;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +32,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
 
@@ -47,6 +50,8 @@ public class UserServiceImpl implements UserService {
     private final LocalizationUtils localizationUtils;
     private final AuthHelper authHelper;
 
+    private final MailService mailService;
+
     /**
      * Tạo tài khoản mới cho người dùng.
      *
@@ -63,11 +68,15 @@ public class UserServiceImpl implements UserService {
 
             User newAccount = userMapper.mapToEntity(request);
             newAccount.setPassword(passwordEncoder.encode(request.getPassword()));
-            newAccount.setActive(true);
+            newAccount.setActive(false);
             newAccount.setLastChangePass(new Date(System.currentTimeMillis()));
             newAccount.setTenantId(UUID.randomUUID().toString().substring(0, 8));
 
             userRepository.save(newAccount);
+
+            if (newAccount.getId() != null) {
+                mailService.sendConfirmLink(newAccount.getEmail(), newAccount.getId(), UUID.randomUUID().toString());
+            }
 
             // Trả về phản hồi thành công với mã trạng thái 201
             return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_CREATE_SUCCESSFULLY));
@@ -84,6 +93,7 @@ public class UserServiceImpl implements UserService {
      * @return ResponseEntity chứa thông tin đăng nhập và token.
      */
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> loginAccount(LoginAccountRequest request) {
         try {
             Optional<User> existingUserOptional = userRepository.findByPhone(request.getPhone());
@@ -92,6 +102,9 @@ public class UserServiceImpl implements UserService {
             }
 
             User existingUser = existingUserOptional.get();
+            if (!existingUser.isActive()) {
+                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_EMAIL_NOT_CONFIRMED));
+            }
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getPhone(), request.getPassword());
             authenticationManager.authenticate(authenticationToken);
@@ -140,6 +153,7 @@ public class UserServiceImpl implements UserService {
      * @return ResponseEntity chứa token mới hoặc thông báo lỗi.
      */
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> refreshToken(RefreshTokenRequest request) {
         try {
             String refreshToken = request.getRefreshToken();
@@ -181,6 +195,7 @@ public class UserServiceImpl implements UserService {
      * @return ResponseEntity chứa thông báo kết quả của việc thay đổi mật khẩu.
      */
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> changePasswordAccount(ChangePasswordRequest request) {
         try {
             User existingUser = authHelper.getUser();
@@ -210,6 +225,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> adminCreateAccount(AdminCreateStaffRequest request) {
         try {
             if (userRepository.existsByPhoneAndTenantId(request.getPhone(), authHelper.getUser().getTenantId())) {
@@ -259,6 +275,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> adminUpdateAccount(String accountId, AdminUpdateAccountRequest request) {
         try {
             Optional<User> userOptional = userRepository.findByIdAndTenantId(accountId, authHelper.getUser().getTenantId());
@@ -280,6 +297,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> deleteAccount(String accountId) {
         try {
             Optional<User> userOptional = userRepository.findByIdAndTenantId(accountId, authHelper.getUser().getTenantId());
@@ -321,5 +339,33 @@ public class UserServiceImpl implements UserService {
             // Xử lý các lỗi không mong muốn
             return ResponseUtil.error500Response(e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public ModelAndView confirmEmail(String userId, String verifyCode) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+//            if (userOptional.isEmpty()) {
+//                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_NOT_FOUND));
+//            }
+
+            User user = userOptional.get();
+//            if (user.isActive()) {
+//                return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.USER_EMAIL_ALREADY_CONFIRMED));
+//            }
+
+            user.setActive(true);
+
+            // Trả về ModelAndView với file HTML
+            ModelAndView modelAndView = new ModelAndView("confirmation-success");
+            modelAndView.addObject("message", localizationUtils.getLocalizedMessage(MessageKeys.USER_CONFIRM_EMAIL_SUCCESSFULLY));
+            return modelAndView;
+
+        } catch (Exception e) {
+            // Xử lý các lỗi không mong muốn
+//            return ResponseUtil.error500Response(e.getMessage());
+        }
+        return null;
     }
 }

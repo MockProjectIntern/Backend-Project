@@ -123,7 +123,7 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
             transactionCategoryMapper.updateFromToDTO(request, existTransactionCategory);
             transactionCategoryRepository.save(existTransactionCategory);
 
-            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CATEGORY_UPDATE_SUCCESSFULLY));
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CATEGORY_UPDATE_SUCCESSFULLY));
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

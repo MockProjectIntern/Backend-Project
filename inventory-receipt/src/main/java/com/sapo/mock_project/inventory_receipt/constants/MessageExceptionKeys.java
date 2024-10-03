@@ -7,6 +7,8 @@ public class MessageExceptionKeys {
     public static final String USER_OLD_PASSWORD_INCORRECT = "user.old_password.incorrect";
     public static final String USER_TOKEN_EXPIRED = "user.token.expired";
     public static final String USER_TOKEN_INVALID = "user.token.invalid";
+    public static final String USER_EMAIL_ALREADY_CONFIRMED = "user.email.already_confirmed";
+    public static final String USER_EMAIL_NOT_CONFIRMED = "user.email.not_confirmed";
 
     public static final String SUPPLIER_GROUP_NOT_FOUND = "supplier_group.not_found";
 

@@ -3,6 +3,7 @@ package com.sapo.mock_project.inventory_receipt.services.user;
 import com.sapo.mock_project.inventory_receipt.dtos.request.user.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.ModelAndView;
 
 public interface UserService {
     ResponseEntity<ResponseObject<Object>> createAccount(RegisterAccountRequest request);
@@ -24,4 +25,6 @@ public interface UserService {
     ResponseEntity<ResponseObject<Object>> deleteAccount(String accountId);
 
     ResponseEntity<ResponseObject<Object>> getListName(int page, int size);
+
+    ModelAndView confirmEmail(String userId, String verifyCode);
 }

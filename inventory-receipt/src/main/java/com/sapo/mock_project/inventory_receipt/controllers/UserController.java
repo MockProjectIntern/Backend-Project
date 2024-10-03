@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Controller xử lý các yêu cầu HTTP liên quan đến chức năng của người dùng (đăng ký, đăng nhập, đổi mật khẩu, v.v.).
@@ -170,5 +171,10 @@ public class UserController {
     public ResponseEntity<ResponseObject<Object>> getListName(@RequestParam(value = "page", defaultValue = "1") int page,
                                                               @RequestParam(value = "size", defaultValue = "10") int size) {
         return userService.getListName(page, size);
+    }
+
+    @GetMapping("/confirm-email/{userId}")
+    public ModelAndView confirmEmail(@PathVariable String userId, @RequestParam String verifyCode) {
+        return userService.confirmEmail(userId, verifyCode);
     }
 }

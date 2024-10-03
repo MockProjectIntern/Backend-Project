@@ -51,4 +51,7 @@ public class RegisterAccountRequest {
     @JsonProperty("role")
     @Schema(description = "Vai trò được gán cho người dùng", example = "USER", required = true)
     private RoleEnum role;
+
+    @JsonProperty("email")
+    private String email;
 }
