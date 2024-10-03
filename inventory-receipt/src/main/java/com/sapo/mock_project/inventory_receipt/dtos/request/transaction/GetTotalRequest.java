@@ -2,6 +2,7 @@ package com.sapo.mock_project.inventory_receipt.dtos.request.transaction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionMethod;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -10,7 +11,7 @@ import java.util.List;
 @Data
 public class GetTotalRequest {
     @JsonProperty("mode")
-    private String mode;
+    private TransactionType mode;
 
     @JsonProperty("keyword")
     private String keyword;

@@ -1,6 +1,7 @@
 package com.sapo.mock_project.inventory_receipt.services.specification;
 
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionMethod;
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.dtos.request.transaction.GetTotalRequest;
 import com.sapo.mock_project.inventory_receipt.entities.Transaction;
 import com.sapo.mock_project.inventory_receipt.utils.DateUtils;
@@ -13,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class GetTotalTransactionSpecification implements Specification<Transacti
     public Predicate toPredicate(Root<Transaction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
-        String mode = request.getMode();
+        TransactionType mode = request.getMode();
         String keyword = request.getKeyword();
         List<String> userCreatedIds = request.getUserCreatedIds();
         List<TransactionMethod> paymentMethods = request.getPaymentMethods();
@@ -38,11 +38,11 @@ public class GetTotalTransactionSpecification implements Specification<Transacti
         LocalDateTime dateTo = DateUtils.getDateTimeTo(request.getDateTo());
 
         if (mode != null) {
-            if (mode.equals("INCOME")) {
+            if (mode ==TransactionType.INCOME) {
                 Predicate incomePredicate = criteriaBuilder.equal(root.get("type"), "INCOME");
 
                 predicates.add(incomePredicate);
-            } else if (mode.equals("EXPENSE")) {
+            } else if (mode == TransactionType.EXPENSE) {
                 Predicate expensePredicate = criteriaBuilder.equal(root.get("type"), "EXPENSE");
 
                 predicates.add(expensePredicate);

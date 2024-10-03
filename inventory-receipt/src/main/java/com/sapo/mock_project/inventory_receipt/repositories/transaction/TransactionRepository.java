@@ -1,5 +1,6 @@
 package com.sapo.mock_project.inventory_receipt.repositories.transaction;
 
+import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.entities.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -26,5 +27,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
                 WHERE t.tenantId = :tenantId
                 AND (:mode IS NULL OR t.type = :mode)
             """)
-    List<Object[]> getTotalValue(String mode, String dateType, LocalDateTime dateFrom, LocalDateTime dateTo, String tenantId);
+    List<Object[]> getTotalValue(TransactionType mode, String dateType, LocalDateTime dateFrom, LocalDateTime dateTo, String tenantId);
 }

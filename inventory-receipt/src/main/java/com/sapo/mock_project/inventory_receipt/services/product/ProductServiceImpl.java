@@ -9,6 +9,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.request.product.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.Pagination;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseObject;
 import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
+import com.sapo.mock_project.inventory_receipt.dtos.response.product.ProductDetailResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.product.ProductGetListResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.product.ProductManageGetListResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.product.QuickGetListProductResponse;
@@ -297,6 +298,32 @@ public class ProductServiceImpl implements ProductService {
             productRepository.save(existingProduct);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_DELETED_SUCCESSFULLY));
+        } catch (Exception e) {
+            return ResponseUtil.error500Response(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseObject<Object>> getDetailProduct(String productId) {
+        try {
+            Product existingProduct = productRepository.findByIdAndTenantId(productId, authHelper.getUser().getTenantId())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND)));
+
+            ProductDetailResponse response = productMapper.mapToResponse(existingProduct);
+            if (existingProduct.getCategory() != null) {
+                response.setCategoryId(existingProduct.getCategory().getId());
+                response.setCategoryName(existingProduct.getCategory().getName());
+            }
+            if (existingProduct.getBrand() != null) {
+                response.setBrandId(existingProduct.getBrand().getId());
+                response.setBrandName(existingProduct.getBrand().getName());
+            }
+            if (existingProduct.getImages() != null && !existingProduct.getImages().isEmpty()) {
+                response.setImage(existingProduct.getImages().get(0));
+            }
+
+
+            return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_DETAIL_SUCCESSFULLY), response);
         } catch (Exception e) {
             return ResponseUtil.error500Response(e.getMessage());
         }

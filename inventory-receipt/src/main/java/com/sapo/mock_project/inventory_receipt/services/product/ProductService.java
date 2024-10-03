@@ -20,4 +20,6 @@ public interface ProductService {
     ResponseEntity<ResponseObject<Object>> quickGetListProduct(String keyword, int page, int size);
 
     ResponseEntity<ResponseObject<Object>> deleteProduct(String productId);
+
+    ResponseEntity<ResponseObject<Object>> getDetailProduct(String productId);
 }

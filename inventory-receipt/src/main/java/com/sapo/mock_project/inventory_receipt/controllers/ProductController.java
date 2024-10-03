@@ -74,4 +74,9 @@ public class ProductController {
     public ResponseEntity<ResponseObject<Object>> deleteProduct(@PathVariable String id) {
         return productService.deleteProduct(id);
     }
+
+    @GetMapping("/detail.json/{id}")
+    public ResponseEntity<ResponseObject<Object>> getDetailProduct(@PathVariable String id) {
+        return productService.getDetailProduct(id);
+    }
 }
