@@ -4,6 +4,7 @@ public class MessageKeys {
     public static final String GET_DASHBOARD_SUCCESSFULLY = "get.dashboard.successfully";
 
     public static final String USER_CREATE_SUCCESSFULLY = "user.create.successfully";
+    public static final String USER_CREATE_ADMIN_SUCCESSFULLY = "user.create_admin.successfully";
     public static final String USER_LOGIN_SUCCESSFULLY = "user.login.successfully";
     public static final String USER_REFRESH_TOKEN_SUCCESSFULLY = "user.refresh_token.successfully";
     public static final String USER_GET_DETAIL_SUCCESSFULLY = "user.get_detail.successfully";

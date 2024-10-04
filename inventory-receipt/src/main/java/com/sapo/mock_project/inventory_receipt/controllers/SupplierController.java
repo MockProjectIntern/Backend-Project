@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -34,6 +35,7 @@ public class SupplierController {
      * @return ResponseEntity chứa thông tin phản hồi về kết quả tạo nhà cung cấp.
      */
     @PostMapping("/create.json")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> createSupplier(@Valid @RequestBody CreateSupplierRequest request) {
         StringUtils.trimAllStringFields(request);
 
@@ -78,6 +80,7 @@ public class SupplierController {
      * @return ResponseEntity chứa thông tin phản hồi về kết quả cập nhật nhà cung cấp.
      */
     @PutMapping("/update.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> updateSupplier(@PathVariable String id,
                                                                  @Valid @RequestBody UpdateSupplierRequest request) {
         StringUtils.trimAllStringFields(request);
@@ -92,6 +95,7 @@ public class SupplierController {
      * @return ResponseEntity chứa thông tin phản hồi về kết quả xóa nhà cung cấp.
      */
     @DeleteMapping("/delete.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> deleteSupplier(@PathVariable("id") String id) {
         return supplierService.deleteSupplier(id);
     }

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -42,6 +43,7 @@ public class SupplierGroupController {
             @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
     })
     @PostMapping("/create.json")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> createSupplierGroup(@Valid @RequestBody CreateSupplierGroupRequest request) {
         return supplierGroupService.createSupplierGroup(request);
     }
@@ -100,6 +102,7 @@ public class SupplierGroupController {
             @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
     })
     @PutMapping("/update.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> updateSupplierGroup(@PathVariable(value = "id") String id,
                                                                       @Valid @RequestBody UpdateSupplierGroupRequest request) {
         return supplierGroupService.updateSupplierGroup(id, request);
@@ -119,6 +122,7 @@ public class SupplierGroupController {
             @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
     })
     @DeleteMapping("/delete.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> deleteSupplierGroup(@PathVariable(value = "id") String id) {
         return supplierGroupService.deleteSupplierGroup(id);
     }

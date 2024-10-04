@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -36,6 +37,7 @@ public class GRNController {
      * @return ResponseEntity chứa thông tin phản hồi về kết quả tạo phiếu nhập kho.
      */
     @PostMapping("/create.json")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDINATOR')")
     public ResponseEntity<ResponseObject<Object>> createGRN(@Valid @RequestBody CreateGRNRequest request) {
         StringUtils.trimAllStringFields(request);
 
@@ -61,6 +63,7 @@ public class GRNController {
      * @return ResponseEntity chứa thông tin phản hồi về kết quả cập nhật phiếu nhập kho.
      */
     @PutMapping("/update.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDINATOR')")
     public ResponseEntity<ResponseObject<Object>> updateGRN(@PathVariable String id,
                                                             @Valid @RequestBody UpdateGRNRequest request) {
         StringUtils.trimAllStringFields(request);
@@ -75,6 +78,7 @@ public class GRNController {
      * @return ResponseEntity chứa thông tin phản hồi về kết quả xóa phiếu nhập kho.
      */
     @DeleteMapping("/delete.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDINATOR')")
     public ResponseEntity<ResponseObject<Object>> deleteGRN(@PathVariable("id") String id) {
         return grnService.deleteGRN(id);
     }
@@ -104,6 +108,7 @@ public class GRNController {
      * @return ResponseEntity chứa thông tin phản hồi về kết quả nhập phiếu nhập kho.
      */
     @PutMapping("/import.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDINATOR')")
     public ResponseEntity<ResponseObject<Object>> importGRN(@PathVariable String id) {
         return grnService.importGRN(id);
     }

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -25,6 +26,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/create.json")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         StringUtils.trimAllStringFields(request);
 
@@ -47,6 +49,7 @@ public class OrderController {
     }
 
     @PutMapping("/update.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> updateOrder(@PathVariable String id, @Valid @RequestBody UpdateOrderRequest request) {
         StringUtils.trimAllStringFields(request);
 
@@ -54,6 +57,7 @@ public class OrderController {
     }
 
     @PutMapping("/update-little.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<ResponseObject<Object>> updateOrderLittle(@PathVariable String id, @Valid @RequestBody UpdateOrderLittleRequest request) {
         StringUtils.trimAllStringFields(request);
 

@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // Trả về phản hồi thành công với mã trạng thái 201
-            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_CREATE_SUCCESSFULLY));
+            return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.USER_CREATE_ADMIN_SUCCESSFULLY));
         } catch (Exception e) {
             // Xử lý các lỗi không mong muốn
             return ResponseUtil.error500Response(e.getMessage());

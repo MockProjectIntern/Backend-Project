@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class BrandController {
 
     @PostMapping("/create.json")
     @Operation(summary = "Tạo mới thương hiệu")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> createBrand(@Valid @RequestBody CreateBrandRequest createBrandRequest) {
         StringUtils.trimAllStringFields(createBrandRequest);
 
@@ -31,6 +33,7 @@ public class BrandController {
 
     @PutMapping("/update.json/{id}")
     @Operation(summary = "Cập nhật thông tin thương hiệu")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> updateBrand(@PathVariable String id, @RequestBody UpdateBrandRequest updateBrandRequest) {
         StringUtils.trimAllStringFields(updateBrandRequest);
 

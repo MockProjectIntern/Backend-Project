@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,6 +35,7 @@ public class CategoryController {
      */
     @Operation(summary = "Tạo mới danh mục", description = "API để tạo mới một danh mục trong hệ thống.")
     @PostMapping("/create.json")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> createCategory(@Valid @RequestBody CreateCategoryRequest request) {
         StringUtils.trimAllStringFields(request);
 

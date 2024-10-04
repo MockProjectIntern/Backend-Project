@@ -79,18 +79,25 @@ public class RefundInformationServiceImpl implements RefundInformationService {
 
             List<RefundInformationDetail> refundDetails = new ArrayList<>();
             for (CreateRefundInforDetailRequest detailRequest : request.getRefundDetail()) {
-                boolean isExist = existingGRN.getGrnProducts().stream()
-                        .anyMatch(detail -> detail.getProduct().getId().equals(detailRequest.getProductId()));
-                if (!isExist) {
-                    return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_IN_LIST));
-                }
+//                boolean isExist = existingGRN.getGrnProducts().stream()
+//                        .anyMatch(detail -> detail.getId().equals(detailRequest.getProductId()));
+//                if (!isExist) {
+//                    return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_IN_LIST));
+//                }
 
-                Optional<Product> optionalProduct = productRepository.findById(detailRequest.getProductId());
-                if (optionalProduct.isEmpty()) {
+                Optional<GRNProduct> optionalGRNProduct = existingGRN.getGrnProducts().stream()
+                        .filter(grnProduct -> grnProduct.getId().equals(detailRequest.getProductId()))
+                        .findFirst();
+                if (optionalGRNProduct.isEmpty()) {
                     return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND));
                 }
+                GRNProduct existingGRNProduct = optionalGRNProduct.get();
+//                Optional<Product> optionalProduct = productRepository.findById(detailRequest.getProductId());
+//                if (optionalProduct.isEmpty()) {
+//                    return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.PRODUCT_NOT_FOUND));
+//                }
 
-                Product existingProduct = optionalProduct.get();
+                Product existingProduct = existingGRNProduct.getProduct();
 
                 RefundInformationDetail newDetail = RefundInformationDetail.builder()
                         .quantity(detailRequest.getQuantity())

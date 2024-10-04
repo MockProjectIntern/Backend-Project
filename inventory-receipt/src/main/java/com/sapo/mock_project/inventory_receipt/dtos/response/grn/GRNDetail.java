@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sapo.mock_project.inventory_receipt.constants.DateTimePattern;
 import com.sapo.mock_project.inventory_receipt.constants.enums.*;
 import com.sapo.mock_project.inventory_receipt.dtos.response.BaseResponse;
-import com.sapo.mock_project.inventory_receipt.dtos.response.supplier.SupplierDetail;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNHistory;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNImportCost;
 import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNPaymentMethod;
@@ -13,10 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DTO phản hồi chi tiết thông tin của một phiếu nhập kho (GRN).
@@ -102,6 +99,9 @@ public class GRNDetail extends BaseResponse {
     @Schema(description = "Tổng giá trị của phiếu nhập kho", example = "1500000.00")
     @JsonProperty("total_value")
     private BigDecimal totalValue;
+
+    @JsonProperty("total_paid")
+    private BigDecimal totalPaid;
 
     /**
      * Trạng thái thanh toán của phiếu nhập kho.

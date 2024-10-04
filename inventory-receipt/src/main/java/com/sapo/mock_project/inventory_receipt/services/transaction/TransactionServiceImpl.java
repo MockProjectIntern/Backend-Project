@@ -4,6 +4,8 @@ import com.sapo.mock_project.inventory_receipt.components.AuthHelper;
 import com.sapo.mock_project.inventory_receipt.components.LocalizationUtils;
 import com.sapo.mock_project.inventory_receipt.constants.*;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNPaymentStatus;
+import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
+import com.sapo.mock_project.inventory_receipt.constants.enums.GRNStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.transaction.TransactionType;
 import com.sapo.mock_project.inventory_receipt.dtos.internal.transaction.AutoCreateTransactionRequest;
@@ -14,6 +16,7 @@ import com.sapo.mock_project.inventory_receipt.dtos.response.ResponseUtil;
 import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.GetTotalTransactionResponse;
 import com.sapo.mock_project.inventory_receipt.dtos.response.transaction.TransactionGetListResponse;
 import com.sapo.mock_project.inventory_receipt.entities.*;
+import com.sapo.mock_project.inventory_receipt.entities.subentities.GRNPaymentMethod;
 import com.sapo.mock_project.inventory_receipt.exceptions.DataNotFoundException;
 import com.sapo.mock_project.inventory_receipt.exceptions.NoActionForOperationException;
 import com.sapo.mock_project.inventory_receipt.mappers.TransactionMapper;
@@ -27,6 +30,7 @@ import com.sapo.mock_project.inventory_receipt.services.specification.Transactio
 import com.sapo.mock_project.inventory_receipt.utils.CommonUtils;
 import com.sapo.mock_project.inventory_receipt.utils.DateUtils;
 import com.sapo.mock_project.inventory_receipt.utils.StringUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +40,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -340,13 +345,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<ResponseObject<Object>> paymentGRN(CreateTransactionGRNRequest request) {
         try {
             Optional<GRN> grn = grnRepository.findByIdAndTenantId(request.getGrnId(), authHelper.getUser().getTenantId());
             if (grn.isEmpty()) {
                 return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.GRN_NOT_FOUND));
             }
-            if (grn.get().getTotalPaid().compareTo(request.getAmount()) >= 0) {
+            if (grn.get().getTotalPaid().add(request.getAmount()).compareTo(grn.get().getTotalValue()) > 0) {
                 return ResponseUtil.error400Response(localizationUtils.getLocalizedMessage(MessageExceptionKeys.TRANSACTION_GRN_AMOUNT_INVALID));
             }
             TransactionCategory transactionCategory = transactionCategoryRepository.findById("TSC00002")
@@ -390,9 +396,27 @@ public class TransactionServiceImpl implements TransactionService {
                     .userCreated(authHelper.getUser())
                     .build();
 
+            GRNPaymentMethod paymentMethod = GRNPaymentMethod.builder()
+                    .amount(request.getAmount())
+                    .method(request.getPaymentMethod().name())
+                    .date(LocalDateTime.now())
+                    .reference(newTransaction.getId())
+                    .build();
+            List<GRNPaymentMethod> paymentMethods = exsitingGrn.getPaymentMethods();
+            if (paymentMethods == null || paymentMethods.isEmpty()) {
+                paymentMethods = List.of(paymentMethod);
+            } else {
+                paymentMethods.add(paymentMethod);
+            }
+            exsitingGrn.setPaymentMethods(paymentMethods);
+            if (exsitingGrn.getTotalPaid().compareTo(exsitingGrn.getTotalValue()) == 0 && exsitingGrn.getReceivedStatus() == GRNReceiveStatus.ENTERED) {
+                exsitingGrn.setStatus(GRNStatus.COMPLETED);
+            }
+
             transactionRepository.save(newTransaction);
             debtSupplierRepository.save(debtSupplier);
             supplierRepository.save(supplier);
+            grnRepository.save(exsitingGrn);
 
             return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.TRANSACTION_CREATE_SUCCESSFULLY));
         } catch (Exception e) {

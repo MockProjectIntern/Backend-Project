@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -36,6 +37,7 @@ public class ProductController {
     }
 
     @PutMapping("/update.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> updateProduct(@PathVariable String id,
                                                                 @Valid @RequestBody UpdateProductRequest request) {
         StringUtils.trimAllStringFields(request);
@@ -71,6 +73,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> deleteProduct(@PathVariable String id) {
         return productService.deleteProduct(id);
     }

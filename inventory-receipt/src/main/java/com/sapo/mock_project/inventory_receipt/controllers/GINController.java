@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -26,6 +27,7 @@ public class GINController {
     private final GINService ginService;
 
     @PostMapping("/create.json")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> createGIN(@Valid @RequestBody CreateGINRequest request) {
         StringUtils.trimAllStringFields(request);
 
@@ -38,6 +40,7 @@ public class GINController {
     }
 
     @PutMapping("/update.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> updateGIN(@PathVariable String id,
                                                             @Valid @RequestBody UpdateGINRequest request) {
         StringUtils.trimAllStringFields(request);
@@ -46,6 +49,7 @@ public class GINController {
     }
 
     @DeleteMapping("/delete.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> deleteGIN(@PathVariable("id") String id) {
         return ginService.deleteGIN(id);
     }
@@ -61,6 +65,7 @@ public class GINController {
     }
 
     @PutMapping("balance.json/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
     public ResponseEntity<ResponseObject<Object>> balanceGIN(@PathVariable String id) {
         return ginService.balanceGIN(id);
     }
