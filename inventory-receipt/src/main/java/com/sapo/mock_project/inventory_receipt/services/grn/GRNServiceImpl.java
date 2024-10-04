@@ -9,6 +9,7 @@ import com.sapo.mock_project.inventory_receipt.constants.MessageValidateKeys;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNPaymentStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNReceiveStatus;
 import com.sapo.mock_project.inventory_receipt.constants.enums.GRNStatus;
+import com.sapo.mock_project.inventory_receipt.constants.enums.OrderStatus;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.CreateGRNProductRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.CreateGRNRequest;
 import com.sapo.mock_project.inventory_receipt.dtos.request.grn.GetListGRNRequest;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Triển khai các dịch vụ liên quan đến phiếu nhập hàng (GRN).
@@ -105,14 +107,51 @@ public class GRNServiceImpl implements GRNService {
             newGRN.setSupplier(existingSupplier);
             newGRN.setUserCreated(user);
 
-            // Nếu nhập hàng từ order thì set order cho GRN
-            if (request.getOrderId() != null) {
-                newGRN.setOrder(orderRepository.findById(request.getOrderId())
-                        .orElseThrow(() -> new DataNotFoundException("Order Not found")));
-            }
-
             // Tính toán giá trị của GRN
             newGRN.calculatorValue();
+
+            // Nếu nhập hàng từ order thì set order cho GRN
+            if (request.getOrderId() != null) {
+
+                Order order = orderRepository.findById(request.getOrderId())
+                        .orElseThrow(() -> new DataNotFoundException("Order Not found"));
+                newGRN.setOrder(order);
+
+                if (request.getReceivedStatus() == GRNReceiveStatus.ENTERED) {
+                    newGRN.setUserImported(user);
+
+                    for (GRNProduct grnProduct : newGRN.getGrnProducts()) {
+                        Product product = grnProduct.getProduct();
+                        product.setQuantity(product.getQuantity().add(grnProduct.getQuantity()));
+
+                        productRepository.save(product);
+                    }
+
+                    AtomicBoolean isCompleted = new AtomicBoolean(true);
+                    order.getOrderDetails().forEach(orderDetail -> {
+                        orderDetail.setImportedQuantity(orderDetail.getImportedQuantity() != null
+                                ? orderDetail.getImportedQuantity().add(grnProducts.stream().filter(
+                                        grnProduct -> grnProduct.getProduct().getId().equals(orderDetail.getProduct().getId()))
+                                .findFirst().get().getQuantity())
+                                : grnProducts.stream().filter(
+                                        grnProduct -> grnProduct.getProduct().getId().equals(orderDetail.getProduct().getId()))
+                                .findFirst().get().getQuantity());
+                        if (orderDetail.getImportedQuantity().compareTo(orderDetail.getQuantity()) != 0) {
+                            isCompleted.set(false);
+                        }
+                    });
+
+                    if (isCompleted.get()) {
+                        order.setStatus(OrderStatus.COMPLETED);
+                    } else {
+                        order.setStatus(OrderStatus.PARTIAL);
+                    }
+
+
+                    existingSupplier.setCurrentDebt(existingSupplier.getCurrentDebt().add(newGRN.getTotalValue()));
+                }
+
+            }
 
             // Thêm lịch sử tạo mới GRN
             GRNHistory grnHistory = GRNHistory.builder()
@@ -132,12 +171,15 @@ public class GRNServiceImpl implements GRNService {
                     product.setQuantity(product.getQuantity().add(grnProduct.getQuantity()));
                     productRepository.save(product);
                 }
+
+                existingSupplier.setCurrentDebt(existingSupplier.getCurrentDebt().add(newGRN.getTotalValue()));
             }
 
             newGRN.setHistories(List.of(grnHistory));
 
             grnRepository.save(newGRN);
             grnProductRepository.saveAll(newGRN.getGrnProducts());
+            supplierRepository.save(existingSupplier);
 
             return ResponseUtil.success201Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_CREATE_SUCCESSFULLY));
         } catch (Exception e) {
@@ -396,7 +438,11 @@ public class GRNServiceImpl implements GRNService {
                 productRepository.save(product);
             }
 
+            Supplier supplier = grn.getSupplier();
+            supplier.setCurrentDebt(supplier.getCurrentDebt().add(grn.getTotalValue()));
+
             grnRepository.save(grn);
+            supplierRepository.save(supplier);
 
             return ResponseUtil.success200Response(localizationUtils.getLocalizedMessage(MessageKeys.GRN_IMPORT_SUCCESSFULLY));
         } catch (Exception e) {
